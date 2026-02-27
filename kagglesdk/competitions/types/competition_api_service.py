@@ -712,6 +712,11 @@ class ApiCreateSubmissionRequest(KaggleObject):
       https://github.com/Kaggle/kaggleazure/blob/9c4bea5548c50844a257f26a10c6c9ae9aaf486b/Kaggle.Services.Competitions/Iam/Competitions/CompetitionsSubmitChecker.cs#L78).
       If specified, submit on behalf of this model team instead of
       the current user.
+    sandbox (bool)
+      Only competition hosts or admins can set true (see checker at
+      https://github.com/Kaggle/kaggleazure/blob/9c4bea5548c50844a257f26a10c6c9ae9aaf486b/Kaggle.Services.Competitions/Iam/Competitions/CompetitionsSubmitChecker.cs#L69).
+      If set, this will be a sample submission used for verifying the competition
+      setup.
   """
 
   def __init__(self):
@@ -719,6 +724,7 @@ class ApiCreateSubmissionRequest(KaggleObject):
     self._blob_file_tokens = ""
     self._submission_description = None
     self._benchmark_model_version_id = None
+    self._sandbox = None
     self._freeze()
 
   @property
@@ -781,6 +787,25 @@ class ApiCreateSubmissionRequest(KaggleObject):
     if not isinstance(benchmark_model_version_id, int):
       raise TypeError('benchmark_model_version_id must be of type int')
     self._benchmark_model_version_id = benchmark_model_version_id
+
+  @property
+  def sandbox(self) -> bool:
+    r"""
+    Only competition hosts or admins can set true (see checker at
+    https://github.com/Kaggle/kaggleazure/blob/9c4bea5548c50844a257f26a10c6c9ae9aaf486b/Kaggle.Services.Competitions/Iam/Competitions/CompetitionsSubmitChecker.cs#L69).
+    If set, this will be a sample submission used for verifying the competition
+    setup.
+    """
+    return self._sandbox or False
+
+  @sandbox.setter
+  def sandbox(self, sandbox: Optional[bool]):
+    if sandbox is None:
+      del self.sandbox
+      return
+    if not isinstance(sandbox, bool):
+      raise TypeError('sandbox must be of type bool')
+    self._sandbox = sandbox
 
   def endpoint(self):
     path = '/api/v1/competitions/submissions/submit/{competition_name}'
@@ -2297,6 +2322,7 @@ ApiCreateSubmissionRequest._fields = [
   FieldMetadata("blobFileTokens", "blob_file_tokens", "_blob_file_tokens", str, "", PredefinedSerializer()),
   FieldMetadata("submissionDescription", "submission_description", "_submission_description", str, None, PredefinedSerializer(), optional=True),
   FieldMetadata("benchmarkModelVersionId", "benchmark_model_version_id", "_benchmark_model_version_id", int, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("sandbox", "sandbox", "_sandbox", bool, None, PredefinedSerializer(), optional=True),
 ]
 
 ApiCreateSubmissionResponse._fields = [

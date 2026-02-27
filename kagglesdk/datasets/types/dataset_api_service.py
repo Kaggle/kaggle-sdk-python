@@ -1834,7 +1834,7 @@ class ApiGetDatasetMetadataResponse(KaggleObject):
     info (DatasetInfo)
     error_message (str)
       Required for backwards-compatibility. See
-      https://github.com/Kaggle/kaggle-api/issues/235
+      https://github.com/Kaggle/kaggle-cli/issues/235
   """
 
   def __init__(self):
@@ -1859,7 +1859,7 @@ class ApiGetDatasetMetadataResponse(KaggleObject):
   def error_message(self) -> str:
     r"""
     Required for backwards-compatibility. See
-    https://github.com/Kaggle/kaggle-api/issues/235
+    https://github.com/Kaggle/kaggle-cli/issues/235
     """
     return self._error_message or ""
 
