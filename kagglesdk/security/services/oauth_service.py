@@ -1,58 +1,92 @@
-from kagglesdk.common.types.http_redirect import HttpRedirect
 from kagglesdk.kaggle_http_client import KaggleHttpClient
-from kagglesdk.security.types.oauth_service import ExchangeOAuthTokenRequest, ExchangeOAuthTokenResponse, IntrospectTokenRequest, IntrospectTokenResponse, RegisterOAuthClientRequest, RegisterOAuthClientResponse, StartOAuthFlowRequest
+from kagglesdk.security.types.oauth_service import CreateOAuthClientRequest, DeleteOAuthClientRequest, FinalizeOAuthFlowRequest, FinalizeOAuthFlowResponse, GetOAuthClientRequest, GetOAuthFlowInfoRequest, ListOAuthClientsRequest, ListOAuthClientsResponse, OAuthFlowInfo, UpdateOAuthClientRequest
+from kagglesdk.security.types.security_types import OAuthClient
 
 class OAuthClient(object):
 
   def __init__(self, client: KaggleHttpClient):
     self._client = client
 
-  def start_oauth_flow(self, request: StartOAuthFlowRequest = None) -> HttpRedirect:
+  def get_oauth_flow_info(self, request: GetOAuthFlowInfoRequest = None) -> OAuthFlowInfo:
     r"""
     Args:
-      request (StartOAuthFlowRequest):
+      request (GetOAuthFlowInfoRequest):
         The request object; initialized to empty instance if not specified.
     """
 
     if request is None:
-      request = StartOAuthFlowRequest()
+      request = GetOAuthFlowInfoRequest()
 
-    return self._client.call("security.OAuthService", "StartOAuthFlow", request, HttpRedirect)
+    return self._client.call("security.OAuthService", "GetOAuthFlowInfo", request, OAuthFlowInfo)
 
-  def exchange_oauth_token(self, request: ExchangeOAuthTokenRequest = None) -> ExchangeOAuthTokenResponse:
+  def finalize_oauth_flow(self, request: FinalizeOAuthFlowRequest = None) -> FinalizeOAuthFlowResponse:
     r"""
     Args:
-      request (ExchangeOAuthTokenRequest):
+      request (FinalizeOAuthFlowRequest):
         The request object; initialized to empty instance if not specified.
     """
 
     if request is None:
-      request = ExchangeOAuthTokenRequest()
+      request = FinalizeOAuthFlowRequest()
 
-    return self._client.call("security.OAuthService", "ExchangeOAuthToken", request, ExchangeOAuthTokenResponse)
+    return self._client.call("security.OAuthService", "FinalizeOAuthFlow", request, FinalizeOAuthFlowResponse)
 
-  def introspect_token(self, request: IntrospectTokenRequest = None) -> IntrospectTokenResponse:
+  def create_oauth_client(self, request: CreateOAuthClientRequest = None) -> OAuthClient:
     r"""
     Args:
-      request (IntrospectTokenRequest):
+      request (CreateOAuthClientRequest):
         The request object; initialized to empty instance if not specified.
     """
 
     if request is None:
-      request = IntrospectTokenRequest()
+      request = CreateOAuthClientRequest()
 
-    return self._client.call("security.OAuthService", "IntrospectToken", request, IntrospectTokenResponse)
+    return self._client.call("security.OAuthService", "CreateOAuthClient", request, OAuthClient)
 
-  def register_oauth_client(self, request: RegisterOAuthClientRequest = None) -> RegisterOAuthClientResponse:
+  def get_oauth_client(self, request: GetOAuthClientRequest = None) -> OAuthClient:
     r"""
-    Dynamic Client Registration Endpoint (RFC 7591)
-
     Args:
-      request (RegisterOAuthClientRequest):
+      request (GetOAuthClientRequest):
         The request object; initialized to empty instance if not specified.
     """
 
     if request is None:
-      request = RegisterOAuthClientRequest()
+      request = GetOAuthClientRequest()
 
-    return self._client.call("security.OAuthService", "RegisterOAuthClient", request, RegisterOAuthClientResponse)
+    return self._client.call("security.OAuthService", "GetOAuthClient", request, OAuthClient)
+
+  def list_oauth_clients(self, request: ListOAuthClientsRequest = None) -> ListOAuthClientsResponse:
+    r"""
+    Args:
+      request (ListOAuthClientsRequest):
+        The request object; initialized to empty instance if not specified.
+    """
+
+    if request is None:
+      request = ListOAuthClientsRequest()
+
+    return self._client.call("security.OAuthService", "ListOAuthClients", request, ListOAuthClientsResponse)
+
+  def update_oauth_client(self, request: UpdateOAuthClientRequest = None) -> OAuthClient:
+    r"""
+    Args:
+      request (UpdateOAuthClientRequest):
+        The request object; initialized to empty instance if not specified.
+    """
+
+    if request is None:
+      request = UpdateOAuthClientRequest()
+
+    return self._client.call("security.OAuthService", "UpdateOAuthClient", request, OAuthClient)
+
+  def delete_oauth_client(self, request: DeleteOAuthClientRequest = None):
+    r"""
+    Args:
+      request (DeleteOAuthClientRequest):
+        The request object; initialized to empty instance if not specified.
+    """
+
+    if request is None:
+      request = DeleteOAuthClientRequest()
+
+    self._client.call("security.OAuthService", "DeleteOAuthClient", request, None)

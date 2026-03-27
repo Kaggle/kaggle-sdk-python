@@ -1,5 +1,5 @@
 from kagglesdk.kaggle_http_client import KaggleHttpClient
-from kagglesdk.security.types.iam_service import GetIamPolicyRequest, IamPolicy, SetIamPolicyRequest
+from kagglesdk.security.types.iam_service import GetIamPolicyRequest, IamPolicy, SearchPrincipalsRequest, SearchPrincipalsResponse, SetIamPolicyRequest
 
 class IamClient(object):
 
@@ -29,3 +29,15 @@ class IamClient(object):
       request = SetIamPolicyRequest()
 
     return self._client.call("security.IamService", "SetIamPolicy", request, IamPolicy)
+
+  def search_principals(self, request: SearchPrincipalsRequest = None) -> SearchPrincipalsResponse:
+    r"""
+    Args:
+      request (SearchPrincipalsRequest):
+        The request object; initialized to empty instance if not specified.
+    """
+
+    if request is None:
+      request = SearchPrincipalsRequest()
+
+    return self._client.call("security.IamService", "SearchPrincipals", request, SearchPrincipalsResponse)

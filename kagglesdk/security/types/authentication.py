@@ -152,6 +152,36 @@ class AuthorizationScope(KaggleObject):
     self._role = role
 
 
+class DataAccessReason(KaggleObject):
+  r"""
+  The structured reason/justification for accessing another user's data.
+  This was patterned after
+  http://google3/security/credentials/proto/authenticator.proto;l=309;rcl=439326919
+
+  Attributes:
+    manual_reason (str)
+      The access reason/justification (i.e. as specified in Genie).
+  """
+
+  def __init__(self):
+    self._manual_reason = None
+    self._freeze()
+
+  @property
+  def manual_reason(self) -> str:
+    """The access reason/justification (i.e. as specified in Genie)."""
+    return self._manual_reason or ""
+
+  @manual_reason.setter
+  def manual_reason(self, manual_reason: str):
+    if manual_reason is None:
+      del self.manual_reason
+      return
+    if not isinstance(manual_reason, str):
+      raise TypeError('manual_reason must be of type str')
+    self._manual_reason = manual_reason
+
+
 AuthorizationPermissionScope._fields = [
   FieldMetadata("name", "name", "_name", str, "", PredefinedSerializer()),
   FieldMetadata("description", "description", "_description", str, None, PredefinedSerializer(), optional=True),
@@ -167,5 +197,9 @@ AuthorizationScope._fields = [
   FieldMetadata("resourceId", "resource_id", "_resource_id", int, 0, PredefinedSerializer()),
   FieldMetadata("permission", "permission", "_permission", AuthorizationPermissionScope, None, KaggleObjectSerializer(), optional=True),
   FieldMetadata("role", "role", "_role", AuthorizationRoleScope, None, KaggleObjectSerializer(), optional=True),
+]
+
+DataAccessReason._fields = [
+  FieldMetadata("manualReason", "manual_reason", "_manual_reason", str, None, PredefinedSerializer(), optional=True),
 ]
 
