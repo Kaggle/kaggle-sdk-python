@@ -17,6 +17,19 @@ class OrganizationCategory(enum.Enum):
   medical research
   """
 
+class OrganizationDenialReason(enum.Enum):
+  ORGANIZATION_DENIAL_REASON_UNSPECIFIED = 0
+  INCORRECT_ORGANIZATION_CATEGORY = 1
+  """Incorrect organization type was chosen"""
+  NO_REPRESENTATION_NECESSARY = 2
+  """Organization does not need to be represented on Kaggle"""
+  ORGANIZATION_ALREADY_EXISTS = 3
+  """Organization already exists on Kaggle"""
+  NO_OUTSIDE_EVIDENCE = 4
+  """No proof of organization's existence outside of Kaggle"""
+  SPAM = 5
+  """This organization is spam"""
+
 class OrganizationMembershipType(enum.Enum):
   ORGANIZATION_MEMBERSHIP_TYPE_UNSPECIFIED = 0
   MEMBER = 1

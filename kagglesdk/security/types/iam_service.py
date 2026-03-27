@@ -33,14 +33,6 @@ class GetIamPolicyRequest(KaggleObject):
       raise TypeError('resource_id must be of type KaggleResourceId')
     self._resource_id = resource_id
 
-  def endpoint(self):
-    path = '/api/v1/iam/get/{resource_id}'
-    return path.format_map(self.to_field_map(self))
-
-  @staticmethod
-  def endpoint_path():
-    return '/api/v1/iam/get/{resource_id}'
-
 
 class GroupPrincipal(KaggleObject):
   r"""
@@ -269,6 +261,10 @@ class Principal(KaggleObject):
     group (GroupPrincipal)
     organization (OrganizationPrincipal)
     name (str)
+    is_fixed (bool)
+      Whether this principal binding is fixed (system-managed) and cannot be
+      removed by regular users. Fixed bindings are created by system accounts
+      (e.g., when sharing hackathon resources with competition groups).
   """
 
   def __init__(self):
@@ -276,6 +272,7 @@ class Principal(KaggleObject):
     self._group = None
     self._organization = None
     self._name = ""
+    self._is_fixed = False
     self._freeze()
 
   @property
@@ -336,6 +333,120 @@ class Principal(KaggleObject):
       raise TypeError('name must be of type str')
     self._name = name
 
+  @property
+  def is_fixed(self) -> bool:
+    r"""
+    Whether this principal binding is fixed (system-managed) and cannot be
+    removed by regular users. Fixed bindings are created by system accounts
+    (e.g., when sharing hackathon resources with competition groups).
+    """
+    return self._is_fixed
+
+  @is_fixed.setter
+  def is_fixed(self, is_fixed: bool):
+    if is_fixed is None:
+      del self.is_fixed
+      return
+    if not isinstance(is_fixed, bool):
+      raise TypeError('is_fixed must be of type bool')
+    self._is_fixed = is_fixed
+
+
+class SearchPrincipalsRequest(KaggleObject):
+  r"""
+  Attributes:
+    query (str)
+      Term to search for in user profiles (usernames, display names etc) and
+      groups (slugs, names, descriptions).
+    resource_id (KaggleResourceId)
+      If specified, may return additional principals based on the resource.
+      For example, competition team members will be included if the resource is a
+      kernel that is part of a competition.
+    page_size (int)
+      Max number of principals to return.
+  """
+
+  def __init__(self):
+    self._query = ""
+    self._resource_id = None
+    self._page_size = 0
+    self._freeze()
+
+  @property
+  def query(self) -> str:
+    r"""
+    Term to search for in user profiles (usernames, display names etc) and
+    groups (slugs, names, descriptions).
+    """
+    return self._query
+
+  @query.setter
+  def query(self, query: str):
+    if query is None:
+      del self.query
+      return
+    if not isinstance(query, str):
+      raise TypeError('query must be of type str')
+    self._query = query
+
+  @property
+  def resource_id(self) -> Optional['KaggleResourceId']:
+    r"""
+    If specified, may return additional principals based on the resource.
+    For example, competition team members will be included if the resource is a
+    kernel that is part of a competition.
+    """
+    return self._resource_id or None
+
+  @resource_id.setter
+  def resource_id(self, resource_id: Optional[Optional['KaggleResourceId']]):
+    if resource_id is None:
+      del self.resource_id
+      return
+    if not isinstance(resource_id, KaggleResourceId):
+      raise TypeError('resource_id must be of type KaggleResourceId')
+    self._resource_id = resource_id
+
+  @property
+  def page_size(self) -> int:
+    """Max number of principals to return."""
+    return self._page_size
+
+  @page_size.setter
+  def page_size(self, page_size: int):
+    if page_size is None:
+      del self.page_size
+      return
+    if not isinstance(page_size, int):
+      raise TypeError('page_size must be of type int')
+    self._page_size = page_size
+
+
+class SearchPrincipalsResponse(KaggleObject):
+  r"""
+  Attributes:
+    principals (Principal)
+  """
+
+  def __init__(self):
+    self._principals = []
+    self._freeze()
+
+  @property
+  def principals(self) -> Optional[List[Optional['Principal']]]:
+    return self._principals
+
+  @principals.setter
+  def principals(self, principals: Optional[List[Optional['Principal']]]):
+    if principals is None:
+      del self.principals
+      return
+    if not isinstance(principals, list):
+      raise TypeError('principals must be of type list')
+    if not all([isinstance(t, Principal) for t in principals]):
+      raise TypeError('principals must contain only items of type Principal')
+    self._principals = principals
+
 
 class SetIamPolicyRequest(KaggleObject):
   r"""
@@ -380,19 +491,6 @@ class SetIamPolicyRequest(KaggleObject):
     if not isinstance(policy, IamPolicy):
       raise TypeError('policy must be of type IamPolicy')
     self._policy = policy
-
-  def endpoint(self):
-    path = '/api/v1/iam/set/{resource_id}/{policy}'
-    return path.format_map(self.to_field_map(self))
-
-
-  @staticmethod
-  def method():
-    return 'POST'
-
-  @staticmethod
-  def body_fields():
-    return '*'
 
 
 class UserPrincipal(KaggleObject):
@@ -481,6 +579,17 @@ Principal._fields = [
   FieldMetadata("group", "group", "_group", GroupPrincipal, None, KaggleObjectSerializer(), optional=True),
   FieldMetadata("organization", "organization", "_organization", OrganizationPrincipal, None, KaggleObjectSerializer(), optional=True),
   FieldMetadata("name", "name", "_name", str, "", PredefinedSerializer()),
+  FieldMetadata("isFixed", "is_fixed", "_is_fixed", bool, False, PredefinedSerializer()),
+]
+
+SearchPrincipalsRequest._fields = [
+  FieldMetadata("query", "query", "_query", str, "", PredefinedSerializer()),
+  FieldMetadata("resourceId", "resource_id", "_resource_id", KaggleResourceId, None, KaggleObjectSerializer(), optional=True),
+  FieldMetadata("pageSize", "page_size", "_page_size", int, 0, PredefinedSerializer()),
+]
+
+SearchPrincipalsResponse._fields = [
+  FieldMetadata("principals", "principals", "_principals", Principal, [], ListSerializer(KaggleObjectSerializer())),
 ]
 
 SetIamPolicyRequest._fields = [
