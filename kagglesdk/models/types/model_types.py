@@ -872,6 +872,10 @@ class ModelInstanceVersion(KaggleObject):
     thumbnail_url (str)
     is_private (bool)
     sigstore_state (SigstoreState)
+    model_id (int)
+    owner_slug (str)
+    model_slug (str)
+    model_instance_id (int)
   """
 
   def __init__(self):
@@ -885,6 +889,10 @@ class ModelInstanceVersion(KaggleObject):
     self._thumbnail_url = ""
     self._is_private = False
     self._sigstore_state = SigstoreState.SIGSTORE_STATE_UNSPECIFIED
+    self._model_id = 0
+    self._owner_slug = ""
+    self._model_slug = ""
+    self._model_instance_id = 0
     self._freeze()
 
   @property
@@ -1016,6 +1024,58 @@ class ModelInstanceVersion(KaggleObject):
     if not isinstance(sigstore_state, SigstoreState):
       raise TypeError('sigstore_state must be of type SigstoreState')
     self._sigstore_state = sigstore_state
+
+  @property
+  def model_id(self) -> int:
+    return self._model_id
+
+  @model_id.setter
+  def model_id(self, model_id: int):
+    if model_id is None:
+      del self.model_id
+      return
+    if not isinstance(model_id, int):
+      raise TypeError('model_id must be of type int')
+    self._model_id = model_id
+
+  @property
+  def owner_slug(self) -> str:
+    return self._owner_slug
+
+  @owner_slug.setter
+  def owner_slug(self, owner_slug: str):
+    if owner_slug is None:
+      del self.owner_slug
+      return
+    if not isinstance(owner_slug, str):
+      raise TypeError('owner_slug must be of type str')
+    self._owner_slug = owner_slug
+
+  @property
+  def model_slug(self) -> str:
+    return self._model_slug
+
+  @model_slug.setter
+  def model_slug(self, model_slug: str):
+    if model_slug is None:
+      del self.model_slug
+      return
+    if not isinstance(model_slug, str):
+      raise TypeError('model_slug must be of type str')
+    self._model_slug = model_slug
+
+  @property
+  def model_instance_id(self) -> int:
+    return self._model_instance_id
+
+  @model_instance_id.setter
+  def model_instance_id(self, model_instance_id: int):
+    if model_instance_id is None:
+      del self.model_instance_id
+      return
+    if not isinstance(model_instance_id, int):
+      raise TypeError('model_instance_id must be of type int')
+    self._model_instance_id = model_instance_id
 
 
 class ModelInstanceVersionList(KaggleObject):
@@ -1313,6 +1373,10 @@ ModelInstanceVersion._fields = [
   FieldMetadata("thumbnailUrl", "thumbnail_url", "_thumbnail_url", str, "", PredefinedSerializer()),
   FieldMetadata("isPrivate", "is_private", "_is_private", bool, False, PredefinedSerializer()),
   FieldMetadata("sigstoreState", "sigstore_state", "_sigstore_state", SigstoreState, SigstoreState.SIGSTORE_STATE_UNSPECIFIED, EnumSerializer()),
+  FieldMetadata("modelId", "model_id", "_model_id", int, 0, PredefinedSerializer()),
+  FieldMetadata("ownerSlug", "owner_slug", "_owner_slug", str, "", PredefinedSerializer()),
+  FieldMetadata("modelSlug", "model_slug", "_model_slug", str, "", PredefinedSerializer()),
+  FieldMetadata("modelInstanceId", "model_instance_id", "_model_instance_id", int, 0, PredefinedSerializer()),
 ]
 
 ModelInstanceVersionList._fields = [

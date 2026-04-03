@@ -1,0 +1,9 @@
+import enum
+
+class AgentExamSubmissionStatus(enum.Enum):
+  """Saved to the DB. Do not modify existing values."""
+  AGENT_EXAM_SUBMISSION_STATUS_UNSPECIFIED = 0
+  AGENT_EXAM_SUBMISSION_STATUS_STARTED = 1
+  AGENT_EXAM_SUBMISSION_STATUS_COMPLETED = 2
+  AGENT_EXAM_SUBMISSION_STATUS_TIMED_OUT = 3
+
