@@ -1136,6 +1136,53 @@ class ApiGetCompetitionRequest(KaggleObject):
     return '/api/v1/competitions/get/{competition_name}'
 
 
+class ApiGetHackathonWriteUpRequest(KaggleObject):
+  r"""
+  Attributes:
+    competition_name (str)
+    hackathon_write_up_id (int)
+  """
+
+  def __init__(self):
+    self._competition_name = ""
+    self._hackathon_write_up_id = 0
+    self._freeze()
+
+  @property
+  def competition_name(self) -> str:
+    return self._competition_name
+
+  @competition_name.setter
+  def competition_name(self, competition_name: str):
+    if competition_name is None:
+      del self.competition_name
+      return
+    if not isinstance(competition_name, str):
+      raise TypeError('competition_name must be of type str')
+    self._competition_name = competition_name
+
+  @property
+  def hackathon_write_up_id(self) -> int:
+    return self._hackathon_write_up_id
+
+  @hackathon_write_up_id.setter
+  def hackathon_write_up_id(self, hackathon_write_up_id: int):
+    if hackathon_write_up_id is None:
+      del self.hackathon_write_up_id
+      return
+    if not isinstance(hackathon_write_up_id, int):
+      raise TypeError('hackathon_write_up_id must be of type int')
+    self._hackathon_write_up_id = hackathon_write_up_id
+
+  def endpoint(self):
+    path = '/api/v1/competitions/{competition_name}/hackathon-write-ups/{hackathon_write_up_id}'
+    return path.format_map(self.to_field_map(self))
+
+  @staticmethod
+  def endpoint_path():
+    return '/api/v1/competitions/{competition_name}/hackathon-write-ups/{hackathon_write_up_id}'
+
+
 class ApiGetLeaderboardRequest(KaggleObject):
   r"""
   Attributes:
@@ -1774,6 +1821,100 @@ class ApiListDataTreeFilesRequest(KaggleObject):
     return '/api/v1/competitions/{competition_name}/data-tree/list/'
 
 
+class ApiListHackathonWriteUpsRequest(KaggleObject):
+  r"""
+  Attributes:
+    competition_name (str)
+    hackathon_track_ids (int)
+    winner (bool)
+    page_size (int)
+    page_token (str)
+  """
+
+  def __init__(self):
+    self._competition_name = ""
+    self._hackathon_track_ids = []
+    self._winner = None
+    self._page_size = None
+    self._page_token = None
+    self._freeze()
+
+  @property
+  def competition_name(self) -> str:
+    return self._competition_name
+
+  @competition_name.setter
+  def competition_name(self, competition_name: str):
+    if competition_name is None:
+      del self.competition_name
+      return
+    if not isinstance(competition_name, str):
+      raise TypeError('competition_name must be of type str')
+    self._competition_name = competition_name
+
+  @property
+  def hackathon_track_ids(self) -> Optional[List[int]]:
+    return self._hackathon_track_ids
+
+  @hackathon_track_ids.setter
+  def hackathon_track_ids(self, hackathon_track_ids: Optional[List[int]]):
+    if hackathon_track_ids is None:
+      del self.hackathon_track_ids
+      return
+    if not isinstance(hackathon_track_ids, list):
+      raise TypeError('hackathon_track_ids must be of type list')
+    if not all([isinstance(t, int) for t in hackathon_track_ids]):
+      raise TypeError('hackathon_track_ids must contain only items of type int')
+    self._hackathon_track_ids = hackathon_track_ids
+
+  @property
+  def winner(self) -> bool:
+    return self._winner or False
+
+  @winner.setter
+  def winner(self, winner: Optional[bool]):
+    if winner is None:
+      del self.winner
+      return
+    if not isinstance(winner, bool):
+      raise TypeError('winner must be of type bool')
+    self._winner = winner
+
+  @property
+  def page_size(self) -> int:
+    return self._page_size or 0
+
+  @page_size.setter
+  def page_size(self, page_size: Optional[int]):
+    if page_size is None:
+      del self.page_size
+      return
+    if not isinstance(page_size, int):
+      raise TypeError('page_size must be of type int')
+    self._page_size = page_size
+
+  @property
+  def page_token(self) -> str:
+    return self._page_token or ""
+
+  @page_token.setter
+  def page_token(self, page_token: Optional[str]):
+    if page_token is None:
+      del self.page_token
+      return
+    if not isinstance(page_token, str):
+      raise TypeError('page_token must be of type str')
+    self._page_token = page_token
+
+  def endpoint(self):
+    path = '/api/v1/competitions/{competition_name}/hackathon-write-ups'
+    return path.format_map(self.to_field_map(self))
+
+  @staticmethod
+  def endpoint_path():
+    return '/api/v1/competitions/{competition_name}/hackathon-write-ups'
+
+
 class ApiListSubmissionsRequest(KaggleObject):
   r"""
   Attributes:
@@ -2360,6 +2501,11 @@ ApiGetCompetitionRequest._fields = [
   FieldMetadata("competitionName", "competition_name", "_competition_name", str, "", PredefinedSerializer()),
 ]
 
+ApiGetHackathonWriteUpRequest._fields = [
+  FieldMetadata("competitionName", "competition_name", "_competition_name", str, "", PredefinedSerializer()),
+  FieldMetadata("hackathonWriteUpId", "hackathon_write_up_id", "_hackathon_write_up_id", int, 0, PredefinedSerializer()),
+]
+
 ApiGetLeaderboardRequest._fields = [
   FieldMetadata("competitionName", "competition_name", "_competition_name", str, "", PredefinedSerializer()),
   FieldMetadata("overridePublic", "override_public", "_override_public", bool, None, PredefinedSerializer(), optional=True),
@@ -2413,6 +2559,14 @@ ApiListDataFilesResponse._fields = [
 ApiListDataTreeFilesRequest._fields = [
   FieldMetadata("competitionName", "competition_name", "_competition_name", str, "", PredefinedSerializer()),
   FieldMetadata("path", "path", "_path", str, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("pageSize", "page_size", "_page_size", int, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("pageToken", "page_token", "_page_token", str, None, PredefinedSerializer(), optional=True),
+]
+
+ApiListHackathonWriteUpsRequest._fields = [
+  FieldMetadata("competitionName", "competition_name", "_competition_name", str, "", PredefinedSerializer()),
+  FieldMetadata("hackathonTrackIds", "hackathon_track_ids", "_hackathon_track_ids", int, [], ListSerializer(PredefinedSerializer())),
+  FieldMetadata("winner", "winner", "_winner", bool, None, PredefinedSerializer(), optional=True),
   FieldMetadata("pageSize", "page_size", "_page_size", int, None, PredefinedSerializer(), optional=True),
   FieldMetadata("pageToken", "page_token", "_page_token", str, None, PredefinedSerializer(), optional=True),
 ]

@@ -1,4 +1,4 @@
-from kagglesdk.benchmarks.types.benchmarks_api_service import ApiBenchmarkLeaderboard, ApiGetBenchmarkLeaderboardRequest
+from kagglesdk.benchmarks.types.benchmarks_api_service import ApiBenchmarkLeaderboard, ApiGetBenchmarkLeaderboardRequest, ApiListBenchmarkModelsRequest, ApiListBenchmarkModelsResponse
 from kagglesdk.kaggle_http_client import KaggleHttpClient
 
 class BenchmarksApiClient(object):
@@ -17,3 +17,15 @@ class BenchmarksApiClient(object):
       request = ApiGetBenchmarkLeaderboardRequest()
 
     return self._client.call("benchmarks.BenchmarksApiService", "GetBenchmarkLeaderboard", request, ApiBenchmarkLeaderboard)
+
+  def list_benchmark_models(self, request: ApiListBenchmarkModelsRequest = None) -> ApiListBenchmarkModelsResponse:
+    r"""
+    Args:
+      request (ApiListBenchmarkModelsRequest):
+        The request object; initialized to empty instance if not specified.
+    """
+
+    if request is None:
+      request = ApiListBenchmarkModelsRequest()
+
+    return self._client.call("benchmarks.BenchmarksApiService", "ListBenchmarkModels", request, ApiListBenchmarkModelsResponse)

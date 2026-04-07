@@ -1,5 +1,15 @@
 import enum
 
+class WriteUpLinkLocation(enum.Enum):
+  WRITE_UP_LINK_LOCATION_UNSPECIFIED = 0
+  ADDITIONAL_LINKS = 1
+  CAROUSEL = 2
+
+class WriteUpLinkMediaType(enum.Enum):
+  WRITE_UP_LINK_MEDIA_TYPE_UNSPECIFIED = 0
+  IMAGE = 1
+  VIDEO = 2
+
 class WriteUpType(enum.Enum):
   WRITE_UP_TYPE_UNSPECIFIED = 0
   HACKATHON_PROJECT = 1
