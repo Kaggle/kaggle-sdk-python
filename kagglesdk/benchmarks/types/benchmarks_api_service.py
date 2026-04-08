@@ -1,3 +1,4 @@
+from google.protobuf.field_mask_pb2 import FieldMask
 from kagglesdk.benchmarks.types.benchmark_types import BenchmarkModel, BenchmarkResult
 from kagglesdk.kaggle_object import *
 from typing import List, Optional
@@ -223,11 +224,13 @@ class ApiListBenchmarkModelsRequest(KaggleObject):
   Attributes:
     page_size (int)
     page_token (str)
+    read_mask (FieldMask)
   """
 
   def __init__(self):
     self._page_size = 0
     self._page_token = ""
+    self._read_mask = None
     self._freeze()
 
   @property
@@ -255,6 +258,19 @@ class ApiListBenchmarkModelsRequest(KaggleObject):
     if not isinstance(page_token, str):
       raise TypeError('page_token must be of type str')
     self._page_token = page_token
+
+  @property
+  def read_mask(self) -> FieldMask:
+    return self._read_mask
+
+  @read_mask.setter
+  def read_mask(self, read_mask: FieldMask):
+    if read_mask is None:
+      del self.read_mask
+      return
+    if not isinstance(read_mask, FieldMask):
+      raise TypeError('read_mask must be of type FieldMask')
+    self._read_mask = read_mask
 
   def endpoint(self):
     path = '/api/v1/benchmarks/models'
@@ -342,6 +358,7 @@ ApiGetBenchmarkLeaderboardRequest._fields = [
 ApiListBenchmarkModelsRequest._fields = [
   FieldMetadata("pageSize", "page_size", "_page_size", int, 0, PredefinedSerializer()),
   FieldMetadata("pageToken", "page_token", "_page_token", str, "", PredefinedSerializer()),
+  FieldMetadata("readMask", "read_mask", "_read_mask", FieldMask, None, FieldMaskSerializer()),
 ]
 
 ApiListBenchmarkModelsResponse._fields = [

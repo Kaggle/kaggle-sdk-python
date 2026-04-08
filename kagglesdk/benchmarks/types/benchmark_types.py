@@ -251,6 +251,14 @@ class BenchmarkModelVersion(KaggleObject):
     license (License)
     importance_level (BenchmarkModelImportanceLevel)
       Whether this model version is run on Kaggle-maintained benchmarks
+    input_modalities (str)
+      Comma-separated input modalities supported by this model version.
+      Valid values: 'text', 'image', 'video', 'audio'.
+      Example: 'text,image'
+    output_modalities (str)
+      Comma-separated output modalities supported by this model version.
+      Valid values: 'text', 'image', 'video', 'audio'.
+      Example: 'text,image'
   """
 
   def __init__(self):
@@ -269,6 +277,8 @@ class BenchmarkModelVersion(KaggleObject):
     self._name = None
     self._license = None
     self._importance_level = None
+    self._input_modalities = None
+    self._output_modalities = None
     self._freeze()
 
   @property
@@ -491,6 +501,42 @@ class BenchmarkModelVersion(KaggleObject):
     if not isinstance(importance_level, BenchmarkModelImportanceLevel):
       raise TypeError('importance_level must be of type BenchmarkModelImportanceLevel')
     self._importance_level = importance_level
+
+  @property
+  def input_modalities(self) -> str:
+    r"""
+    Comma-separated input modalities supported by this model version.
+    Valid values: 'text', 'image', 'video', 'audio'.
+    Example: 'text,image'
+    """
+    return self._input_modalities or ""
+
+  @input_modalities.setter
+  def input_modalities(self, input_modalities: Optional[str]):
+    if input_modalities is None:
+      del self.input_modalities
+      return
+    if not isinstance(input_modalities, str):
+      raise TypeError('input_modalities must be of type str')
+    self._input_modalities = input_modalities
+
+  @property
+  def output_modalities(self) -> str:
+    r"""
+    Comma-separated output modalities supported by this model version.
+    Valid values: 'text', 'image', 'video', 'audio'.
+    Example: 'text,image'
+    """
+    return self._output_modalities or ""
+
+  @output_modalities.setter
+  def output_modalities(self, output_modalities: Optional[str]):
+    if output_modalities is None:
+      del self.output_modalities
+      return
+    if not isinstance(output_modalities, str):
+      raise TypeError('output_modalities must be of type str')
+    self._output_modalities = output_modalities
 
 
 class BenchmarkResult(KaggleObject):
@@ -800,6 +846,8 @@ BenchmarkModelVersion._fields = [
   FieldMetadata("name", "name", "_name", str, None, PredefinedSerializer(), optional=True),
   FieldMetadata("license", "license", "_license", License, None, KaggleObjectSerializer()),
   FieldMetadata("importanceLevel", "importance_level", "_importance_level", BenchmarkModelImportanceLevel, None, EnumSerializer(), optional=True),
+  FieldMetadata("inputModalities", "input_modalities", "_input_modalities", str, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("outputModalities", "output_modalities", "_output_modalities", str, None, PredefinedSerializer(), optional=True),
 ]
 
 BenchmarkResult._fields = [

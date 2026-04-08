@@ -8,12 +8,12 @@ class ApiBatchScheduleBenchmarkTaskRunsRequest(KaggleObject):
   r"""
   Attributes:
     task_slugs (ApiBenchmarkTaskSlug)
-    model_slugs (str)
+    model_version_slugs (str)
   """
 
   def __init__(self):
     self._task_slugs = []
-    self._model_slugs = []
+    self._model_version_slugs = []
     self._freeze()
 
   @property
@@ -32,19 +32,19 @@ class ApiBatchScheduleBenchmarkTaskRunsRequest(KaggleObject):
     self._task_slugs = task_slugs
 
   @property
-  def model_slugs(self) -> Optional[List[str]]:
-    return self._model_slugs
+  def model_version_slugs(self) -> Optional[List[str]]:
+    return self._model_version_slugs
 
-  @model_slugs.setter
-  def model_slugs(self, model_slugs: Optional[List[str]]):
-    if model_slugs is None:
-      del self.model_slugs
+  @model_version_slugs.setter
+  def model_version_slugs(self, model_version_slugs: Optional[List[str]]):
+    if model_version_slugs is None:
+      del self.model_version_slugs
       return
-    if not isinstance(model_slugs, list):
-      raise TypeError('model_slugs must be of type list')
-    if not all([isinstance(t, str) for t in model_slugs]):
-      raise TypeError('model_slugs must contain only items of type str')
-    self._model_slugs = model_slugs
+    if not isinstance(model_version_slugs, list):
+      raise TypeError('model_version_slugs must be of type list')
+    if not all([isinstance(t, str) for t in model_version_slugs]):
+      raise TypeError('model_version_slugs must contain only items of type str')
+    self._model_version_slugs = model_version_slugs
 
   def endpoint(self):
     path = '/api/v1/benchmarks/tasks/schedule'
@@ -194,7 +194,7 @@ class ApiBenchmarkTaskRun(KaggleObject):
   Attributes:
     task_slug (ApiBenchmarkTaskSlug)
       Task that was invoked.
-    model_slug (str)
+    model_version_slug (str)
       Model candidate against the task.
     id (int)
       Run identifier.
@@ -210,7 +210,7 @@ class ApiBenchmarkTaskRun(KaggleObject):
 
   def __init__(self):
     self._task_slug = None
-    self._model_slug = ""
+    self._model_version_slug = ""
     self._id = 0
     self._state = BenchmarkTaskRunState.BENCHMARK_TASK_RUN_STATE_UNSPECIFIED
     self._start_time = None
@@ -233,18 +233,18 @@ class ApiBenchmarkTaskRun(KaggleObject):
     self._task_slug = task_slug
 
   @property
-  def model_slug(self) -> str:
+  def model_version_slug(self) -> str:
     """Model candidate against the task."""
-    return self._model_slug
+    return self._model_version_slug
 
-  @model_slug.setter
-  def model_slug(self, model_slug: str):
-    if model_slug is None:
-      del self.model_slug
+  @model_version_slug.setter
+  def model_version_slug(self, model_version_slug: str):
+    if model_version_slug is None:
+      del self.model_version_slug
       return
-    if not isinstance(model_slug, str):
-      raise TypeError('model_slug must be of type str')
-    self._model_slug = model_slug
+    if not isinstance(model_version_slug, str):
+      raise TypeError('model_version_slug must be of type str')
+    self._model_version_slug = model_version_slug
 
   @property
   def id(self) -> int:
@@ -578,12 +578,12 @@ class ApiListBenchmarkTaskRunsRequest(KaggleObject):
   r"""
   Attributes:
     task_slugs (ApiBenchmarkTaskSlug)
-    model_slugs (str)
+    model_version_slugs (str)
   """
 
   def __init__(self):
     self._task_slugs = []
-    self._model_slugs = []
+    self._model_version_slugs = []
     self._freeze()
 
   @property
@@ -602,19 +602,19 @@ class ApiListBenchmarkTaskRunsRequest(KaggleObject):
     self._task_slugs = task_slugs
 
   @property
-  def model_slugs(self) -> Optional[List[str]]:
-    return self._model_slugs
+  def model_version_slugs(self) -> Optional[List[str]]:
+    return self._model_version_slugs
 
-  @model_slugs.setter
-  def model_slugs(self, model_slugs: Optional[List[str]]):
-    if model_slugs is None:
-      del self.model_slugs
+  @model_version_slugs.setter
+  def model_version_slugs(self, model_version_slugs: Optional[List[str]]):
+    if model_version_slugs is None:
+      del self.model_version_slugs
       return
-    if not isinstance(model_slugs, list):
-      raise TypeError('model_slugs must be of type list')
-    if not all([isinstance(t, str) for t in model_slugs]):
-      raise TypeError('model_slugs must contain only items of type str')
-    self._model_slugs = model_slugs
+    if not isinstance(model_version_slugs, list):
+      raise TypeError('model_version_slugs must be of type list')
+    if not all([isinstance(t, str) for t in model_version_slugs]):
+      raise TypeError('model_version_slugs must contain only items of type str')
+    self._model_version_slugs = model_version_slugs
 
   def endpoint(self):
     path = '/api/v1/benchmarks/tasks/runs/list'
@@ -722,7 +722,7 @@ class ApiListBenchmarkTasksResponse(KaggleObject):
 
 ApiBatchScheduleBenchmarkTaskRunsRequest._fields = [
   FieldMetadata("taskSlugs", "task_slugs", "_task_slugs", ApiBenchmarkTaskSlug, [], ListSerializer(KaggleObjectSerializer())),
-  FieldMetadata("modelSlugs", "model_slugs", "_model_slugs", str, [], ListSerializer(PredefinedSerializer())),
+  FieldMetadata("modelVersionSlugs", "model_version_slugs", "_model_version_slugs", str, [], ListSerializer(PredefinedSerializer())),
 ]
 
 ApiBatchScheduleBenchmarkTaskRunsResponse._fields = [
@@ -739,7 +739,7 @@ ApiBenchmarkTask._fields = [
 
 ApiBenchmarkTaskRun._fields = [
   FieldMetadata("taskSlug", "task_slug", "_task_slug", ApiBenchmarkTaskSlug, None, KaggleObjectSerializer()),
-  FieldMetadata("modelSlug", "model_slug", "_model_slug", str, "", PredefinedSerializer()),
+  FieldMetadata("modelVersionSlug", "model_version_slug", "_model_version_slug", str, "", PredefinedSerializer()),
   FieldMetadata("id", "id", "_id", int, 0, PredefinedSerializer()),
   FieldMetadata("state", "state", "_state", BenchmarkTaskRunState, BenchmarkTaskRunState.BENCHMARK_TASK_RUN_STATE_UNSPECIFIED, EnumSerializer()),
   FieldMetadata("startTime", "start_time", "_start_time", datetime, None, DateTimeSerializer(), optional=True),
@@ -775,7 +775,7 @@ ApiGetBenchmarkTaskRequest._fields = [
 
 ApiListBenchmarkTaskRunsRequest._fields = [
   FieldMetadata("taskSlugs", "task_slugs", "_task_slugs", ApiBenchmarkTaskSlug, [], ListSerializer(KaggleObjectSerializer())),
-  FieldMetadata("modelSlugs", "model_slugs", "_model_slugs", str, [], ListSerializer(PredefinedSerializer())),
+  FieldMetadata("modelVersionSlugs", "model_version_slugs", "_model_version_slugs", str, [], ListSerializer(PredefinedSerializer())),
 ]
 
 ApiListBenchmarkTaskRunsResponse._fields = [

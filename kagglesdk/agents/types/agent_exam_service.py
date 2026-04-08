@@ -989,6 +989,122 @@ class ApiGetAgentExamAgentResponse(KaggleObject):
     return self.agent_type
 
 
+class ApiGetAgentExamInsightsRequest(KaggleObject):
+  r"""
+  """
+
+  pass
+  def endpoint(self):
+    path = '/api/v1/agentExam/Insights'
+    return path.format_map(self.to_field_map(self))
+
+
+class ApiGetAgentExamInsightsResponse(KaggleObject):
+  r"""
+  Attributes:
+    agents_registered (int)
+    total_submissions (int)
+    pct_completed (float)
+    score_distribution (ScoreDistributionBin)
+    agents_submitted (int)
+  """
+
+  def __init__(self):
+    self._agents_registered = 0
+    self._total_submissions = 0
+    self._pct_completed = 0.0
+    self._score_distribution = []
+    self._agents_submitted = 0
+    self._freeze()
+
+  @property
+  def agents_registered(self) -> int:
+    return self._agents_registered
+
+  @agents_registered.setter
+  def agents_registered(self, agents_registered: int):
+    if agents_registered is None:
+      del self.agents_registered
+      return
+    if not isinstance(agents_registered, int):
+      raise TypeError('agents_registered must be of type int')
+    self._agents_registered = agents_registered
+
+  @property
+  def total_submissions(self) -> int:
+    return self._total_submissions
+
+  @total_submissions.setter
+  def total_submissions(self, total_submissions: int):
+    if total_submissions is None:
+      del self.total_submissions
+      return
+    if not isinstance(total_submissions, int):
+      raise TypeError('total_submissions must be of type int')
+    self._total_submissions = total_submissions
+
+  @property
+  def pct_completed(self) -> float:
+    return self._pct_completed
+
+  @pct_completed.setter
+  def pct_completed(self, pct_completed: float):
+    if pct_completed is None:
+      del self.pct_completed
+      return
+    if not isinstance(pct_completed, float):
+      raise TypeError('pct_completed must be of type float')
+    self._pct_completed = pct_completed
+
+  @property
+  def score_distribution(self) -> Optional[List[Optional['ScoreDistributionBin']]]:
+    return self._score_distribution
+
+  @score_distribution.setter
+  def score_distribution(self, score_distribution: Optional[List[Optional['ScoreDistributionBin']]]):
+    if score_distribution is None:
+      del self.score_distribution
+      return
+    if not isinstance(score_distribution, list):
+      raise TypeError('score_distribution must be of type list')
+    if not all([isinstance(t, ScoreDistributionBin) for t in score_distribution]):
+      raise TypeError('score_distribution must contain only items of type ScoreDistributionBin')
+    self._score_distribution = score_distribution
+
+  @property
+  def agents_submitted(self) -> int:
+    return self._agents_submitted
+
+  @agents_submitted.setter
+  def agents_submitted(self, agents_submitted: int):
+    if agents_submitted is None:
+      del self.agents_submitted
+      return
+    if not isinstance(agents_submitted, int):
+      raise TypeError('agents_submitted must be of type int')
+    self._agents_submitted = agents_submitted
+
+  @property
+  def agentsRegistered(self):
+    return self.agents_registered
+
+  @property
+  def totalSubmissions(self):
+    return self.total_submissions
+
+  @property
+  def pctCompleted(self):
+    return self.pct_completed
+
+  @property
+  def scoreDistribution(self):
+    return self.score_distribution
+
+  @property
+  def agentsSubmitted(self):
+    return self.agents_submitted
+
+
 class ApiGetAgentExamSubmissionRequest(KaggleObject):
   r"""
   Attributes:
@@ -1254,6 +1370,45 @@ class ApiListTopAgentExamAgentsResponse(KaggleObject):
     return self.total_count
 
 
+class ScoreDistributionBin(KaggleObject):
+  r"""
+  Attributes:
+    label (str)
+    count (int)
+  """
+
+  def __init__(self):
+    self._label = ""
+    self._count = 0
+    self._freeze()
+
+  @property
+  def label(self) -> str:
+    return self._label
+
+  @label.setter
+  def label(self, label: str):
+    if label is None:
+      del self.label
+      return
+    if not isinstance(label, str):
+      raise TypeError('label must be of type str')
+    self._label = label
+
+  @property
+  def count(self) -> int:
+    return self._count
+
+  @count.setter
+  def count(self, count: int):
+    if count is None:
+      del self.count
+      return
+    if not isinstance(count, int):
+      raise TypeError('count must be of type int')
+    self._count = count
+
+
 AgentExamAgentScore._fields = [
   FieldMetadata("agentId", "agent_id", "_agent_id", str, "", PredefinedSerializer()),
   FieldMetadata("agentName", "agent_name", "_agent_name", str, "", PredefinedSerializer()),
@@ -1338,6 +1493,16 @@ ApiGetAgentExamAgentResponse._fields = [
   FieldMetadata("agentType", "agent_type", "_agent_type", str, None, PredefinedSerializer(), optional=True),
 ]
 
+ApiGetAgentExamInsightsRequest._fields = []
+
+ApiGetAgentExamInsightsResponse._fields = [
+  FieldMetadata("agentsRegistered", "agents_registered", "_agents_registered", int, 0, PredefinedSerializer()),
+  FieldMetadata("totalSubmissions", "total_submissions", "_total_submissions", int, 0, PredefinedSerializer()),
+  FieldMetadata("pctCompleted", "pct_completed", "_pct_completed", float, 0.0, PredefinedSerializer()),
+  FieldMetadata("scoreDistribution", "score_distribution", "_score_distribution", ScoreDistributionBin, [], ListSerializer(KaggleObjectSerializer())),
+  FieldMetadata("agentsSubmitted", "agents_submitted", "_agents_submitted", int, 0, PredefinedSerializer()),
+]
+
 ApiGetAgentExamSubmissionRequest._fields = [
   FieldMetadata("submissionId", "submission_id", "_submission_id", str, "", PredefinedSerializer()),
 ]
@@ -1361,5 +1526,10 @@ ApiListTopAgentExamAgentsRequest._fields = [
 ApiListTopAgentExamAgentsResponse._fields = [
   FieldMetadata("agents", "agents", "_agents", AgentExamAgentScore, [], ListSerializer(KaggleObjectSerializer())),
   FieldMetadata("totalCount", "total_count", "_total_count", int, 0, PredefinedSerializer()),
+]
+
+ScoreDistributionBin._fields = [
+  FieldMetadata("label", "label", "_label", str, "", PredefinedSerializer()),
+  FieldMetadata("count", "count", "_count", int, 0, PredefinedSerializer()),
 ]
 

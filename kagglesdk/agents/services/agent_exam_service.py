@@ -1,4 +1,4 @@
-from kagglesdk.agents.types.agent_exam_service import ApiCompleteAgentExamSubmissionRequest, ApiCompleteAgentExamSubmissionResponse, ApiCreateAgentExamAgentRequest, ApiCreateAgentExamAgentResponse, ApiCreateAgentExamSubmissionRequest, ApiCreateAgentExamSubmissionResponse, ApiGetAgentExamAgentRequest, ApiGetAgentExamAgentResponse, ApiGetAgentExamSubmissionRequest, ApiGetAgentExamSubmissionResponse, ApiListTopAgentExamAgentsRequest, ApiListTopAgentExamAgentsResponse
+from kagglesdk.agents.types.agent_exam_service import ApiCompleteAgentExamSubmissionRequest, ApiCompleteAgentExamSubmissionResponse, ApiCreateAgentExamAgentRequest, ApiCreateAgentExamAgentResponse, ApiCreateAgentExamSubmissionRequest, ApiCreateAgentExamSubmissionResponse, ApiGetAgentExamAgentRequest, ApiGetAgentExamAgentResponse, ApiGetAgentExamInsightsRequest, ApiGetAgentExamInsightsResponse, ApiGetAgentExamSubmissionRequest, ApiGetAgentExamSubmissionResponse, ApiListTopAgentExamAgentsRequest, ApiListTopAgentExamAgentsResponse
 from kagglesdk.kaggle_http_client import KaggleHttpClient
 
 class AgentExamClient(object):
@@ -77,3 +77,15 @@ class AgentExamClient(object):
       request = ApiListTopAgentExamAgentsRequest()
 
     return self._client.call("agents.AgentExamService", "ListTopAgentExamAgents", request, ApiListTopAgentExamAgentsResponse)
+
+  def get_agent_exam_insights(self, request: ApiGetAgentExamInsightsRequest = None) -> ApiGetAgentExamInsightsResponse:
+    r"""
+    Args:
+      request (ApiGetAgentExamInsightsRequest):
+        The request object; initialized to empty instance if not specified.
+    """
+
+    if request is None:
+      request = ApiGetAgentExamInsightsRequest()
+
+    return self._client.call("agents.AgentExamService", "GetAgentExamInsights", request, ApiGetAgentExamInsightsResponse)
