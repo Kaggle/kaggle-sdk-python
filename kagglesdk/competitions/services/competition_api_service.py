@@ -1,6 +1,8 @@
 from kagglesdk.common.types.file_download import FileDownload
 from kagglesdk.common.types.http_redirect import HttpRedirect
-from kagglesdk.competitions.types.competition_api_service import ApiCompetition, ApiCreateCodeSubmissionRequest, ApiCreateCodeSubmissionResponse, ApiCreateSubmissionRequest, ApiCreateSubmissionResponse, ApiDownloadDataFileRequest, ApiDownloadDataFilesRequest, ApiDownloadLeaderboardRequest, ApiGetCompetitionDataFilesSummaryRequest, ApiGetCompetitionRequest, ApiGetLeaderboardRequest, ApiGetLeaderboardResponse, ApiGetSubmissionRequest, ApiListCompetitionsRequest, ApiListCompetitionsResponse, ApiListDataFilesRequest, ApiListDataFilesResponse, ApiListDataTreeFilesRequest, ApiListSubmissionsRequest, ApiListSubmissionsResponse, ApiStartSubmissionUploadRequest, ApiStartSubmissionUploadResponse, ApiSubmission
+from kagglesdk.competitions.types.competition_api_service import ApiCompetition, ApiCreateCodeSubmissionRequest, ApiCreateCodeSubmissionResponse, ApiCreateSubmissionRequest, ApiCreateSubmissionResponse, ApiDownloadDataFileRequest, ApiDownloadDataFilesRequest, ApiDownloadLeaderboardRequest, ApiGetCompetitionDataFilesSummaryRequest, ApiGetCompetitionRequest, ApiGetHackathonWriteUpRequest, ApiGetLeaderboardRequest, ApiGetLeaderboardResponse, ApiGetSubmissionRequest, ApiListCompetitionsRequest, ApiListCompetitionsResponse, ApiListDataFilesRequest, ApiListDataFilesResponse, ApiListDataTreeFilesRequest, ApiListHackathonWriteUpsRequest, ApiListSubmissionsRequest, ApiListSubmissionsResponse, ApiStartSubmissionUploadRequest, ApiStartSubmissionUploadResponse, ApiSubmission
+from kagglesdk.competitions.types.hackathon_service import ListHackathonWriteUpsResponse
+from kagglesdk.competitions.types.hackathons import HackathonWriteUp
 from kagglesdk.datasets.databundles.types.databundle_api_types import ApiDirectoryContent, ApiFilesSummary
 from kagglesdk.kaggle_http_client import KaggleHttpClient
 
@@ -176,3 +178,27 @@ class CompetitionApiClient(object):
       request = ApiGetCompetitionDataFilesSummaryRequest()
 
     return self._client.call("competitions.CompetitionApiService", "GetCompetitionDataFilesSummary", request, ApiFilesSummary)
+
+  def list_hackathon_write_ups(self, request: ApiListHackathonWriteUpsRequest = None) -> ListHackathonWriteUpsResponse:
+    r"""
+    Args:
+      request (ApiListHackathonWriteUpsRequest):
+        The request object; initialized to empty instance if not specified.
+    """
+
+    if request is None:
+      request = ApiListHackathonWriteUpsRequest()
+
+    return self._client.call("competitions.CompetitionApiService", "ListHackathonWriteUps", request, ListHackathonWriteUpsResponse)
+
+  def get_hackathon_write_up(self, request: ApiGetHackathonWriteUpRequest = None) -> HackathonWriteUp:
+    r"""
+    Args:
+      request (ApiGetHackathonWriteUpRequest):
+        The request object; initialized to empty instance if not specified.
+    """
+
+    if request is None:
+      request = ApiGetHackathonWriteUpRequest()
+
+    return self._client.call("competitions.CompetitionApiService", "GetHackathonWriteUp", request, HackathonWriteUp)

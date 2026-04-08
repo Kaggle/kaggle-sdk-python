@@ -1,5 +1,7 @@
 from kagglesdk.admin.services.inbox_file_service import InboxFileClient
+from kagglesdk.agents.services.agent_exam_service import AgentExamClient
 from kagglesdk.benchmarks.services.benchmarks_api_service import BenchmarksApiClient
+from kagglesdk.benchmarks.services.benchmark_tasks_api_service import BenchmarkTasksApiClient
 from kagglesdk.blobs.services.blob_api_service import BlobApiClient
 from kagglesdk.common.services.operations_service import OperationsClient
 from kagglesdk.competitions.services.competition_api_service import CompetitionApiClient
@@ -22,9 +24,14 @@ class KaggleClient(object):
     def __init__(self, http_client: KaggleHttpClient):
       self.inbox_file_client = InboxFileClient(http_client)
 
+  class Agents(object):
+    def __init__(self, http_client: KaggleHttpClient):
+      self.agent_exam_client = AgentExamClient(http_client)
+
   class Benchmarks(object):
     def __init__(self, http_client: KaggleHttpClient):
       self.benchmarks_api_client = BenchmarksApiClient(http_client)
+      self.benchmark_tasks_api_client = BenchmarkTasksApiClient(http_client)
 
   class Blobs(object):
     def __init__(self, http_client: KaggleHttpClient):
@@ -72,6 +79,7 @@ class KaggleClient(object):
   def __init__(self, env: KaggleEnv = None, verbose: bool = False, username: str = None, password: str = None, api_token: str = None, user_agent: str = '', response_processor=None):
     self._http_client = http_client = KaggleHttpClient(env, verbose, username=username, password=password, api_token=api_token, user_agent=user_agent, response_processor=response_processor)
     self.admin = KaggleClient.Admin(http_client)
+    self.agents = KaggleClient.Agents(http_client)
     self.benchmarks = KaggleClient.Benchmarks(http_client)
     self.blobs = KaggleClient.Blobs(http_client)
     self.common = KaggleClient.Common(http_client)

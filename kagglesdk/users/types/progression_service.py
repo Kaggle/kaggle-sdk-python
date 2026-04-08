@@ -1,5 +1,11 @@
 import enum
 
+class Medal(enum.Enum):
+  MEDAL_UNSPECIFIED = 0
+  GOLD = 1
+  SILVER = 2
+  BRONZE = 3
+
 class UserAchievementType(enum.Enum):
   USER_ACHIEVEMENT_TYPE_UNSPECIFIED = 0
   USER_ACHIEVEMENT_TYPE_COMPETITIONS = 1

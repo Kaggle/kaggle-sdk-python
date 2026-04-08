@@ -269,6 +269,10 @@ class Principal(KaggleObject):
     group (GroupPrincipal)
     organization (OrganizationPrincipal)
     name (str)
+    is_fixed (bool)
+      Whether this principal binding is fixed (system-managed) and cannot be
+      removed by regular users. Fixed bindings are created by system accounts
+      (e.g., when sharing hackathon resources with competition groups).
   """
 
   def __init__(self):
@@ -276,6 +280,7 @@ class Principal(KaggleObject):
     self._group = None
     self._organization = None
     self._name = ""
+    self._is_fixed = False
     self._freeze()
 
   @property
@@ -335,6 +340,24 @@ class Principal(KaggleObject):
     if not isinstance(name, str):
       raise TypeError('name must be of type str')
     self._name = name
+
+  @property
+  def is_fixed(self) -> bool:
+    r"""
+    Whether this principal binding is fixed (system-managed) and cannot be
+    removed by regular users. Fixed bindings are created by system accounts
+    (e.g., when sharing hackathon resources with competition groups).
+    """
+    return self._is_fixed
+
+  @is_fixed.setter
+  def is_fixed(self, is_fixed: bool):
+    if is_fixed is None:
+      del self.is_fixed
+      return
+    if not isinstance(is_fixed, bool):
+      raise TypeError('is_fixed must be of type bool')
+    self._is_fixed = is_fixed
 
 
 class SetIamPolicyRequest(KaggleObject):
@@ -481,6 +504,7 @@ Principal._fields = [
   FieldMetadata("group", "group", "_group", GroupPrincipal, None, KaggleObjectSerializer(), optional=True),
   FieldMetadata("organization", "organization", "_organization", OrganizationPrincipal, None, KaggleObjectSerializer(), optional=True),
   FieldMetadata("name", "name", "_name", str, "", PredefinedSerializer()),
+  FieldMetadata("isFixed", "is_fixed", "_is_fixed", bool, False, PredefinedSerializer()),
 ]
 
 SetIamPolicyRequest._fields = [

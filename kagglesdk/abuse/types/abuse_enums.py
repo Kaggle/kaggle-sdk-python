@@ -1,0 +1,7 @@
+import enum
+
+class PrivatedModerationStatus(enum.Enum):
+  PRIVATED_MODERATION_STATUS_UNSPECIFIED = 0
+  PRIVATED_MODERATION_STATUS_NO_ABUSE = 1
+  PERMANENTLY_PRIVATED = 3
+

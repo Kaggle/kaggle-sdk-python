@@ -1,3 +1,4 @@
+from kagglesdk.common.types.cropped_image_upload import CroppedImageUpload
 from kagglesdk.kaggle_object import *
 from kagglesdk.users.types.users_enums import CollaboratorType
 from typing import Optional, List
@@ -78,6 +79,13 @@ class DatasetInfo(KaggleObject):
     licenses (SettingsLicense)
     collaborators (DatasetCollaborator)
     data (DatasetSettingsFile)
+    expected_update_frequency (str)
+      Expected update frequency of dataset (see DatasetVersionMetadata).
+      Accepted values: 'not specified', 'never', 'annually', 'quarterly',
+      'monthly', 'weekly', 'daily', 'hourly'
+    user_specified_sources (str)
+      User specified sources for current dataset version (see
+      DatasetVersionMetadata).
   """
 
   def __init__(self):
@@ -96,6 +104,8 @@ class DatasetInfo(KaggleObject):
     self._licenses = []
     self._collaborators = []
     self._data = []
+    self._expected_update_frequency = None
+    self._user_specified_sources = None
     self._freeze()
 
   @property
@@ -305,6 +315,41 @@ class DatasetInfo(KaggleObject):
       raise TypeError('data must contain only items of type DatasetSettingsFile')
     self._data = data
 
+  @property
+  def expected_update_frequency(self) -> str:
+    r"""
+    Expected update frequency of dataset (see DatasetVersionMetadata).
+    Accepted values: 'not specified', 'never', 'annually', 'quarterly',
+    'monthly', 'weekly', 'daily', 'hourly'
+    """
+    return self._expected_update_frequency or ""
+
+  @expected_update_frequency.setter
+  def expected_update_frequency(self, expected_update_frequency: Optional[str]):
+    if expected_update_frequency is None:
+      del self.expected_update_frequency
+      return
+    if not isinstance(expected_update_frequency, str):
+      raise TypeError('expected_update_frequency must be of type str')
+    self._expected_update_frequency = expected_update_frequency
+
+  @property
+  def user_specified_sources(self) -> str:
+    r"""
+    User specified sources for current dataset version (see
+    DatasetVersionMetadata).
+    """
+    return self._user_specified_sources or ""
+
+  @user_specified_sources.setter
+  def user_specified_sources(self, user_specified_sources: Optional[str]):
+    if user_specified_sources is None:
+      del self.user_specified_sources
+      return
+    if not isinstance(user_specified_sources, str):
+      raise TypeError('user_specified_sources must be of type str')
+    self._user_specified_sources = user_specified_sources
+
 
 class DatasetSettings(KaggleObject):
   r"""
@@ -317,6 +362,16 @@ class DatasetSettings(KaggleObject):
     licenses (SettingsLicense)
     collaborators (DatasetCollaborator)
     data (DatasetSettingsFile)
+    expected_update_frequency (str)
+      Expected update frequency of dataset (see DatasetVersionMetadata).
+      Accepted values: 'not specified', 'never', 'annually', 'quarterly',
+      'monthly', 'weekly', 'daily', 'hourly'
+    user_specified_sources (str)
+      User specified sources for current dataset version (see
+      DatasetVersionMetadata).
+    image (CroppedImageUpload)
+      If provided, will update the dataset image. Expects two crop rectangles
+      with titles of: 'cover image' and 'thumbnail'
   """
 
   def __init__(self):
@@ -328,6 +383,9 @@ class DatasetSettings(KaggleObject):
     self._licenses = []
     self._collaborators = []
     self._data = []
+    self._expected_update_frequency = None
+    self._user_specified_sources = None
+    self._image = None
     self._freeze()
 
   @property
@@ -441,6 +499,58 @@ class DatasetSettings(KaggleObject):
     if not all([isinstance(t, DatasetSettingsFile) for t in data]):
       raise TypeError('data must contain only items of type DatasetSettingsFile')
     self._data = data
+
+  @property
+  def expected_update_frequency(self) -> str:
+    r"""
+    Expected update frequency of dataset (see DatasetVersionMetadata).
+    Accepted values: 'not specified', 'never', 'annually', 'quarterly',
+    'monthly', 'weekly', 'daily', 'hourly'
+    """
+    return self._expected_update_frequency or ""
+
+  @expected_update_frequency.setter
+  def expected_update_frequency(self, expected_update_frequency: Optional[str]):
+    if expected_update_frequency is None:
+      del self.expected_update_frequency
+      return
+    if not isinstance(expected_update_frequency, str):
+      raise TypeError('expected_update_frequency must be of type str')
+    self._expected_update_frequency = expected_update_frequency
+
+  @property
+  def user_specified_sources(self) -> str:
+    r"""
+    User specified sources for current dataset version (see
+    DatasetVersionMetadata).
+    """
+    return self._user_specified_sources or ""
+
+  @user_specified_sources.setter
+  def user_specified_sources(self, user_specified_sources: Optional[str]):
+    if user_specified_sources is None:
+      del self.user_specified_sources
+      return
+    if not isinstance(user_specified_sources, str):
+      raise TypeError('user_specified_sources must be of type str')
+    self._user_specified_sources = user_specified_sources
+
+  @property
+  def image(self) -> Optional['CroppedImageUpload']:
+    r"""
+    If provided, will update the dataset image. Expects two crop rectangles
+    with titles of: 'cover image' and 'thumbnail'
+    """
+    return self._image or None
+
+  @image.setter
+  def image(self, image: Optional[Optional['CroppedImageUpload']]):
+    if image is None:
+      del self.image
+      return
+    if not isinstance(image, CroppedImageUpload):
+      raise TypeError('image must be of type CroppedImageUpload')
+    self._image = image
 
 
 class DatasetSettingsFile(KaggleObject):
@@ -614,6 +724,8 @@ DatasetInfo._fields = [
   FieldMetadata("licenses", "licenses", "_licenses", SettingsLicense, [], ListSerializer(KaggleObjectSerializer())),
   FieldMetadata("collaborators", "collaborators", "_collaborators", DatasetCollaborator, [], ListSerializer(KaggleObjectSerializer())),
   FieldMetadata("data", "data", "_data", DatasetSettingsFile, [], ListSerializer(KaggleObjectSerializer())),
+  FieldMetadata("expectedUpdateFrequency", "expected_update_frequency", "_expected_update_frequency", str, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("userSpecifiedSources", "user_specified_sources", "_user_specified_sources", str, None, PredefinedSerializer(), optional=True),
 ]
 
 DatasetSettings._fields = [
@@ -625,6 +737,9 @@ DatasetSettings._fields = [
   FieldMetadata("licenses", "licenses", "_licenses", SettingsLicense, [], ListSerializer(KaggleObjectSerializer())),
   FieldMetadata("collaborators", "collaborators", "_collaborators", DatasetCollaborator, [], ListSerializer(KaggleObjectSerializer())),
   FieldMetadata("data", "data", "_data", DatasetSettingsFile, [], ListSerializer(KaggleObjectSerializer())),
+  FieldMetadata("expectedUpdateFrequency", "expected_update_frequency", "_expected_update_frequency", str, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("userSpecifiedSources", "user_specified_sources", "_user_specified_sources", str, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("image", "image", "_image", CroppedImageUpload, None, KaggleObjectSerializer(), optional=True),
 ]
 
 DatasetSettingsFile._fields = [

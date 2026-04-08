@@ -1,4 +1,5 @@
-from kagglesdk.benchmarks.types.benchmark_types import BenchmarkResult
+from google.protobuf.field_mask_pb2 import FieldMask
+from kagglesdk.benchmarks.types.benchmark_types import BenchmarkModel, BenchmarkResult
 from kagglesdk.kaggle_object import *
 from typing import List, Optional
 
@@ -218,6 +219,119 @@ class ApiGetBenchmarkLeaderboardRequest(KaggleObject):
     return '/api/v1/benchmarks/{owner_slug}/{benchmark_slug}/leaderboard'
 
 
+class ApiListBenchmarkModelsRequest(KaggleObject):
+  r"""
+  Attributes:
+    page_size (int)
+    page_token (str)
+    read_mask (FieldMask)
+  """
+
+  def __init__(self):
+    self._page_size = 0
+    self._page_token = ""
+    self._read_mask = None
+    self._freeze()
+
+  @property
+  def page_size(self) -> int:
+    return self._page_size
+
+  @page_size.setter
+  def page_size(self, page_size: int):
+    if page_size is None:
+      del self.page_size
+      return
+    if not isinstance(page_size, int):
+      raise TypeError('page_size must be of type int')
+    self._page_size = page_size
+
+  @property
+  def page_token(self) -> str:
+    return self._page_token
+
+  @page_token.setter
+  def page_token(self, page_token: str):
+    if page_token is None:
+      del self.page_token
+      return
+    if not isinstance(page_token, str):
+      raise TypeError('page_token must be of type str')
+    self._page_token = page_token
+
+  @property
+  def read_mask(self) -> FieldMask:
+    return self._read_mask
+
+  @read_mask.setter
+  def read_mask(self, read_mask: FieldMask):
+    if read_mask is None:
+      del self.read_mask
+      return
+    if not isinstance(read_mask, FieldMask):
+      raise TypeError('read_mask must be of type FieldMask')
+    self._read_mask = read_mask
+
+  def endpoint(self):
+    path = '/api/v1/benchmarks/models'
+    return path.format_map(self.to_field_map(self))
+
+
+class ApiListBenchmarkModelsResponse(KaggleObject):
+  r"""
+  Attributes:
+    benchmark_models (BenchmarkModel)
+      NOTE: This reuses the internal BenchmarkModel directly. If BenchmarkModel
+      ever gets fields that shouldn't be public, introduce a dedicated API type.
+    next_page_token (str)
+  """
+
+  def __init__(self):
+    self._benchmark_models = []
+    self._next_page_token = None
+    self._freeze()
+
+  @property
+  def benchmark_models(self) -> Optional[List[Optional['BenchmarkModel']]]:
+    r"""
+    NOTE: This reuses the internal BenchmarkModel directly. If BenchmarkModel
+    ever gets fields that shouldn't be public, introduce a dedicated API type.
+    """
+    return self._benchmark_models
+
+  @benchmark_models.setter
+  def benchmark_models(self, benchmark_models: Optional[List[Optional['BenchmarkModel']]]):
+    if benchmark_models is None:
+      del self.benchmark_models
+      return
+    if not isinstance(benchmark_models, list):
+      raise TypeError('benchmark_models must be of type list')
+    if not all([isinstance(t, BenchmarkModel) for t in benchmark_models]):
+      raise TypeError('benchmark_models must contain only items of type BenchmarkModel')
+    self._benchmark_models = benchmark_models
+
+  @property
+  def next_page_token(self) -> str:
+    return self._next_page_token or ""
+
+  @next_page_token.setter
+  def next_page_token(self, next_page_token: Optional[str]):
+    if next_page_token is None:
+      del self.next_page_token
+      return
+    if not isinstance(next_page_token, str):
+      raise TypeError('next_page_token must be of type str')
+    self._next_page_token = next_page_token
+
+  @property
+  def benchmarkModels(self):
+    return self.benchmark_models
+
+  @property
+  def nextPageToken(self):
+    return self.next_page_token
+
+
 ApiBenchmarkLeaderboard.LeaderboardRow._fields = [
   FieldMetadata("modelVersionName", "model_version_name", "_model_version_name", str, "", PredefinedSerializer()),
   FieldMetadata("modelVersionSlug", "model_version_slug", "_model_version_slug", str, "", PredefinedSerializer()),
@@ -239,5 +353,16 @@ ApiGetBenchmarkLeaderboardRequest._fields = [
   FieldMetadata("ownerSlug", "owner_slug", "_owner_slug", str, "", PredefinedSerializer()),
   FieldMetadata("benchmarkSlug", "benchmark_slug", "_benchmark_slug", str, "", PredefinedSerializer()),
   FieldMetadata("versionNumber", "version_number", "_version_number", int, None, PredefinedSerializer(), optional=True),
+]
+
+ApiListBenchmarkModelsRequest._fields = [
+  FieldMetadata("pageSize", "page_size", "_page_size", int, 0, PredefinedSerializer()),
+  FieldMetadata("pageToken", "page_token", "_page_token", str, "", PredefinedSerializer()),
+  FieldMetadata("readMask", "read_mask", "_read_mask", FieldMask, None, FieldMaskSerializer()),
+]
+
+ApiListBenchmarkModelsResponse._fields = [
+  FieldMetadata("benchmarkModels", "benchmark_models", "_benchmark_models", BenchmarkModel, [], ListSerializer(KaggleObjectSerializer())),
+  FieldMetadata("nextPageToken", "next_page_token", "_next_page_token", str, None, PredefinedSerializer(), optional=True),
 ]
 
