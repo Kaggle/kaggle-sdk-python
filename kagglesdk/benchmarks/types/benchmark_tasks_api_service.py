@@ -579,11 +579,17 @@ class ApiListBenchmarkTaskRunsRequest(KaggleObject):
   Attributes:
     task_slug (ApiBenchmarkTaskSlug)
     model_version_slugs (str)
+    page_size (int)
+    page_token (str)
+    skip (int)
   """
 
   def __init__(self):
     self._task_slug = None
     self._model_version_slugs = []
+    self._page_size = 0
+    self._page_token = ""
+    self._skip = 0
     self._freeze()
 
   @property
@@ -614,6 +620,45 @@ class ApiListBenchmarkTaskRunsRequest(KaggleObject):
       raise TypeError('model_version_slugs must contain only items of type str')
     self._model_version_slugs = model_version_slugs
 
+  @property
+  def page_size(self) -> int:
+    return self._page_size
+
+  @page_size.setter
+  def page_size(self, page_size: int):
+    if page_size is None:
+      del self.page_size
+      return
+    if not isinstance(page_size, int):
+      raise TypeError('page_size must be of type int')
+    self._page_size = page_size
+
+  @property
+  def page_token(self) -> str:
+    return self._page_token
+
+  @page_token.setter
+  def page_token(self, page_token: str):
+    if page_token is None:
+      del self.page_token
+      return
+    if not isinstance(page_token, str):
+      raise TypeError('page_token must be of type str')
+    self._page_token = page_token
+
+  @property
+  def skip(self) -> int:
+    return self._skip
+
+  @skip.setter
+  def skip(self, skip: int):
+    if skip is None:
+      del self.skip
+      return
+    if not isinstance(skip, int):
+      raise TypeError('skip must be of type int')
+    self._skip = skip
+
   def endpoint(self):
     path = '/api/v1/benchmarks/tasks/runs/list'
     return path.format_map(self.to_field_map(self))
@@ -623,10 +668,14 @@ class ApiListBenchmarkTaskRunsResponse(KaggleObject):
   r"""
   Attributes:
     runs (ApiBenchmarkTaskRun)
+    total_results (int)
+    next_page_token (str)
   """
 
   def __init__(self):
     self._runs = []
+    self._total_results = 0
+    self._next_page_token = ""
     self._freeze()
 
   @property
@@ -643,6 +692,40 @@ class ApiListBenchmarkTaskRunsResponse(KaggleObject):
     if not all([isinstance(t, ApiBenchmarkTaskRun) for t in runs]):
       raise TypeError('runs must contain only items of type ApiBenchmarkTaskRun')
     self._runs = runs
+
+  @property
+  def total_results(self) -> int:
+    return self._total_results
+
+  @total_results.setter
+  def total_results(self, total_results: int):
+    if total_results is None:
+      del self.total_results
+      return
+    if not isinstance(total_results, int):
+      raise TypeError('total_results must be of type int')
+    self._total_results = total_results
+
+  @property
+  def next_page_token(self) -> str:
+    return self._next_page_token
+
+  @next_page_token.setter
+  def next_page_token(self, next_page_token: str):
+    if next_page_token is None:
+      del self.next_page_token
+      return
+    if not isinstance(next_page_token, str):
+      raise TypeError('next_page_token must be of type str')
+    self._next_page_token = next_page_token
+
+  @property
+  def totalResults(self):
+    return self.total_results
+
+  @property
+  def nextPageToken(self):
+    return self.next_page_token
 
 
 class ApiListBenchmarkTasksRequest(KaggleObject):
@@ -774,10 +857,15 @@ ApiGetBenchmarkTaskRequest._fields = [
 ApiListBenchmarkTaskRunsRequest._fields = [
   FieldMetadata("taskSlug", "task_slug", "_task_slug", ApiBenchmarkTaskSlug, None, KaggleObjectSerializer()),
   FieldMetadata("modelVersionSlugs", "model_version_slugs", "_model_version_slugs", str, [], ListSerializer(PredefinedSerializer())),
+  FieldMetadata("pageSize", "page_size", "_page_size", int, 0, PredefinedSerializer()),
+  FieldMetadata("pageToken", "page_token", "_page_token", str, "", PredefinedSerializer()),
+  FieldMetadata("skip", "skip", "_skip", int, 0, PredefinedSerializer()),
 ]
 
 ApiListBenchmarkTaskRunsResponse._fields = [
   FieldMetadata("runs", "runs", "_runs", ApiBenchmarkTaskRun, [], ListSerializer(KaggleObjectSerializer())),
+  FieldMetadata("totalResults", "total_results", "_total_results", int, 0, PredefinedSerializer()),
+  FieldMetadata("nextPageToken", "next_page_token", "_next_page_token", str, "", PredefinedSerializer()),
 ]
 
 ApiListBenchmarkTasksRequest._fields = [
