@@ -577,29 +577,27 @@ class ApiGetBenchmarkTaskRequest(KaggleObject):
 class ApiListBenchmarkTaskRunsRequest(KaggleObject):
   r"""
   Attributes:
-    task_slugs (ApiBenchmarkTaskSlug)
+    task_slug (ApiBenchmarkTaskSlug)
     model_version_slugs (str)
   """
 
   def __init__(self):
-    self._task_slugs = []
+    self._task_slug = None
     self._model_version_slugs = []
     self._freeze()
 
   @property
-  def task_slugs(self) -> Optional[List[Optional['ApiBenchmarkTaskSlug']]]:
-    return self._task_slugs
+  def task_slug(self) -> Optional['ApiBenchmarkTaskSlug']:
+    return self._task_slug
 
-  @task_slugs.setter
-  def task_slugs(self, task_slugs: Optional[List[Optional['ApiBenchmarkTaskSlug']]]):
-    if task_slugs is None:
-      del self.task_slugs
+  @task_slug.setter
+  def task_slug(self, task_slug: Optional['ApiBenchmarkTaskSlug']):
+    if task_slug is None:
+      del self.task_slug
       return
-    if not isinstance(task_slugs, list):
-      raise TypeError('task_slugs must be of type list')
-    if not all([isinstance(t, ApiBenchmarkTaskSlug) for t in task_slugs]):
-      raise TypeError('task_slugs must contain only items of type ApiBenchmarkTaskSlug')
-    self._task_slugs = task_slugs
+    if not isinstance(task_slug, ApiBenchmarkTaskSlug):
+      raise TypeError('task_slug must be of type ApiBenchmarkTaskSlug')
+    self._task_slug = task_slug
 
   @property
   def model_version_slugs(self) -> Optional[List[str]]:
@@ -774,7 +772,7 @@ ApiGetBenchmarkTaskRequest._fields = [
 ]
 
 ApiListBenchmarkTaskRunsRequest._fields = [
-  FieldMetadata("taskSlugs", "task_slugs", "_task_slugs", ApiBenchmarkTaskSlug, [], ListSerializer(KaggleObjectSerializer())),
+  FieldMetadata("taskSlug", "task_slug", "_task_slug", ApiBenchmarkTaskSlug, None, KaggleObjectSerializer()),
   FieldMetadata("modelVersionSlugs", "model_version_slugs", "_model_version_slugs", str, [], ListSerializer(PredefinedSerializer())),
 ]
 
