@@ -1007,6 +1007,7 @@ class ApiGetAgentExamInsightsResponse(KaggleObject):
     pct_completed (float)
     score_distribution (ScoreDistributionBin)
     agents_submitted (int)
+    completed_submissions (int)
   """
 
   def __init__(self):
@@ -1015,6 +1016,7 @@ class ApiGetAgentExamInsightsResponse(KaggleObject):
     self._pct_completed = 0.0
     self._score_distribution = []
     self._agents_submitted = 0
+    self._completed_submissions = 0
     self._freeze()
 
   @property
@@ -1085,6 +1087,19 @@ class ApiGetAgentExamInsightsResponse(KaggleObject):
     self._agents_submitted = agents_submitted
 
   @property
+  def completed_submissions(self) -> int:
+    return self._completed_submissions
+
+  @completed_submissions.setter
+  def completed_submissions(self, completed_submissions: int):
+    if completed_submissions is None:
+      del self.completed_submissions
+      return
+    if not isinstance(completed_submissions, int):
+      raise TypeError('completed_submissions must be of type int')
+    self._completed_submissions = completed_submissions
+
+  @property
   def agentsRegistered(self):
     return self.agents_registered
 
@@ -1103,6 +1118,10 @@ class ApiGetAgentExamInsightsResponse(KaggleObject):
   @property
   def agentsSubmitted(self):
     return self.agents_submitted
+
+  @property
+  def completedSubmissions(self):
+    return self.completed_submissions
 
 
 class ApiGetAgentExamSubmissionRequest(KaggleObject):
@@ -1501,6 +1520,7 @@ ApiGetAgentExamInsightsResponse._fields = [
   FieldMetadata("pctCompleted", "pct_completed", "_pct_completed", float, 0.0, PredefinedSerializer()),
   FieldMetadata("scoreDistribution", "score_distribution", "_score_distribution", ScoreDistributionBin, [], ListSerializer(KaggleObjectSerializer())),
   FieldMetadata("agentsSubmitted", "agents_submitted", "_agents_submitted", int, 0, PredefinedSerializer()),
+  FieldMetadata("completedSubmissions", "completed_submissions", "_completed_submissions", int, 0, PredefinedSerializer()),
 ]
 
 ApiGetAgentExamSubmissionRequest._fields = [
