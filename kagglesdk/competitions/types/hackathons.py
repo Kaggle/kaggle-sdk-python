@@ -1,7 +1,193 @@
+from kagglesdk.competitions.types.competition_enums import HackathonTrackPrizeType
 from kagglesdk.competitions.types.team import Team
 from kagglesdk.discussions.types.writeup_types import WriteUp
 from kagglesdk.kaggle_object import *
 from typing import Optional, List
+
+class HackathonTrack(KaggleObject):
+  r"""
+  Attributes:
+    id (int)
+    title (str)
+    description (str)
+    prizes (HackathonTrackPrize)
+    order_index (float)
+  """
+
+  def __init__(self):
+    self._id = 0
+    self._title = ""
+    self._description = ""
+    self._prizes = []
+    self._order_index = 0.0
+    self._freeze()
+
+  @property
+  def id(self) -> int:
+    return self._id
+
+  @id.setter
+  def id(self, id: int):
+    if id is None:
+      del self.id
+      return
+    if not isinstance(id, int):
+      raise TypeError('id must be of type int')
+    self._id = id
+
+  @property
+  def title(self) -> str:
+    return self._title
+
+  @title.setter
+  def title(self, title: str):
+    if title is None:
+      del self.title
+      return
+    if not isinstance(title, str):
+      raise TypeError('title must be of type str')
+    self._title = title
+
+  @property
+  def description(self) -> str:
+    return self._description
+
+  @description.setter
+  def description(self, description: str):
+    if description is None:
+      del self.description
+      return
+    if not isinstance(description, str):
+      raise TypeError('description must be of type str')
+    self._description = description
+
+  @property
+  def prizes(self) -> Optional[List[Optional['HackathonTrackPrize']]]:
+    return self._prizes
+
+  @prizes.setter
+  def prizes(self, prizes: Optional[List[Optional['HackathonTrackPrize']]]):
+    if prizes is None:
+      del self.prizes
+      return
+    if not isinstance(prizes, list):
+      raise TypeError('prizes must be of type list')
+    if not all([isinstance(t, HackathonTrackPrize) for t in prizes]):
+      raise TypeError('prizes must contain only items of type HackathonTrackPrize')
+    self._prizes = prizes
+
+  @property
+  def order_index(self) -> float:
+    return self._order_index
+
+  @order_index.setter
+  def order_index(self, order_index: float):
+    if order_index is None:
+      del self.order_index
+      return
+    if not isinstance(order_index, float):
+      raise TypeError('order_index must be of type float')
+    self._order_index = order_index
+
+
+class HackathonTrackPrize(KaggleObject):
+  r"""
+  Attributes:
+    id (int)
+    title (str)
+    type (HackathonTrackPrizeType)
+    amount_usd (int)
+    description (str)
+    order_index (float)
+  """
+
+  def __init__(self):
+    self._id = 0
+    self._title = ""
+    self._type = HackathonTrackPrizeType.HACKATHON_TRACK_PRIZE_TYPE_UNSPECIFIED
+    self._amount_usd = 0
+    self._description = ""
+    self._order_index = 0.0
+    self._freeze()
+
+  @property
+  def id(self) -> int:
+    return self._id
+
+  @id.setter
+  def id(self, id: int):
+    if id is None:
+      del self.id
+      return
+    if not isinstance(id, int):
+      raise TypeError('id must be of type int')
+    self._id = id
+
+  @property
+  def title(self) -> str:
+    return self._title
+
+  @title.setter
+  def title(self, title: str):
+    if title is None:
+      del self.title
+      return
+    if not isinstance(title, str):
+      raise TypeError('title must be of type str')
+    self._title = title
+
+  @property
+  def type(self) -> 'HackathonTrackPrizeType':
+    return self._type
+
+  @type.setter
+  def type(self, type: 'HackathonTrackPrizeType'):
+    if type is None:
+      del self.type
+      return
+    if not isinstance(type, HackathonTrackPrizeType):
+      raise TypeError('type must be of type HackathonTrackPrizeType')
+    self._type = type
+
+  @property
+  def amount_usd(self) -> int:
+    return self._amount_usd
+
+  @amount_usd.setter
+  def amount_usd(self, amount_usd: int):
+    if amount_usd is None:
+      del self.amount_usd
+      return
+    if not isinstance(amount_usd, int):
+      raise TypeError('amount_usd must be of type int')
+    self._amount_usd = amount_usd
+
+  @property
+  def description(self) -> str:
+    return self._description
+
+  @description.setter
+  def description(self, description: str):
+    if description is None:
+      del self.description
+      return
+    if not isinstance(description, str):
+      raise TypeError('description must be of type str')
+    self._description = description
+
+  @property
+  def order_index(self) -> float:
+    return self._order_index
+
+  @order_index.setter
+  def order_index(self, order_index: float):
+    if order_index is None:
+      del self.order_index
+      return
+    if not isinstance(order_index, float):
+      raise TypeError('order_index must be of type float')
+    self._order_index = order_index
+
 
 class HackathonWriteUp(KaggleObject):
   r"""
@@ -150,6 +336,23 @@ class HackathonWriteUp(KaggleObject):
       raise TypeError('owner_judge_user_id must be of type int')
     self._owner_judge_user_id = owner_judge_user_id
 
+
+HackathonTrack._fields = [
+  FieldMetadata("id", "id", "_id", int, 0, PredefinedSerializer()),
+  FieldMetadata("title", "title", "_title", str, "", PredefinedSerializer()),
+  FieldMetadata("description", "description", "_description", str, "", PredefinedSerializer()),
+  FieldMetadata("prizes", "prizes", "_prizes", HackathonTrackPrize, [], ListSerializer(KaggleObjectSerializer())),
+  FieldMetadata("orderIndex", "order_index", "_order_index", float, 0.0, PredefinedSerializer()),
+]
+
+HackathonTrackPrize._fields = [
+  FieldMetadata("id", "id", "_id", int, 0, PredefinedSerializer()),
+  FieldMetadata("title", "title", "_title", str, "", PredefinedSerializer()),
+  FieldMetadata("type", "type", "_type", HackathonTrackPrizeType, HackathonTrackPrizeType.HACKATHON_TRACK_PRIZE_TYPE_UNSPECIFIED, EnumSerializer()),
+  FieldMetadata("amountUsd", "amount_usd", "_amount_usd", int, 0, PredefinedSerializer()),
+  FieldMetadata("description", "description", "_description", str, "", PredefinedSerializer()),
+  FieldMetadata("orderIndex", "order_index", "_order_index", float, 0.0, PredefinedSerializer()),
+]
 
 HackathonWriteUp._fields = [
   FieldMetadata("id", "id", "_id", int, 0, PredefinedSerializer()),

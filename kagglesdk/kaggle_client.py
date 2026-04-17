@@ -5,6 +5,7 @@ from kagglesdk.benchmarks.services.benchmark_tasks_api_service import BenchmarkT
 from kagglesdk.blobs.services.blob_api_service import BlobApiClient
 from kagglesdk.common.services.operations_service import OperationsClient
 from kagglesdk.competitions.services.competition_api_service import CompetitionApiClient
+from kagglesdk.competitions.services.hackathon_service import HackathonClient
 from kagglesdk.datasets.services.dataset_api_service import DatasetApiClient
 from kagglesdk.education.services.education_api_service import EducationApiClient
 from kagglesdk.kernels.services.kernels_api_service import KernelsApiClient
@@ -44,6 +45,7 @@ class KaggleClient(object):
   class Competitions(object):
     def __init__(self, http_client: KaggleHttpClient):
       self.competition_api_client = CompetitionApiClient(http_client)
+      self.hackathon_client = HackathonClient(http_client)
 
   class Datasets(object):
     def __init__(self, http_client: KaggleHttpClient):

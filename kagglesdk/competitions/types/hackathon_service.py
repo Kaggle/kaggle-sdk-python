@@ -1,6 +1,64 @@
-from kagglesdk.competitions.types.hackathons import HackathonWriteUp
+from kagglesdk.competitions.types.hackathons import HackathonTrack, HackathonWriteUp
 from kagglesdk.kaggle_object import *
 from typing import List, Optional
+
+class ListHackathonTracksRequest(KaggleObject):
+  r"""
+  Attributes:
+    competition_id (int)
+  """
+
+  def __init__(self):
+    self._competition_id = 0
+    self._freeze()
+
+  @property
+  def competition_id(self) -> int:
+    return self._competition_id
+
+  @competition_id.setter
+  def competition_id(self, competition_id: int):
+    if competition_id is None:
+      del self.competition_id
+      return
+    if not isinstance(competition_id, int):
+      raise TypeError('competition_id must be of type int')
+    self._competition_id = competition_id
+
+  def endpoint(self):
+    path = '/api/v1/competitions/{competition_id}/hackathon-tracks'
+    return path.format_map(self.to_field_map(self))
+
+  @staticmethod
+  def endpoint_path():
+    return '/api/v1/competitions/{competition_id}/hackathon-tracks'
+
+
+class ListHackathonTracksResponse(KaggleObject):
+  r"""
+  Attributes:
+    tracks (HackathonTrack)
+  """
+
+  def __init__(self):
+    self._tracks = []
+    self._freeze()
+
+  @property
+  def tracks(self) -> Optional[List[Optional['HackathonTrack']]]:
+    return self._tracks
+
+  @tracks.setter
+  def tracks(self, tracks: Optional[List[Optional['HackathonTrack']]]):
+    if tracks is None:
+      del self.tracks
+      return
+    if not isinstance(tracks, list):
+      raise TypeError('tracks must be of type list')
+    if not all([isinstance(t, HackathonTrack) for t in tracks]):
+      raise TypeError('tracks must contain only items of type HackathonTrack')
+    self._tracks = tracks
+
 
 class ListHackathonWriteUpsResponse(KaggleObject):
   r"""
@@ -69,6 +127,14 @@ class ListHackathonWriteUpsResponse(KaggleObject):
   def totalCount(self):
     return self.total_count
 
+
+ListHackathonTracksRequest._fields = [
+  FieldMetadata("competitionId", "competition_id", "_competition_id", int, 0, PredefinedSerializer()),
+]
+
+ListHackathonTracksResponse._fields = [
+  FieldMetadata("tracks", "tracks", "_tracks", HackathonTrack, [], ListSerializer(KaggleObjectSerializer())),
+]
 
 ListHackathonWriteUpsResponse._fields = [
   FieldMetadata("hackathonWriteUps", "hackathon_write_ups", "_hackathon_write_ups", HackathonWriteUp, [], ListSerializer(KaggleObjectSerializer())),

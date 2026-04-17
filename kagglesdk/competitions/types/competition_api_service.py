@@ -1,5 +1,6 @@
 from datetime import datetime
 from kagglesdk.competitions.types.competition_enums import CompetitionListTab, CompetitionSortBy, HostSegment, SubmissionGroup, SubmissionSortBy
+from kagglesdk.competitions.types.episode import EpisodeAgentState, EpisodeState, EpisodeType
 from kagglesdk.competitions.types.submission_status import SubmissionStatus
 from kagglesdk.kaggle_object import *
 from typing import Optional, List
@@ -551,6 +552,53 @@ class ApiCompetition(KaggleObject):
     self._date_created = date_created
 
 
+class ApiCompetitionPage(KaggleObject):
+  r"""
+  Attributes:
+    name (str)
+      Page name (e.g. 'description', 'rules', 'evaluation', 'data-description',
+      'prizes').
+    content (str)
+      The rendered content of the page.
+  """
+
+  def __init__(self):
+    self._name = ""
+    self._content = ""
+    self._freeze()
+
+  @property
+  def name(self) -> str:
+    r"""
+    Page name (e.g. 'description', 'rules', 'evaluation', 'data-description',
+    'prizes').
+    """
+    return self._name
+
+  @name.setter
+  def name(self, name: str):
+    if name is None:
+      del self.name
+      return
+    if not isinstance(name, str):
+      raise TypeError('name must be of type str')
+    self._name = name
+
+  @property
+  def content(self) -> str:
+    """The rendered content of the page."""
+    return self._content
+
+  @content.setter
+  def content(self, content: str):
+    if content is None:
+      del self.content
+      return
+    if not isinstance(content, str):
+      raise TypeError('content must be of type str')
+    self._content = content
+
+
 class ApiCreateCodeSubmissionRequest(KaggleObject):
   r"""
   Attributes:
@@ -1072,6 +1120,206 @@ class ApiDownloadLeaderboardRequest(KaggleObject):
     return '/api/v1/competitions/{competition_name}/leaderboard/download'
 
 
+class ApiEpisode(KaggleObject):
+  r"""
+  Attributes:
+    id (int)
+    create_time (datetime)
+    end_time (datetime)
+    state (EpisodeState)
+    type (EpisodeType)
+    agents (ApiEpisodeAgent)
+  """
+
+  def __init__(self):
+    self._id = 0
+    self._create_time = None
+    self._end_time = None
+    self._state = EpisodeState.EPISODE_STATE_UNSPECIFIED
+    self._type = EpisodeType.EPISODE_TYPE_UNSPECIFIED
+    self._agents = []
+    self._freeze()
+
+  @property
+  def id(self) -> int:
+    return self._id
+
+  @id.setter
+  def id(self, id: int):
+    if id is None:
+      del self.id
+      return
+    if not isinstance(id, int):
+      raise TypeError('id must be of type int')
+    self._id = id
+
+  @property
+  def create_time(self) -> datetime:
+    return self._create_time
+
+  @create_time.setter
+  def create_time(self, create_time: datetime):
+    if create_time is None:
+      del self.create_time
+      return
+    if not isinstance(create_time, datetime):
+      raise TypeError('create_time must be of type datetime')
+    self._create_time = create_time
+
+  @property
+  def end_time(self) -> datetime:
+    return self._end_time
+
+  @end_time.setter
+  def end_time(self, end_time: datetime):
+    if end_time is None:
+      del self.end_time
+      return
+    if not isinstance(end_time, datetime):
+      raise TypeError('end_time must be of type datetime')
+    self._end_time = end_time
+
+  @property
+  def state(self) -> 'EpisodeState':
+    return self._state
+
+  @state.setter
+  def state(self, state: 'EpisodeState'):
+    if state is None:
+      del self.state
+      return
+    if not isinstance(state, EpisodeState):
+      raise TypeError('state must be of type EpisodeState')
+    self._state = state
+
+  @property
+  def type(self) -> 'EpisodeType':
+    return self._type
+
+  @type.setter
+  def type(self, type: 'EpisodeType'):
+    if type is None:
+      del self.type
+      return
+    if not isinstance(type, EpisodeType):
+      raise TypeError('type must be of type EpisodeType')
+    self._type = type
+
+  @property
+  def agents(self) -> Optional[List[Optional['ApiEpisodeAgent']]]:
+    return self._agents
+
+  @agents.setter
+  def agents(self, agents: Optional[List[Optional['ApiEpisodeAgent']]]):
+    if agents is None:
+      del self.agents
+      return
+    if not isinstance(agents, list):
+      raise TypeError('agents must be of type list')
+    if not all([isinstance(t, ApiEpisodeAgent) for t in agents]):
+      raise TypeError('agents must contain only items of type ApiEpisodeAgent')
+    self._agents = agents
+
+
+class ApiEpisodeAgent(KaggleObject):
+  r"""
+  Attributes:
+    submission_id (int)
+    index (int)
+    reward (float)
+    state (EpisodeAgentState)
+    team_name (str)
+    team_id (int)
+  """
+
+  def __init__(self):
+    self._submission_id = 0
+    self._index = 0
+    self._reward = None
+    self._state = EpisodeAgentState.EPISODE_AGENT_STATE_UNSPECIFIED
+    self._team_name = None
+    self._team_id = 0
+    self._freeze()
+
+  @property
+  def submission_id(self) -> int:
+    return self._submission_id
+
+  @submission_id.setter
+  def submission_id(self, submission_id: int):
+    if submission_id is None:
+      del self.submission_id
+      return
+    if not isinstance(submission_id, int):
+      raise TypeError('submission_id must be of type int')
+    self._submission_id = submission_id
+
+  @property
+  def index(self) -> int:
+    return self._index
+
+  @index.setter
+  def index(self, index: int):
+    if index is None:
+      del self.index
+      return
+    if not isinstance(index, int):
+      raise TypeError('index must be of type int')
+    self._index = index
+
+  @property
+  def reward(self) -> float:
+    return self._reward or 0.0
+
+  @reward.setter
+  def reward(self, reward: Optional[float]):
+    if reward is None:
+      del self.reward
+      return
+    if not isinstance(reward, float):
+      raise TypeError('reward must be of type float')
+    self._reward = reward
+
+  @property
+  def state(self) -> 'EpisodeAgentState':
+    return self._state
+
+  @state.setter
+  def state(self, state: 'EpisodeAgentState'):
+    if state is None:
+      del self.state
+      return
+    if not isinstance(state, EpisodeAgentState):
+      raise TypeError('state must be of type EpisodeAgentState')
+    self._state = state
+
+  @property
+  def team_name(self) -> str:
+    return self._team_name or ""
+
+  @team_name.setter
+  def team_name(self, team_name: Optional[str]):
+    if team_name is None:
+      del self.team_name
+      return
+    if not isinstance(team_name, str):
+      raise TypeError('team_name must be of type str')
+    self._team_name = team_name
+
+  @property
+  def team_id(self) -> int:
+    return self._team_id
+
+  @team_id.setter
+  def team_id(self, team_id: int):
+    if team_id is None:
+      del self.team_id
+      return
+    if not isinstance(team_id, int):
+      raise TypeError('team_id must be of type int')
+    self._team_id = team_id
+
+
 class ApiGetCompetitionDataFilesSummaryRequest(KaggleObject):
   r"""
   Attributes:
@@ -1134,6 +1382,117 @@ class ApiGetCompetitionRequest(KaggleObject):
   @staticmethod
   def endpoint_path():
     return '/api/v1/competitions/get/{competition_name}'
+
+
+class ApiGetEpisodeAgentLogsRequest(KaggleObject):
+  r"""
+  Attributes:
+    episode_id (int)
+    agent_index (int)
+  """
+
+  def __init__(self):
+    self._episode_id = 0
+    self._agent_index = 0
+    self._freeze()
+
+  @property
+  def episode_id(self) -> int:
+    return self._episode_id
+
+  @episode_id.setter
+  def episode_id(self, episode_id: int):
+    if episode_id is None:
+      del self.episode_id
+      return
+    if not isinstance(episode_id, int):
+      raise TypeError('episode_id must be of type int')
+    self._episode_id = episode_id
+
+  @property
+  def agent_index(self) -> int:
+    return self._agent_index
+
+  @agent_index.setter
+  def agent_index(self, agent_index: int):
+    if agent_index is None:
+      del self.agent_index
+      return
+    if not isinstance(agent_index, int):
+      raise TypeError('agent_index must be of type int')
+    self._agent_index = agent_index
+
+  def endpoint(self):
+    path = '/api/v1/competitions/episodes/{episode_id}/agents/{agent_index}/logs'
+    return path.format_map(self.to_field_map(self))
+
+  @staticmethod
+  def endpoint_path():
+    return '/api/v1/competitions/episodes/{episode_id}/agents/{agent_index}/logs'
+
+
+class ApiGetEpisodeReplayRequest(KaggleObject):
+  r"""
+  Attributes:
+    episode_id (int)
+  """
+
+  def __init__(self):
+    self._episode_id = 0
+    self._freeze()
+
+  @property
+  def episode_id(self) -> int:
+    return self._episode_id
+
+  @episode_id.setter
+  def episode_id(self, episode_id: int):
+    if episode_id is None:
+      del self.episode_id
+      return
+    if not isinstance(episode_id, int):
+      raise TypeError('episode_id must be of type int')
+    self._episode_id = episode_id
+
+  def endpoint(self):
+    path = '/api/v1/competitions/episodes/{episode_id}/replay'
+    return path.format_map(self.to_field_map(self))
+
+  @staticmethod
+  def endpoint_path():
+    return '/api/v1/competitions/episodes/{episode_id}/replay'
+
+
+class ApiGetHackathonOverviewRequest(KaggleObject):
+  r"""
+  Attributes:
+    competition_name (str)
+  """
+
+  def __init__(self):
+    self._competition_name = ""
+    self._freeze()
+
+  @property
+  def competition_name(self) -> str:
+    return self._competition_name
+
+  @competition_name.setter
+  def competition_name(self, competition_name: str):
+    if competition_name is None:
+      del self.competition_name
+      return
+    if not isinstance(competition_name, str):
+      raise TypeError('competition_name must be of type str')
+    self._competition_name = competition_name
+
+  def endpoint(self):
+    path = '/api/v1/competitions/{competition_name}/hackathon-overview'
+    return path.format_map(self.to_field_map(self))
+
+  @staticmethod
+  def endpoint_path():
+    return '/api/v1/competitions/{competition_name}/hackathon-overview'
 
 
 class ApiGetHackathonWriteUpRequest(KaggleObject):
@@ -1417,6 +1776,85 @@ class ApiLeaderboardSubmission(KaggleObject):
     if not isinstance(score, str):
       raise TypeError('score must be of type str')
     self._score = score
+
+
+class ApiListCompetitionPagesRequest(KaggleObject):
+  r"""
+  Attributes:
+    competition_name (str)
+    page_name (str)
+      Optional filter to return only the page with this name (e.g. 'description',
+      'rules', 'evaluation'). If empty, all published pages are returned.
+  """
+
+  def __init__(self):
+    self._competition_name = ""
+    self._page_name = None
+    self._freeze()
+
+  @property
+  def competition_name(self) -> str:
+    return self._competition_name
+
+  @competition_name.setter
+  def competition_name(self, competition_name: str):
+    if competition_name is None:
+      del self.competition_name
+      return
+    if not isinstance(competition_name, str):
+      raise TypeError('competition_name must be of type str')
+    self._competition_name = competition_name
+
+  @property
+  def page_name(self) -> str:
+    r"""
+    Optional filter to return only the page with this name (e.g. 'description',
+    'rules', 'evaluation'). If empty, all published pages are returned.
+    """
+    return self._page_name or ""
+
+  @page_name.setter
+  def page_name(self, page_name: Optional[str]):
+    if page_name is None:
+      del self.page_name
+      return
+    if not isinstance(page_name, str):
+      raise TypeError('page_name must be of type str')
+    self._page_name = page_name
+
+  def endpoint(self):
+    path = '/api/v1/competitions/{competition_name}/pages'
+    return path.format_map(self.to_field_map(self))
+
+  @staticmethod
+  def endpoint_path():
+    return '/api/v1/competitions/{competition_name}/pages'
+
+
+class ApiListCompetitionPagesResponse(KaggleObject):
+  r"""
+  Attributes:
+    pages (ApiCompetitionPage)
+  """
+
+  def __init__(self):
+    self._pages = []
+    self._freeze()
+
+  @property
+  def pages(self) -> Optional[List[Optional['ApiCompetitionPage']]]:
+    return self._pages
+
+  @pages.setter
+  def pages(self, pages: Optional[List[Optional['ApiCompetitionPage']]]):
+    if pages is None:
+      del self.pages
+      return
+    if not isinstance(pages, list):
+      raise TypeError('pages must be of type list')
+    if not all([isinstance(t, ApiCompetitionPage) for t in pages]):
+      raise TypeError('pages must contain only items of type ApiCompetitionPage')
+    self._pages = pages
 
 
 class ApiListCompetitionsRequest(KaggleObject):
@@ -1913,6 +2351,64 @@ class ApiListHackathonWriteUpsRequest(KaggleObject):
   @staticmethod
   def endpoint_path():
     return '/api/v1/competitions/{competition_name}/hackathon-write-ups'
+
+
+class ApiListSubmissionEpisodesRequest(KaggleObject):
+  r"""
+  Attributes:
+    submission_id (int)
+  """
+
+  def __init__(self):
+    self._submission_id = 0
+    self._freeze()
+
+  @property
+  def submission_id(self) -> int:
+    return self._submission_id
+
+  @submission_id.setter
+  def submission_id(self, submission_id: int):
+    if submission_id is None:
+      del self.submission_id
+      return
+    if not isinstance(submission_id, int):
+      raise TypeError('submission_id must be of type int')
+    self._submission_id = submission_id
+
+  def endpoint(self):
+    path = '/api/v1/competitions/submissions/{submission_id}/episodes'
+    return path.format_map(self.to_field_map(self))
+
+  @staticmethod
+  def endpoint_path():
+    return '/api/v1/competitions/submissions/{submission_id}/episodes'
+
+
+class ApiListSubmissionEpisodesResponse(KaggleObject):
+  r"""
+  Attributes:
+    episodes (ApiEpisode)
+  """
+
+  def __init__(self):
+    self._episodes = []
+    self._freeze()
+
+  @property
+  def episodes(self) -> Optional[List[Optional['ApiEpisode']]]:
+    return self._episodes
+
+  @episodes.setter
+  def episodes(self, episodes: Optional[List[Optional['ApiEpisode']]]):
+    if episodes is None:
+      del self.episodes
+      return
+    if not isinstance(episodes, list):
+      raise TypeError('episodes must be of type list')
+    if not all([isinstance(t, ApiEpisode) for t in episodes]):
+      raise TypeError('episodes must contain only items of type ApiEpisode')
+    self._episodes = episodes
 
 
 class ApiListSubmissionsRequest(KaggleObject):
@@ -2444,6 +2940,11 @@ ApiCompetition._fields = [
   FieldMetadata("dateCreated", "date_created", "_date_created", datetime, None, DateTimeSerializer()),
 ]
 
+ApiCompetitionPage._fields = [
+  FieldMetadata("name", "name", "_name", str, "", PredefinedSerializer()),
+  FieldMetadata("content", "content", "_content", str, "", PredefinedSerializer()),
+]
+
 ApiCreateCodeSubmissionRequest._fields = [
   FieldMetadata("competitionName", "competition_name", "_competition_name", str, "", PredefinedSerializer()),
   FieldMetadata("kernelOwner", "kernel_owner", "_kernel_owner", str, "", PredefinedSerializer()),
@@ -2493,11 +2994,42 @@ ApiDownloadLeaderboardRequest._fields = [
   FieldMetadata("competitionName", "competition_name", "_competition_name", str, "", PredefinedSerializer()),
 ]
 
+ApiEpisode._fields = [
+  FieldMetadata("id", "id", "_id", int, 0, PredefinedSerializer()),
+  FieldMetadata("createTime", "create_time", "_create_time", datetime, None, DateTimeSerializer()),
+  FieldMetadata("endTime", "end_time", "_end_time", datetime, None, DateTimeSerializer()),
+  FieldMetadata("state", "state", "_state", EpisodeState, EpisodeState.EPISODE_STATE_UNSPECIFIED, EnumSerializer()),
+  FieldMetadata("type", "type", "_type", EpisodeType, EpisodeType.EPISODE_TYPE_UNSPECIFIED, EnumSerializer()),
+  FieldMetadata("agents", "agents", "_agents", ApiEpisodeAgent, [], ListSerializer(KaggleObjectSerializer())),
+]
+
+ApiEpisodeAgent._fields = [
+  FieldMetadata("submissionId", "submission_id", "_submission_id", int, 0, PredefinedSerializer()),
+  FieldMetadata("index", "index", "_index", int, 0, PredefinedSerializer()),
+  FieldMetadata("reward", "reward", "_reward", float, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("state", "state", "_state", EpisodeAgentState, EpisodeAgentState.EPISODE_AGENT_STATE_UNSPECIFIED, EnumSerializer()),
+  FieldMetadata("teamName", "team_name", "_team_name", str, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("teamId", "team_id", "_team_id", int, 0, PredefinedSerializer()),
+]
+
 ApiGetCompetitionDataFilesSummaryRequest._fields = [
   FieldMetadata("competitionName", "competition_name", "_competition_name", str, "", PredefinedSerializer()),
 ]
 
 ApiGetCompetitionRequest._fields = [
+  FieldMetadata("competitionName", "competition_name", "_competition_name", str, "", PredefinedSerializer()),
+]
+
+ApiGetEpisodeAgentLogsRequest._fields = [
+  FieldMetadata("episodeId", "episode_id", "_episode_id", int, 0, PredefinedSerializer()),
+  FieldMetadata("agentIndex", "agent_index", "_agent_index", int, 0, PredefinedSerializer()),
+]
+
+ApiGetEpisodeReplayRequest._fields = [
+  FieldMetadata("episodeId", "episode_id", "_episode_id", int, 0, PredefinedSerializer()),
+]
+
+ApiGetHackathonOverviewRequest._fields = [
   FieldMetadata("competitionName", "competition_name", "_competition_name", str, "", PredefinedSerializer()),
 ]
 
@@ -2527,6 +3059,15 @@ ApiLeaderboardSubmission._fields = [
   FieldMetadata("teamName", "team_name", "_team_name", str, None, PredefinedSerializer(), optional=True),
   FieldMetadata("submissionDate", "submission_date", "_submission_date", datetime, None, DateTimeSerializer()),
   FieldMetadata("score", "score", "_score", str, None, PredefinedSerializer(), optional=True),
+]
+
+ApiListCompetitionPagesRequest._fields = [
+  FieldMetadata("competitionName", "competition_name", "_competition_name", str, "", PredefinedSerializer()),
+  FieldMetadata("pageName", "page_name", "_page_name", str, None, PredefinedSerializer(), optional=True),
+]
+
+ApiListCompetitionPagesResponse._fields = [
+  FieldMetadata("pages", "pages", "_pages", ApiCompetitionPage, [], ListSerializer(KaggleObjectSerializer())),
 ]
 
 ApiListCompetitionsRequest._fields = [
@@ -2569,6 +3110,14 @@ ApiListHackathonWriteUpsRequest._fields = [
   FieldMetadata("winner", "winner", "_winner", bool, None, PredefinedSerializer(), optional=True),
   FieldMetadata("pageSize", "page_size", "_page_size", int, None, PredefinedSerializer(), optional=True),
   FieldMetadata("pageToken", "page_token", "_page_token", str, None, PredefinedSerializer(), optional=True),
+]
+
+ApiListSubmissionEpisodesRequest._fields = [
+  FieldMetadata("submissionId", "submission_id", "_submission_id", int, 0, PredefinedSerializer()),
+]
+
+ApiListSubmissionEpisodesResponse._fields = [
+  FieldMetadata("episodes", "episodes", "_episodes", ApiEpisode, [], ListSerializer(KaggleObjectSerializer())),
 ]
 
 ApiListSubmissionsRequest._fields = [
