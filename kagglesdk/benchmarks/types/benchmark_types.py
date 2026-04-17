@@ -1,5 +1,5 @@
 from datetime import datetime
-from kagglesdk.benchmarks.types.benchmark_enums import BenchmarkModelImportanceLevel
+from kagglesdk.benchmarks.types.benchmark_enums import BenchmarkModelImportanceLevel, Modality
 from kagglesdk.kaggle_object import *
 from kagglesdk.licenses.types.licenses_types import License
 from kagglesdk.users.types.legacy_organizations_service import OrganizationCard
@@ -251,14 +251,10 @@ class BenchmarkModelVersion(KaggleObject):
     license (License)
     importance_level (BenchmarkModelImportanceLevel)
       Whether this model version is run on Kaggle-maintained benchmarks
-    input_modalities (str)
-      Comma-separated input modalities supported by this model version.
-      Valid values: 'text', 'image', 'video', 'audio'.
-      Example: 'text,image'
-    output_modalities (str)
-      Comma-separated output modalities supported by this model version.
-      Valid values: 'text', 'image', 'video', 'audio'.
-      Example: 'text,image'
+    input_modalities (Modality)
+      Input modalities supported by this model version.
+    output_modalities (Modality)
+      Output modalities supported by this model version.
   """
 
   def __init__(self):
@@ -277,8 +273,8 @@ class BenchmarkModelVersion(KaggleObject):
     self._name = None
     self._license = None
     self._importance_level = None
-    self._input_modalities = None
-    self._output_modalities = None
+    self._input_modalities = []
+    self._output_modalities = []
     self._freeze()
 
   @property
@@ -503,39 +499,35 @@ class BenchmarkModelVersion(KaggleObject):
     self._importance_level = importance_level
 
   @property
-  def input_modalities(self) -> str:
-    r"""
-    Comma-separated input modalities supported by this model version.
-    Valid values: 'text', 'image', 'video', 'audio'.
-    Example: 'text,image'
-    """
-    return self._input_modalities or ""
+  def input_modalities(self) -> Optional[List['Modality']]:
+    """Input modalities supported by this model version."""
+    return self._input_modalities
 
   @input_modalities.setter
-  def input_modalities(self, input_modalities: Optional[str]):
+  def input_modalities(self, input_modalities: Optional[List['Modality']]):
     if input_modalities is None:
       del self.input_modalities
       return
-    if not isinstance(input_modalities, str):
-      raise TypeError('input_modalities must be of type str')
+    if not isinstance(input_modalities, list):
+      raise TypeError('input_modalities must be of type list')
+    if not all([isinstance(t, Modality) for t in input_modalities]):
+      raise TypeError('input_modalities must contain only items of type Modality')
     self._input_modalities = input_modalities
 
   @property
-  def output_modalities(self) -> str:
-    r"""
-    Comma-separated output modalities supported by this model version.
-    Valid values: 'text', 'image', 'video', 'audio'.
-    Example: 'text,image'
-    """
-    return self._output_modalities or ""
+  def output_modalities(self) -> Optional[List['Modality']]:
+    """Output modalities supported by this model version."""
+    return self._output_modalities
 
   @output_modalities.setter
-  def output_modalities(self, output_modalities: Optional[str]):
+  def output_modalities(self, output_modalities: Optional[List['Modality']]):
     if output_modalities is None:
       del self.output_modalities
       return
-    if not isinstance(output_modalities, str):
-      raise TypeError('output_modalities must be of type str')
+    if not isinstance(output_modalities, list):
+      raise TypeError('output_modalities must be of type list')
+    if not all([isinstance(t, Modality) for t in output_modalities]):
+      raise TypeError('output_modalities must contain only items of type Modality')
     self._output_modalities = output_modalities
 
 
@@ -846,8 +838,8 @@ BenchmarkModelVersion._fields = [
   FieldMetadata("name", "name", "_name", str, None, PredefinedSerializer(), optional=True),
   FieldMetadata("license", "license", "_license", License, None, KaggleObjectSerializer()),
   FieldMetadata("importanceLevel", "importance_level", "_importance_level", BenchmarkModelImportanceLevel, None, EnumSerializer(), optional=True),
-  FieldMetadata("inputModalities", "input_modalities", "_input_modalities", str, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("outputModalities", "output_modalities", "_output_modalities", str, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("inputModalities", "input_modalities", "_input_modalities", Modality, [], ListSerializer(EnumSerializer())),
+  FieldMetadata("outputModalities", "output_modalities", "_output_modalities", Modality, [], ListSerializer(EnumSerializer())),
 ]
 
 BenchmarkResult._fields = [
