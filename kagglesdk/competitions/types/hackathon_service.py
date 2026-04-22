@@ -1,29 +1,44 @@
 from kagglesdk.competitions.types.hackathons import HackathonTrack, HackathonWriteUp
 from kagglesdk.kaggle_object import *
-from typing import List, Optional
+from typing import Optional, List
 
 class ListHackathonTracksRequest(KaggleObject):
   r"""
   Attributes:
     competition_id (int)
+    competition_name (str)
   """
 
   def __init__(self):
-    self._competition_id = 0
+    self._competition_id = None
+    self._competition_name = None
     self._freeze()
 
   @property
   def competition_id(self) -> int:
-    return self._competition_id
+    return self._competition_id or 0
 
   @competition_id.setter
-  def competition_id(self, competition_id: int):
+  def competition_id(self, competition_id: Optional[int]):
     if competition_id is None:
       del self.competition_id
       return
     if not isinstance(competition_id, int):
       raise TypeError('competition_id must be of type int')
     self._competition_id = competition_id
+
+  @property
+  def competition_name(self) -> str:
+    return self._competition_name or ""
+
+  @competition_name.setter
+  def competition_name(self, competition_name: Optional[str]):
+    if competition_name is None:
+      del self.competition_name
+      return
+    if not isinstance(competition_name, str):
+      raise TypeError('competition_name must be of type str')
+    self._competition_name = competition_name
 
   def endpoint(self):
     path = '/api/v1/competitions/{competition_id}/hackathon-tracks'
@@ -129,7 +144,8 @@ class ListHackathonWriteUpsResponse(KaggleObject):
 
 
 ListHackathonTracksRequest._fields = [
-  FieldMetadata("competitionId", "competition_id", "_competition_id", int, 0, PredefinedSerializer()),
+  FieldMetadata("competitionId", "competition_id", "_competition_id", int, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("competitionName", "competition_name", "_competition_name", str, None, PredefinedSerializer(), optional=True),
 ]
 
 ListHackathonTracksResponse._fields = [

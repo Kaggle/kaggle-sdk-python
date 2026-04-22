@@ -10,6 +10,7 @@ from kagglesdk.datasets.services.dataset_api_service import DatasetApiClient
 from kagglesdk.education.services.education_api_service import EducationApiClient
 from kagglesdk.kernels.services.kernels_api_service import KernelsApiClient
 from kagglesdk.models.services.model_api_service import ModelApiClient
+from kagglesdk.models.services.model_proxy_api_service import ModelProxyApiClient
 from kagglesdk.models.services.model_service import ModelClient
 from kagglesdk.search.services.search_api_service import SearchApiClient
 from kagglesdk.security.services.iam_service import IamClient
@@ -62,6 +63,7 @@ class KaggleClient(object):
   class Models(object):
     def __init__(self, http_client: KaggleHttpClient):
       self.model_api_client = ModelApiClient(http_client)
+      self.model_proxy_api_client = ModelProxyApiClient(http_client)
       self.model_client = ModelClient(http_client)
 
   class Search(object):
