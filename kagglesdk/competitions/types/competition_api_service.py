@@ -2,6 +2,7 @@ from datetime import datetime
 from kagglesdk.competitions.types.competition_enums import CompetitionListTab, CompetitionSortBy, HostSegment, SubmissionGroup, SubmissionSortBy
 from kagglesdk.competitions.types.episode import EpisodeAgentState, EpisodeState, EpisodeType
 from kagglesdk.competitions.types.submission_status import SubmissionStatus
+from kagglesdk.discussions.types.discussions_enums import CommentListSortBy, TopicListSortBy
 from kagglesdk.kaggle_object import *
 from typing import Optional, List
 
@@ -597,6 +598,150 @@ class ApiCompetitionPage(KaggleObject):
     if not isinstance(content, str):
       raise TypeError('content must be of type str')
     self._content = content
+
+
+class ApiCompetitionTopic(KaggleObject):
+  r"""
+  Attributes:
+    id (int)
+    title (str)
+    topic_url (str)
+    author_name (str)
+    comment_count (int)
+    votes (int)
+    post_date (datetime)
+    last_comment_post_date (datetime)
+    is_sticky (bool)
+  """
+
+  def __init__(self):
+    self._id = 0
+    self._title = ""
+    self._topic_url = ""
+    self._author_name = None
+    self._comment_count = 0
+    self._votes = 0
+    self._post_date = None
+    self._last_comment_post_date = None
+    self._is_sticky = False
+    self._freeze()
+
+  @property
+  def id(self) -> int:
+    return self._id
+
+  @id.setter
+  def id(self, id: int):
+    if id is None:
+      del self.id
+      return
+    if not isinstance(id, int):
+      raise TypeError('id must be of type int')
+    self._id = id
+
+  @property
+  def title(self) -> str:
+    return self._title
+
+  @title.setter
+  def title(self, title: str):
+    if title is None:
+      del self.title
+      return
+    if not isinstance(title, str):
+      raise TypeError('title must be of type str')
+    self._title = title
+
+  @property
+  def topic_url(self) -> str:
+    return self._topic_url
+
+  @topic_url.setter
+  def topic_url(self, topic_url: str):
+    if topic_url is None:
+      del self.topic_url
+      return
+    if not isinstance(topic_url, str):
+      raise TypeError('topic_url must be of type str')
+    self._topic_url = topic_url
+
+  @property
+  def author_name(self) -> str:
+    return self._author_name or ""
+
+  @author_name.setter
+  def author_name(self, author_name: Optional[str]):
+    if author_name is None:
+      del self.author_name
+      return
+    if not isinstance(author_name, str):
+      raise TypeError('author_name must be of type str')
+    self._author_name = author_name
+
+  @property
+  def comment_count(self) -> int:
+    return self._comment_count
+
+  @comment_count.setter
+  def comment_count(self, comment_count: int):
+    if comment_count is None:
+      del self.comment_count
+      return
+    if not isinstance(comment_count, int):
+      raise TypeError('comment_count must be of type int')
+    self._comment_count = comment_count
+
+  @property
+  def votes(self) -> int:
+    return self._votes
+
+  @votes.setter
+  def votes(self, votes: int):
+    if votes is None:
+      del self.votes
+      return
+    if not isinstance(votes, int):
+      raise TypeError('votes must be of type int')
+    self._votes = votes
+
+  @property
+  def post_date(self) -> datetime:
+    return self._post_date
+
+  @post_date.setter
+  def post_date(self, post_date: datetime):
+    if post_date is None:
+      del self.post_date
+      return
+    if not isinstance(post_date, datetime):
+      raise TypeError('post_date must be of type datetime')
+    self._post_date = post_date
+
+  @property
+  def last_comment_post_date(self) -> datetime:
+    return self._last_comment_post_date
+
+  @last_comment_post_date.setter
+  def last_comment_post_date(self, last_comment_post_date: datetime):
+    if last_comment_post_date is None:
+      del self.last_comment_post_date
+      return
+    if not isinstance(last_comment_post_date, datetime):
+      raise TypeError('last_comment_post_date must be of type datetime')
+    self._last_comment_post_date = last_comment_post_date
+
+  @property
+  def is_sticky(self) -> bool:
+    return self._is_sticky
+
+  @is_sticky.setter
+  def is_sticky(self, is_sticky: bool):
+    if is_sticky is None:
+      del self.is_sticky
+      return
+    if not isinstance(is_sticky, bool):
+      raise TypeError('is_sticky must be of type bool')
+    self._is_sticky = is_sticky
 
 
 class ApiCreateCodeSubmissionRequest(KaggleObject):
@@ -2046,6 +2191,117 @@ class ApiListCompetitionsResponse(KaggleObject):
     return self.next_page_token
 
 
+class ApiListCompetitionTopicsRequest(KaggleObject):
+  r"""
+  Attributes:
+    competition_name (str)
+    sort_by (TopicListSortBy)
+      Sort order for the returned topics. Defaults to the forum's default sort.
+    page (int)
+  """
+
+  def __init__(self):
+    self._competition_name = ""
+    self._sort_by = None
+    self._page = None
+    self._freeze()
+
+  @property
+  def competition_name(self) -> str:
+    return self._competition_name
+
+  @competition_name.setter
+  def competition_name(self, competition_name: str):
+    if competition_name is None:
+      del self.competition_name
+      return
+    if not isinstance(competition_name, str):
+      raise TypeError('competition_name must be of type str')
+    self._competition_name = competition_name
+
+  @property
+  def sort_by(self) -> 'TopicListSortBy':
+    """Sort order for the returned topics. Defaults to the forum's default sort."""
+    return self._sort_by or TopicListSortBy.TOPIC_LIST_SORT_BY_UNSPECIFIED
+
+  @sort_by.setter
+  def sort_by(self, sort_by: Optional['TopicListSortBy']):
+    if sort_by is None:
+      del self.sort_by
+      return
+    if not isinstance(sort_by, TopicListSortBy):
+      raise TypeError('sort_by must be of type TopicListSortBy')
+    self._sort_by = sort_by
+
+  @property
+  def page(self) -> int:
+    return self._page or 0
+
+  @page.setter
+  def page(self, page: Optional[int]):
+    if page is None:
+      del self.page
+      return
+    if not isinstance(page, int):
+      raise TypeError('page must be of type int')
+    self._page = page
+
+  def endpoint(self):
+    path = '/api/v1/competitions/{competition_name}/topics'
+    return path.format_map(self.to_field_map(self))
+
+  @staticmethod
+  def endpoint_path():
+    return '/api/v1/competitions/{competition_name}/topics'
+
+
+class ApiListCompetitionTopicsResponse(KaggleObject):
+  r"""
+  Attributes:
+    topics (ApiCompetitionTopic)
+    total_count (int)
+      Total number of topics matching the query (across all pages).
+  """
+
+  def __init__(self):
+    self._topics = []
+    self._total_count = 0
+    self._freeze()
+
+  @property
+  def topics(self) -> Optional[List[Optional['ApiCompetitionTopic']]]:
+    return self._topics
+
+  @topics.setter
+  def topics(self, topics: Optional[List[Optional['ApiCompetitionTopic']]]):
+    if topics is None:
+      del self.topics
+      return
+    if not isinstance(topics, list):
+      raise TypeError('topics must be of type list')
+    if not all([isinstance(t, ApiCompetitionTopic) for t in topics]):
+      raise TypeError('topics must contain only items of type ApiCompetitionTopic')
+    self._topics = topics
+
+  @property
+  def total_count(self) -> int:
+    """Total number of topics matching the query (across all pages)."""
+    return self._total_count
+
+  @total_count.setter
+  def total_count(self, total_count: int):
+    if total_count is None:
+      del self.total_count
+      return
+    if not isinstance(total_count, int):
+      raise TypeError('total_count must be of type int')
+    self._total_count = total_count
+
+  @property
+  def totalCount(self):
+    return self.total_count
+
+
 class ApiListDataFilesRequest(KaggleObject):
   r"""
   Attributes:
@@ -2563,6 +2819,117 @@ class ApiListSubmissionsResponse(KaggleObject):
     return self.next_page_token
 
 
+class ApiListTopicMessagesRequest(KaggleObject):
+  r"""
+  Attributes:
+    competition_name (str)
+    topic_id (int)
+    sort_by (CommentListSortBy)
+      Sort order for the returned messages. Defaults to the user's preference.
+    page_size (int)
+      Maximum number of top-level messages to return. Defaults to 30. Use -1 to
+      return all messages.
+  """
+
+  def __init__(self):
+    self._competition_name = ""
+    self._topic_id = 0
+    self._sort_by = None
+    self._page_size = None
+    self._freeze()
+
+  @property
+  def competition_name(self) -> str:
+    return self._competition_name
+
+  @competition_name.setter
+  def competition_name(self, competition_name: str):
+    if competition_name is None:
+      del self.competition_name
+      return
+    if not isinstance(competition_name, str):
+      raise TypeError('competition_name must be of type str')
+    self._competition_name = competition_name
+
+  @property
+  def topic_id(self) -> int:
+    return self._topic_id
+
+  @topic_id.setter
+  def topic_id(self, topic_id: int):
+    if topic_id is None:
+      del self.topic_id
+      return
+    if not isinstance(topic_id, int):
+      raise TypeError('topic_id must be of type int')
+    self._topic_id = topic_id
+
+  @property
+  def sort_by(self) -> 'CommentListSortBy':
+    """Sort order for the returned messages. Defaults to the user's preference."""
+    return self._sort_by or CommentListSortBy.COMMENT_LIST_SORT_BY_UNSPECIFIED
+
+  @sort_by.setter
+  def sort_by(self, sort_by: Optional['CommentListSortBy']):
+    if sort_by is None:
+      del self.sort_by
+      return
+    if not isinstance(sort_by, CommentListSortBy):
+      raise TypeError('sort_by must be of type CommentListSortBy')
+    self._sort_by = sort_by
+
+  @property
+  def page_size(self) -> int:
+    r"""
+    Maximum number of top-level messages to return. Defaults to 30. Use -1 to
+    return all messages.
+    """
+    return self._page_size or 0
+
+  @page_size.setter
+  def page_size(self, page_size: Optional[int]):
+    if page_size is None:
+      del self.page_size
+      return
+    if not isinstance(page_size, int):
+      raise TypeError('page_size must be of type int')
+    self._page_size = page_size
+
+  def endpoint(self):
+    path = '/api/v1/competitions/{competition_name}/topics/{topic_id}/messages'
+    return path.format_map(self.to_field_map(self))
+
+  @staticmethod
+  def endpoint_path():
+    return '/api/v1/competitions/{competition_name}/topics/{topic_id}/messages'
+
+
+class ApiListTopicMessagesResponse(KaggleObject):
+  r"""
+  Attributes:
+    messages (ApiTopicMessage)
+  """
+
+  def __init__(self):
+    self._messages = []
+    self._freeze()
+
+  @property
+  def messages(self) -> Optional[List[Optional['ApiTopicMessage']]]:
+    return self._messages
+
+  @messages.setter
+  def messages(self, messages: Optional[List[Optional['ApiTopicMessage']]]):
+    if messages is None:
+      del self.messages
+      return
+    if not isinstance(messages, list):
+      raise TypeError('messages must be of type list')
+    if not all([isinstance(t, ApiTopicMessage) for t in messages]):
+      raise TypeError('messages must contain only items of type ApiTopicMessage')
+    self._messages = messages
+
+
 class ApiStartSubmissionUploadRequest(KaggleObject):
   r"""
   Attributes:
@@ -2899,6 +3266,158 @@ class ApiSubmission(KaggleObject):
     self._url = url
 
 
+class ApiTopicMessage(KaggleObject):
+  r"""
+  Attributes:
+    id (int)
+    post_date (datetime)
+    content (str)
+    raw_markdown (str)
+    author_name (str)
+    votes (int)
+    is_deleted (bool)
+    is_pinned (bool)
+    replies (ApiTopicMessage)
+      Replies to this message, if any. Nesting is capped server-side; deeper
+      replies are flattened into the closest ancestor still under the cap.
+  """
+
+  def __init__(self):
+    self._id = 0
+    self._post_date = None
+    self._content = None
+    self._raw_markdown = None
+    self._author_name = None
+    self._votes = 0
+    self._is_deleted = False
+    self._is_pinned = False
+    self._replies = []
+    self._freeze()
+
+  @property
+  def id(self) -> int:
+    return self._id
+
+  @id.setter
+  def id(self, id: int):
+    if id is None:
+      del self.id
+      return
+    if not isinstance(id, int):
+      raise TypeError('id must be of type int')
+    self._id = id
+
+  @property
+  def post_date(self) -> datetime:
+    return self._post_date
+
+  @post_date.setter
+  def post_date(self, post_date: datetime):
+    if post_date is None:
+      del self.post_date
+      return
+    if not isinstance(post_date, datetime):
+      raise TypeError('post_date must be of type datetime')
+    self._post_date = post_date
+
+  @property
+  def content(self) -> str:
+    return self._content or ""
+
+  @content.setter
+  def content(self, content: Optional[str]):
+    if content is None:
+      del self.content
+      return
+    if not isinstance(content, str):
+      raise TypeError('content must be of type str')
+    self._content = content
+
+  @property
+  def raw_markdown(self) -> str:
+    return self._raw_markdown or ""
+
+  @raw_markdown.setter
+  def raw_markdown(self, raw_markdown: Optional[str]):
+    if raw_markdown is None:
+      del self.raw_markdown
+      return
+    if not isinstance(raw_markdown, str):
+      raise TypeError('raw_markdown must be of type str')
+    self._raw_markdown = raw_markdown
+
+  @property
+  def author_name(self) -> str:
+    return self._author_name or ""
+
+  @author_name.setter
+  def author_name(self, author_name: Optional[str]):
+    if author_name is None:
+      del self.author_name
+      return
+    if not isinstance(author_name, str):
+      raise TypeError('author_name must be of type str')
+    self._author_name = author_name
+
+  @property
+  def votes(self) -> int:
+    return self._votes
+
+  @votes.setter
+  def votes(self, votes: int):
+    if votes is None:
+      del self.votes
+      return
+    if not isinstance(votes, int):
+      raise TypeError('votes must be of type int')
+    self._votes = votes
+
+  @property
+  def is_deleted(self) -> bool:
+    return self._is_deleted
+
+  @is_deleted.setter
+  def is_deleted(self, is_deleted: bool):
+    if is_deleted is None:
+      del self.is_deleted
+      return
+    if not isinstance(is_deleted, bool):
+      raise TypeError('is_deleted must be of type bool')
+    self._is_deleted = is_deleted
+
+  @property
+  def is_pinned(self) -> bool:
+    return self._is_pinned
+
+  @is_pinned.setter
+  def is_pinned(self, is_pinned: bool):
+    if is_pinned is None:
+      del self.is_pinned
+      return
+    if not isinstance(is_pinned, bool):
+      raise TypeError('is_pinned must be of type bool')
+    self._is_pinned = is_pinned
+
+  @property
+  def replies(self) -> Optional[List[Optional['ApiTopicMessage']]]:
+    r"""
+    Replies to this message, if any. Nesting is capped server-side; deeper
+    replies are flattened into the closest ancestor still under the cap.
+    """
+    return self._replies
+
+  @replies.setter
+  def replies(self, replies: Optional[List[Optional['ApiTopicMessage']]]):
+    if replies is None:
+      del self.replies
+      return
+    if not isinstance(replies, list):
+      raise TypeError('replies must be of type list')
+    if not all([isinstance(t, ApiTopicMessage) for t in replies]):
+      raise TypeError('replies must contain only items of type ApiTopicMessage')
+    self._replies = replies
+
+
 ApiCategory._fields = [
   FieldMetadata("ref", "ref", "_ref", str, "", PredefinedSerializer()),
   FieldMetadata("name", "name", "_name", str, None, PredefinedSerializer(), optional=True),
@@ -2943,6 +3462,18 @@ ApiCompetition._fields = [
 ApiCompetitionPage._fields = [
   FieldMetadata("name", "name", "_name", str, "", PredefinedSerializer()),
   FieldMetadata("content", "content", "_content", str, "", PredefinedSerializer()),
+]
+
+ApiCompetitionTopic._fields = [
+  FieldMetadata("id", "id", "_id", int, 0, PredefinedSerializer()),
+  FieldMetadata("title", "title", "_title", str, "", PredefinedSerializer()),
+  FieldMetadata("topicUrl", "topic_url", "_topic_url", str, "", PredefinedSerializer()),
+  FieldMetadata("authorName", "author_name", "_author_name", str, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("commentCount", "comment_count", "_comment_count", int, 0, PredefinedSerializer()),
+  FieldMetadata("votes", "votes", "_votes", int, 0, PredefinedSerializer()),
+  FieldMetadata("postDate", "post_date", "_post_date", datetime, None, DateTimeSerializer()),
+  FieldMetadata("lastCommentPostDate", "last_comment_post_date", "_last_comment_post_date", datetime, None, DateTimeSerializer()),
+  FieldMetadata("isSticky", "is_sticky", "_is_sticky", bool, False, PredefinedSerializer()),
 ]
 
 ApiCreateCodeSubmissionRequest._fields = [
@@ -3085,6 +3616,17 @@ ApiListCompetitionsResponse._fields = [
   FieldMetadata("nextPageToken", "next_page_token", "_next_page_token", str, "", PredefinedSerializer()),
 ]
 
+ApiListCompetitionTopicsRequest._fields = [
+  FieldMetadata("competitionName", "competition_name", "_competition_name", str, "", PredefinedSerializer()),
+  FieldMetadata("sortBy", "sort_by", "_sort_by", TopicListSortBy, None, EnumSerializer(), optional=True),
+  FieldMetadata("page", "page", "_page", int, None, PredefinedSerializer(), optional=True),
+]
+
+ApiListCompetitionTopicsResponse._fields = [
+  FieldMetadata("topics", "topics", "_topics", ApiCompetitionTopic, [], ListSerializer(KaggleObjectSerializer())),
+  FieldMetadata("totalCount", "total_count", "_total_count", int, 0, PredefinedSerializer()),
+]
+
 ApiListDataFilesRequest._fields = [
   FieldMetadata("competitionName", "competition_name", "_competition_name", str, "", PredefinedSerializer()),
   FieldMetadata("pageSize", "page_size", "_page_size", int, None, PredefinedSerializer(), optional=True),
@@ -3134,6 +3676,17 @@ ApiListSubmissionsResponse._fields = [
   FieldMetadata("nextPageToken", "next_page_token", "_next_page_token", str, "", PredefinedSerializer()),
 ]
 
+ApiListTopicMessagesRequest._fields = [
+  FieldMetadata("competitionName", "competition_name", "_competition_name", str, "", PredefinedSerializer()),
+  FieldMetadata("topicId", "topic_id", "_topic_id", int, 0, PredefinedSerializer()),
+  FieldMetadata("sortBy", "sort_by", "_sort_by", CommentListSortBy, None, EnumSerializer(), optional=True),
+  FieldMetadata("pageSize", "page_size", "_page_size", int, None, PredefinedSerializer(), optional=True),
+]
+
+ApiListTopicMessagesResponse._fields = [
+  FieldMetadata("messages", "messages", "_messages", ApiTopicMessage, [], ListSerializer(KaggleObjectSerializer())),
+]
+
 ApiStartSubmissionUploadRequest._fields = [
   FieldMetadata("competitionName", "competition_name", "_competition_name", str, None, PredefinedSerializer(), optional=True),
   FieldMetadata("contentLength", "content_length", "_content_length", int, 0, PredefinedSerializer()),
@@ -3160,5 +3713,17 @@ ApiSubmission._fields = [
   FieldMetadata("submittedByRef", "submitted_by_ref", "_submitted_by_ref", str, None, PredefinedSerializer(), optional=True),
   FieldMetadata("teamName", "team_name", "_team_name", str, None, PredefinedSerializer(), optional=True),
   FieldMetadata("url", "url", "_url", str, None, PredefinedSerializer(), optional=True),
+]
+
+ApiTopicMessage._fields = [
+  FieldMetadata("id", "id", "_id", int, 0, PredefinedSerializer()),
+  FieldMetadata("postDate", "post_date", "_post_date", datetime, None, DateTimeSerializer()),
+  FieldMetadata("content", "content", "_content", str, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("rawMarkdown", "raw_markdown", "_raw_markdown", str, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("authorName", "author_name", "_author_name", str, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("votes", "votes", "_votes", int, 0, PredefinedSerializer()),
+  FieldMetadata("isDeleted", "is_deleted", "_is_deleted", bool, False, PredefinedSerializer()),
+  FieldMetadata("isPinned", "is_pinned", "_is_pinned", bool, False, PredefinedSerializer()),
+  FieldMetadata("replies", "replies", "_replies", ApiTopicMessage, [], ListSerializer(KaggleObjectSerializer())),
 ]
 
