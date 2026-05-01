@@ -9,6 +9,8 @@ class ApiBatchScheduleBenchmarkTaskRunsRequest(KaggleObject):
   Attributes:
     task_slugs (ApiBenchmarkTaskSlug)
     model_version_slugs (str)
+      Canonical BenchmarkModelVersion.Slug values (e.g.
+      'claude-sonnet-4-6-default').
   """
 
   def __init__(self):
@@ -33,6 +35,10 @@ class ApiBatchScheduleBenchmarkTaskRunsRequest(KaggleObject):
 
   @property
   def model_version_slugs(self) -> Optional[List[str]]:
+    r"""
+    Canonical BenchmarkModelVersion.Slug values (e.g.
+    'claude-sonnet-4-6-default').
+    """
     return self._model_version_slugs
 
   @model_version_slugs.setter
@@ -103,6 +109,8 @@ class ApiBenchmarkTask(KaggleObject):
       underlying kernel session (SourceKernelSessionId).
     create_time (datetime)
       When this task version was created.
+    creation_error_message (str)
+      Error message from task version creation, if it failed.
   """
 
   def __init__(self):
@@ -111,6 +119,7 @@ class ApiBenchmarkTask(KaggleObject):
     self._error = None
     self._creation_state = BenchmarkTaskVersionCreationState.BENCHMARK_TASK_VERSION_CREATION_STATE_UNSPECIFIED
     self._create_time = None
+    self._creation_error_message = None
     self._freeze()
 
   @property
@@ -186,6 +195,20 @@ class ApiBenchmarkTask(KaggleObject):
       raise TypeError('create_time must be of type datetime')
     self._create_time = create_time
 
+  @property
+  def creation_error_message(self) -> str:
+    """Error message from task version creation, if it failed."""
+    return self._creation_error_message or ""
+
+  @creation_error_message.setter
+  def creation_error_message(self, creation_error_message: Optional[str]):
+    if creation_error_message is None:
+      del self.creation_error_message
+      return
+    if not isinstance(creation_error_message, str):
+      raise TypeError('creation_error_message must be of type str')
+    self._creation_error_message = creation_error_message
+
 
 class ApiBenchmarkTaskRun(KaggleObject):
   r"""
@@ -195,7 +218,9 @@ class ApiBenchmarkTaskRun(KaggleObject):
     task_slug (ApiBenchmarkTaskSlug)
       Task that was invoked.
     model_version_slug (str)
-      Model candidate against the task.
+      Model candidate against the task. This is the canonical
+      BenchmarkModelVersion.Slug (e.g. 'claude-sonnet-4-6-default'), matching
+      the format produced by BatchScheduleBenchmarkTaskRuns.
     id (int)
       Run identifier.
     state (BenchmarkTaskRunState)
@@ -234,7 +259,11 @@ class ApiBenchmarkTaskRun(KaggleObject):
 
   @property
   def model_version_slug(self) -> str:
-    """Model candidate against the task."""
+    r"""
+    Model candidate against the task. This is the canonical
+    BenchmarkModelVersion.Slug (e.g. 'claude-sonnet-4-6-default'), matching
+    the format produced by BatchScheduleBenchmarkTaskRuns.
+    """
     return self._model_version_slug
 
   @model_version_slug.setter
@@ -579,6 +608,10 @@ class ApiListBenchmarkTaskRunsRequest(KaggleObject):
   Attributes:
     task_slug (ApiBenchmarkTaskSlug)
     model_version_slugs (str)
+      Filter to runs for these model versions. Accepts the canonical
+      BenchmarkModelVersion.Slug (preferred, e.g. 'claude-sonnet-4-6-default')
+      or the legacy ModelProxySlug (e.g. 'anthropic/claude-sonnet-4-6@default')
+      for backward compatibility.
     page_size (int)
     page_token (str)
     skip (int)
@@ -607,6 +640,12 @@ class ApiListBenchmarkTaskRunsRequest(KaggleObject):
 
   @property
   def model_version_slugs(self) -> Optional[List[str]]:
+    r"""
+    Filter to runs for these model versions. Accepts the canonical
+    BenchmarkModelVersion.Slug (preferred, e.g. 'claude-sonnet-4-6-default')
+    or the legacy ModelProxySlug (e.g. 'anthropic/claude-sonnet-4-6@default')
+    for backward compatibility.
+    """
     return self._model_version_slugs
 
   @model_version_slugs.setter
@@ -899,6 +938,7 @@ ApiBenchmarkTask._fields = [
   FieldMetadata("error", "error", "_error", str, None, PredefinedSerializer(), optional=True),
   FieldMetadata("creationState", "creation_state", "_creation_state", BenchmarkTaskVersionCreationState, BenchmarkTaskVersionCreationState.BENCHMARK_TASK_VERSION_CREATION_STATE_UNSPECIFIED, EnumSerializer()),
   FieldMetadata("createTime", "create_time", "_create_time", datetime, None, DateTimeSerializer()),
+  FieldMetadata("creationErrorMessage", "creation_error_message", "_creation_error_message", str, None, PredefinedSerializer(), optional=True),
 ]
 
 ApiBenchmarkTaskRun._fields = [

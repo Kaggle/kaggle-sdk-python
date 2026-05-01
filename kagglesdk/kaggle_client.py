@@ -7,6 +7,7 @@ from kagglesdk.common.services.operations_service import OperationsClient
 from kagglesdk.competitions.services.competition_api_service import CompetitionApiClient
 from kagglesdk.competitions.services.hackathon_service import HackathonClient
 from kagglesdk.datasets.services.dataset_api_service import DatasetApiClient
+from kagglesdk.discussions.services.discussions_api_service import DiscussionApiClient
 from kagglesdk.education.services.education_api_service import EducationApiClient
 from kagglesdk.kernels.services.kernels_api_service import KernelsApiClient
 from kagglesdk.models.services.model_api_service import ModelApiClient
@@ -52,6 +53,10 @@ class KaggleClient(object):
     def __init__(self, http_client: KaggleHttpClient):
       self.dataset_api_client = DatasetApiClient(http_client)
 
+  class Discussions(object):
+    def __init__(self, http_client: KaggleHttpClient):
+      self.discussion_api_client = DiscussionApiClient(http_client)
+
   class Education(object):
     def __init__(self, http_client: KaggleHttpClient):
       self.education_api_client = EducationApiClient(http_client)
@@ -89,6 +94,7 @@ class KaggleClient(object):
     self.common = KaggleClient.Common(http_client)
     self.competitions = KaggleClient.Competitions(http_client)
     self.datasets = KaggleClient.Datasets(http_client)
+    self.discussions = KaggleClient.Discussions(http_client)
     self.education = KaggleClient.Education(http_client)
     self.kernels = KaggleClient.Kernels(http_client)
     self.models = KaggleClient.Models(http_client)
