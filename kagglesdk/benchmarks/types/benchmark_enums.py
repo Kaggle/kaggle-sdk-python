@@ -14,13 +14,18 @@ class BenchmarkModelImportanceLevel(enum.Enum):
   """
 
 class BenchmarkTaskVersionCreationState(enum.Enum):
-  """Saved to the DB. Do not modify existing values."""
+  r"""
+  Saved to the DB. Do not modify existing values.
+  LINT.IfChange(BenchmarkTaskVersionCreationState)
+  """
   BENCHMARK_TASK_VERSION_CREATION_STATE_UNSPECIFIED = 0
   BENCHMARK_TASK_VERSION_CREATION_STATE_QUEUED = 1
   BENCHMARK_TASK_VERSION_CREATION_STATE_RUNNING = 2
   BENCHMARK_TASK_VERSION_CREATION_STATE_COMPLETED = 3
   BENCHMARK_TASK_VERSION_CREATION_STATE_ERRORED = 4
   BENCHMARK_TASK_VERSION_CREATION_STATE_KERNEL_WITHOUT_RUN = 5
+  BENCHMARK_TASK_VERSION_CREATION_STATE_VALIDATION_FAILED = 6
+  BENCHMARK_TASK_VERSION_CREATION_STATE_NO_MODEL_SPECIFIED = 7
 
 class Modality(enum.Enum):
   """Modality types supported by a benchmark model version."""
