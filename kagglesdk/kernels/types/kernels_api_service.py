@@ -481,6 +481,67 @@ class ApiGetKernelResponse(KaggleObject):
     self._blob = blob
 
 
+class ApiGetKernelSessionLogsStreamRequest(KaggleObject):
+  r"""
+  Attributes:
+    kernel_session_id (int)
+      ID of the notebook session whose live logs should be streamed.
+    wait_for_logs_url_seconds (int)
+      Maximum number of seconds to wait for the upstream log stream URL to be
+      published by the session manager before giving up. The session manager
+      only publishes the URL once the session has been allocated to a worker,
+      so callers may need to wait while the session is queued. Defaults to 60
+      seconds; capped to 300 seconds.
+  """
+
+  def __init__(self):
+    self._kernel_session_id = 0
+    self._wait_for_logs_url_seconds = None
+    self._freeze()
+
+  @property
+  def kernel_session_id(self) -> int:
+    """ID of the notebook session whose live logs should be streamed."""
+    return self._kernel_session_id
+
+  @kernel_session_id.setter
+  def kernel_session_id(self, kernel_session_id: int):
+    if kernel_session_id is None:
+      del self.kernel_session_id
+      return
+    if not isinstance(kernel_session_id, int):
+      raise TypeError('kernel_session_id must be of type int')
+    self._kernel_session_id = kernel_session_id
+
+  @property
+  def wait_for_logs_url_seconds(self) -> int:
+    r"""
+    Maximum number of seconds to wait for the upstream log stream URL to be
+    published by the session manager before giving up. The session manager
+    only publishes the URL once the session has been allocated to a worker,
+    so callers may need to wait while the session is queued. Defaults to 60
+    seconds; capped to 300 seconds.
+    """
+    return self._wait_for_logs_url_seconds or 0
+
+  @wait_for_logs_url_seconds.setter
+  def wait_for_logs_url_seconds(self, wait_for_logs_url_seconds: Optional[int]):
+    if wait_for_logs_url_seconds is None:
+      del self.wait_for_logs_url_seconds
+      return
+    if not isinstance(wait_for_logs_url_seconds, int):
+      raise TypeError('wait_for_logs_url_seconds must be of type int')
+    self._wait_for_logs_url_seconds = wait_for_logs_url_seconds
+
+  def endpoint(self):
+    path = '/api/v1/kernels/sessions/{kernel_session_id}/logs/stream'
+    return path.format_map(self.to_field_map(self))
+
+  @staticmethod
+  def endpoint_path():
+    return '/api/v1/kernels/sessions/{kernel_session_id}/logs/stream'
+
+
 class ApiGetKernelSessionStatusRequest(KaggleObject):
   r"""
   Attributes:
@@ -2312,6 +2373,11 @@ ApiGetKernelRequest._fields = [
 ApiGetKernelResponse._fields = [
   FieldMetadata("metadata", "metadata", "_metadata", ApiKernelMetadata, None, KaggleObjectSerializer()),
   FieldMetadata("blob", "blob", "_blob", ApiKernelBlob, None, KaggleObjectSerializer()),
+]
+
+ApiGetKernelSessionLogsStreamRequest._fields = [
+  FieldMetadata("kernelSessionId", "kernel_session_id", "_kernel_session_id", int, 0, PredefinedSerializer()),
+  FieldMetadata("waitForLogsUrlSeconds", "wait_for_logs_url_seconds", "_wait_for_logs_url_seconds", int, None, PredefinedSerializer(), optional=True),
 ]
 
 ApiGetKernelSessionStatusRequest._fields = [

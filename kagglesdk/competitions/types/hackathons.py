@@ -2,7 +2,7 @@ from kagglesdk.competitions.types.competition_enums import HackathonTrackPrizeTy
 from kagglesdk.competitions.types.team import Team
 from kagglesdk.discussions.types.writeup_types import WriteUp
 from kagglesdk.kaggle_object import *
-from typing import Optional, List
+from typing import List, Optional
 
 class HackathonTrack(KaggleObject):
   r"""
