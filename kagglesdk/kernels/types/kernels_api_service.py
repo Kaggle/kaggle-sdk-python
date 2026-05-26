@@ -1,7 +1,116 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from kagglesdk.kaggle_object import *
 from kagglesdk.kernels.types.kernels_enums import KernelExecutionType, KernelsListSortType, KernelsListViewType, KernelWorkerStatus
 from typing import Optional, List
+
+class ApiAcceleratorQuota(KaggleObject):
+  r"""
+  Attributes:
+    time_used (timedelta)
+      Quota consumed in the current weekly window.
+    time_reserved (timedelta)
+      Quota reserved by currently-running sessions.
+    total_time_allowed (timedelta)
+      Quota the user is allowed in the current weekly window.
+    minimum_time_allowed (timedelta)
+      Minimum guaranteed weekly quota for the user.
+    is_pay_to_scale_enabled (bool)
+    has_ever_run (bool)
+      True once the user has ever started a session with this accelerator.
+  """
+
+  def __init__(self):
+    self._time_used = None
+    self._time_reserved = None
+    self._total_time_allowed = None
+    self._minimum_time_allowed = None
+    self._is_pay_to_scale_enabled = False
+    self._has_ever_run = False
+    self._freeze()
+
+  @property
+  def time_used(self) -> timedelta:
+    """Quota consumed in the current weekly window."""
+    return self._time_used
+
+  @time_used.setter
+  def time_used(self, time_used: timedelta):
+    if time_used is None:
+      del self.time_used
+      return
+    if not isinstance(time_used, timedelta):
+      raise TypeError('time_used must be of type timedelta')
+    self._time_used = time_used
+
+  @property
+  def time_reserved(self) -> timedelta:
+    """Quota reserved by currently-running sessions."""
+    return self._time_reserved
+
+  @time_reserved.setter
+  def time_reserved(self, time_reserved: timedelta):
+    if time_reserved is None:
+      del self.time_reserved
+      return
+    if not isinstance(time_reserved, timedelta):
+      raise TypeError('time_reserved must be of type timedelta')
+    self._time_reserved = time_reserved
+
+  @property
+  def total_time_allowed(self) -> timedelta:
+    """Quota the user is allowed in the current weekly window."""
+    return self._total_time_allowed
+
+  @total_time_allowed.setter
+  def total_time_allowed(self, total_time_allowed: timedelta):
+    if total_time_allowed is None:
+      del self.total_time_allowed
+      return
+    if not isinstance(total_time_allowed, timedelta):
+      raise TypeError('total_time_allowed must be of type timedelta')
+    self._total_time_allowed = total_time_allowed
+
+  @property
+  def minimum_time_allowed(self) -> timedelta:
+    """Minimum guaranteed weekly quota for the user."""
+    return self._minimum_time_allowed
+
+  @minimum_time_allowed.setter
+  def minimum_time_allowed(self, minimum_time_allowed: timedelta):
+    if minimum_time_allowed is None:
+      del self.minimum_time_allowed
+      return
+    if not isinstance(minimum_time_allowed, timedelta):
+      raise TypeError('minimum_time_allowed must be of type timedelta')
+    self._minimum_time_allowed = minimum_time_allowed
+
+  @property
+  def is_pay_to_scale_enabled(self) -> bool:
+    return self._is_pay_to_scale_enabled
+
+  @is_pay_to_scale_enabled.setter
+  def is_pay_to_scale_enabled(self, is_pay_to_scale_enabled: bool):
+    if is_pay_to_scale_enabled is None:
+      del self.is_pay_to_scale_enabled
+      return
+    if not isinstance(is_pay_to_scale_enabled, bool):
+      raise TypeError('is_pay_to_scale_enabled must be of type bool')
+    self._is_pay_to_scale_enabled = is_pay_to_scale_enabled
+
+  @property
+  def has_ever_run(self) -> bool:
+    """True once the user has ever started a session with this accelerator."""
+    return self._has_ever_run
+
+  @has_ever_run.setter
+  def has_ever_run(self, has_ever_run: bool):
+    if has_ever_run is None:
+      del self.has_ever_run
+      return
+    if not isinstance(has_ever_run, bool):
+      raise TypeError('has_ever_run must be of type bool')
+    self._has_ever_run = has_ever_run
+
 
 class ApiCancelKernelSessionRequest(KaggleObject):
   r"""
@@ -397,6 +506,84 @@ class ApiDownloadKernelOutputZipRequest(KaggleObject):
   @staticmethod
   def endpoint_path():
     return '/api/v1/kernels/output/download_zip/{kernel_session_id}'
+
+
+class ApiGetAcceleratorQuotaStatisticsRequest(KaggleObject):
+  r"""
+  """
+
+  pass
+  def endpoint(self):
+    path = '/api/v1/kernels/quota'
+    return path.format_map(self.to_field_map(self))
+
+
+class ApiGetAcceleratorQuotaStatisticsResponse(KaggleObject):
+  r"""
+  Attributes:
+    quota_refresh_time (datetime)
+      Time at which the weekly quota window resets.
+    gpu_quota (ApiAcceleratorQuota)
+    tpu_quota (ApiAcceleratorQuota)
+  """
+
+  def __init__(self):
+    self._quota_refresh_time = None
+    self._gpu_quota = None
+    self._tpu_quota = None
+    self._freeze()
+
+  @property
+  def quota_refresh_time(self) -> datetime:
+    """Time at which the weekly quota window resets."""
+    return self._quota_refresh_time
+
+  @quota_refresh_time.setter
+  def quota_refresh_time(self, quota_refresh_time: datetime):
+    if quota_refresh_time is None:
+      del self.quota_refresh_time
+      return
+    if not isinstance(quota_refresh_time, datetime):
+      raise TypeError('quota_refresh_time must be of type datetime')
+    self._quota_refresh_time = quota_refresh_time
+
+  @property
+  def gpu_quota(self) -> Optional['ApiAcceleratorQuota']:
+    return self._gpu_quota
+
+  @gpu_quota.setter
+  def gpu_quota(self, gpu_quota: Optional['ApiAcceleratorQuota']):
+    if gpu_quota is None:
+      del self.gpu_quota
+      return
+    if not isinstance(gpu_quota, ApiAcceleratorQuota):
+      raise TypeError('gpu_quota must be of type ApiAcceleratorQuota')
+    self._gpu_quota = gpu_quota
+
+  @property
+  def tpu_quota(self) -> Optional['ApiAcceleratorQuota']:
+    return self._tpu_quota
+
+  @tpu_quota.setter
+  def tpu_quota(self, tpu_quota: Optional['ApiAcceleratorQuota']):
+    if tpu_quota is None:
+      del self.tpu_quota
+      return
+    if not isinstance(tpu_quota, ApiAcceleratorQuota):
+      raise TypeError('tpu_quota must be of type ApiAcceleratorQuota')
+    self._tpu_quota = tpu_quota
+
+  @property
+  def quotaRefreshTime(self):
+    return self.quota_refresh_time
+
+  @property
+  def gpuQuota(self):
+    return self.gpu_quota
+
+  @property
+  def tpuQuota(self):
+    return self.tpu_quota
 
 
 class ApiGetKernelRequest(KaggleObject):
@@ -2328,6 +2515,15 @@ class ApiSaveKernelResponse(KaggleObject):
     return self.kernel_id
 
 
+ApiAcceleratorQuota._fields = [
+  FieldMetadata("timeUsed", "time_used", "_time_used", timedelta, None, TimeDeltaSerializer()),
+  FieldMetadata("timeReserved", "time_reserved", "_time_reserved", timedelta, None, TimeDeltaSerializer()),
+  FieldMetadata("totalTimeAllowed", "total_time_allowed", "_total_time_allowed", timedelta, None, TimeDeltaSerializer()),
+  FieldMetadata("minimumTimeAllowed", "minimum_time_allowed", "_minimum_time_allowed", timedelta, None, TimeDeltaSerializer()),
+  FieldMetadata("isPayToScaleEnabled", "is_pay_to_scale_enabled", "_is_pay_to_scale_enabled", bool, False, PredefinedSerializer()),
+  FieldMetadata("hasEverRun", "has_ever_run", "_has_ever_run", bool, False, PredefinedSerializer()),
+]
+
 ApiCancelKernelSessionRequest._fields = [
   FieldMetadata("kernelSessionId", "kernel_session_id", "_kernel_session_id", int, 0, PredefinedSerializer()),
 ]
@@ -2363,6 +2559,14 @@ ApiDownloadKernelOutputRequest._fields = [
 
 ApiDownloadKernelOutputZipRequest._fields = [
   FieldMetadata("kernelSessionId", "kernel_session_id", "_kernel_session_id", int, 0, PredefinedSerializer()),
+]
+
+ApiGetAcceleratorQuotaStatisticsRequest._fields = []
+
+ApiGetAcceleratorQuotaStatisticsResponse._fields = [
+  FieldMetadata("quotaRefreshTime", "quota_refresh_time", "_quota_refresh_time", datetime, None, DateTimeSerializer()),
+  FieldMetadata("gpuQuota", "gpu_quota", "_gpu_quota", ApiAcceleratorQuota, None, KaggleObjectSerializer()),
+  FieldMetadata("tpuQuota", "tpu_quota", "_tpu_quota", ApiAcceleratorQuota, None, KaggleObjectSerializer()),
 ]
 
 ApiGetKernelRequest._fields = [

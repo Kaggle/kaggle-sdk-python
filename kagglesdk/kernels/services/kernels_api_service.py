@@ -2,7 +2,7 @@ from kagglesdk.common.types.file_download import FileDownload
 from kagglesdk.common.types.http_redirect import HttpRedirect
 from kagglesdk.common.types.operations import Operation
 from kagglesdk.kaggle_http_client import KaggleHttpClient
-from kagglesdk.kernels.types.kernels_api_service import ApiCancelKernelSessionRequest, ApiCancelKernelSessionResponse, ApiCreateKernelSessionRequest, ApiDeleteKernelRequest, ApiDeleteKernelResponse, ApiDownloadKernelOutputRequest, ApiDownloadKernelOutputZipRequest, ApiGetKernelRequest, ApiGetKernelResponse, ApiGetKernelSessionLogsStreamRequest, ApiGetKernelSessionStatusRequest, ApiGetKernelSessionStatusResponse, ApiListKernelFilesRequest, ApiListKernelFilesResponse, ApiListKernelSessionOutputRequest, ApiListKernelSessionOutputResponse, ApiListKernelsRequest, ApiListKernelsResponse, ApiSaveKernelRequest, ApiSaveKernelResponse
+from kagglesdk.kernels.types.kernels_api_service import ApiCancelKernelSessionRequest, ApiCancelKernelSessionResponse, ApiCreateKernelSessionRequest, ApiDeleteKernelRequest, ApiDeleteKernelResponse, ApiDownloadKernelOutputRequest, ApiDownloadKernelOutputZipRequest, ApiGetAcceleratorQuotaStatisticsRequest, ApiGetAcceleratorQuotaStatisticsResponse, ApiGetKernelRequest, ApiGetKernelResponse, ApiGetKernelSessionLogsStreamRequest, ApiGetKernelSessionStatusRequest, ApiGetKernelSessionStatusResponse, ApiListKernelFilesRequest, ApiListKernelFilesResponse, ApiListKernelSessionOutputRequest, ApiListKernelSessionOutputResponse, ApiListKernelsRequest, ApiListKernelsResponse, ApiSaveKernelRequest, ApiSaveKernelResponse
 
 class KernelsApiClient(object):
 
@@ -168,3 +168,15 @@ class KernelsApiClient(object):
       request = ApiGetKernelSessionLogsStreamRequest()
 
     return self._client.call("kernels.KernelsApiService", "GetKernelSessionLogsStream", request, FileDownload)
+
+  def get_accelerator_quota_statistics(self, request: ApiGetAcceleratorQuotaStatisticsRequest = None) -> ApiGetAcceleratorQuotaStatisticsResponse:
+    r"""
+    Args:
+      request (ApiGetAcceleratorQuotaStatisticsRequest):
+        The request object; initialized to empty instance if not specified.
+    """
+
+    if request is None:
+      request = ApiGetAcceleratorQuotaStatisticsRequest()
+
+    return self._client.call("kernels.KernelsApiService", "GetAcceleratorQuotaStatistics", request, ApiGetAcceleratorQuotaStatisticsResponse)
