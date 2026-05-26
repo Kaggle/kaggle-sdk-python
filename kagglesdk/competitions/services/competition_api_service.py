@@ -1,9 +1,6 @@
 from kagglesdk.common.types.file_download import FileDownload
 from kagglesdk.common.types.http_redirect import HttpRedirect
-from kagglesdk.competitions.types.competition_api_service import ApiCompetition, ApiCreateCodeSubmissionRequest, ApiCreateCodeSubmissionResponse, ApiCreateSubmissionRequest, ApiCreateSubmissionResponse, ApiDownloadDataFileRequest, ApiDownloadDataFilesRequest, ApiDownloadLeaderboardRequest, ApiGetCompetitionDataFilesSummaryRequest, ApiGetCompetitionRequest, ApiGetEpisodeAgentLogsRequest, ApiGetEpisodeReplayRequest, ApiGetHackathonOverviewRequest, ApiGetHackathonWriteUpRequest, ApiGetLeaderboardRequest, ApiGetLeaderboardResponse, ApiGetSubmissionRequest, ApiListCompetitionPagesRequest, ApiListCompetitionPagesResponse, ApiListCompetitionsRequest, ApiListCompetitionsResponse, ApiListCompetitionTopicsRequest, ApiListCompetitionTopicsResponse, ApiListDataFilesRequest, ApiListDataFilesResponse, ApiListDataTreeFilesRequest, ApiListHackathonWriteUpsRequest, ApiListSubmissionEpisodesRequest, ApiListSubmissionEpisodesResponse, ApiListSubmissionsRequest, ApiListSubmissionsResponse, ApiListTopicMessagesRequest, ApiListTopicMessagesResponse, ApiStartSubmissionUploadRequest, ApiStartSubmissionUploadResponse, ApiSubmission
-from kagglesdk.competitions.types.hackathon_service import ListHackathonWriteUpsResponse
-from kagglesdk.competitions.types.hackathons import HackathonWriteUp
-from kagglesdk.competitions.types.page_service import ListPagesResponse
+from kagglesdk.competitions.types.competition_api_service import ApiCompetition, ApiCreateCodeSubmissionRequest, ApiCreateCodeSubmissionResponse, ApiCreateSubmissionRequest, ApiCreateSubmissionResponse, ApiDownloadDataFileRequest, ApiDownloadDataFilesRequest, ApiDownloadLeaderboardRequest, ApiGetCompetitionDataFilesSummaryRequest, ApiGetCompetitionRequest, ApiGetEpisodeAgentLogsRequest, ApiGetEpisodeReplayRequest, ApiGetLeaderboardRequest, ApiGetLeaderboardResponse, ApiGetSubmissionRequest, ApiListCompetitionPagesRequest, ApiListCompetitionPagesResponse, ApiListCompetitionsRequest, ApiListCompetitionsResponse, ApiListCompetitionTopicsRequest, ApiListCompetitionTopicsResponse, ApiListDataFilesRequest, ApiListDataFilesResponse, ApiListDataTreeFilesRequest, ApiListSubmissionEpisodesRequest, ApiListSubmissionEpisodesResponse, ApiListSubmissionsRequest, ApiListSubmissionsResponse, ApiListTopicMessagesRequest, ApiListTopicMessagesResponse, ApiStartSubmissionUploadRequest, ApiStartSubmissionUploadResponse, ApiSubmission
 from kagglesdk.datasets.databundles.types.databundle_api_types import ApiDirectoryContent, ApiFilesSummary
 from kagglesdk.kaggle_http_client import KaggleHttpClient
 
@@ -180,30 +177,6 @@ class CompetitionApiClient(object):
 
     return self._client.call("competitions.CompetitionApiService", "GetCompetitionDataFilesSummary", request, ApiFilesSummary)
 
-  def list_hackathon_write_ups(self, request: ApiListHackathonWriteUpsRequest = None) -> ListHackathonWriteUpsResponse:
-    r"""
-    Args:
-      request (ApiListHackathonWriteUpsRequest):
-        The request object; initialized to empty instance if not specified.
-    """
-
-    if request is None:
-      request = ApiListHackathonWriteUpsRequest()
-
-    return self._client.call("competitions.CompetitionApiService", "ListHackathonWriteUps", request, ListHackathonWriteUpsResponse)
-
-  def get_hackathon_write_up(self, request: ApiGetHackathonWriteUpRequest = None) -> HackathonWriteUp:
-    r"""
-    Args:
-      request (ApiGetHackathonWriteUpRequest):
-        The request object; initialized to empty instance if not specified.
-    """
-
-    if request is None:
-      request = ApiGetHackathonWriteUpRequest()
-
-    return self._client.call("competitions.CompetitionApiService", "GetHackathonWriteUp", request, HackathonWriteUp)
-
   def list_submission_episodes(self, request: ApiListSubmissionEpisodesRequest = None) -> ApiListSubmissionEpisodesResponse:
     r"""
     Args:
@@ -251,18 +224,6 @@ class CompetitionApiClient(object):
       request = ApiListCompetitionPagesRequest()
 
     return self._client.call("competitions.CompetitionApiService", "ListCompetitionPages", request, ApiListCompetitionPagesResponse)
-
-  def get_hackathon_overview(self, request: ApiGetHackathonOverviewRequest = None) -> ListPagesResponse:
-    r"""
-    Args:
-      request (ApiGetHackathonOverviewRequest):
-        The request object; initialized to empty instance if not specified.
-    """
-
-    if request is None:
-      request = ApiGetHackathonOverviewRequest()
-
-    return self._client.call("competitions.CompetitionApiService", "GetHackathonOverview", request, ListPagesResponse)
 
   def list_competition_topics(self, request: ApiListCompetitionTopicsRequest = None) -> ApiListCompetitionTopicsResponse:
     r"""

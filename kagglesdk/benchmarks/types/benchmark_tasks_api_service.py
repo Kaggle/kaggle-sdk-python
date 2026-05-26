@@ -1,6 +1,7 @@
 from datetime import datetime
 from kagglesdk.benchmarks.types.benchmark_enums import BenchmarkTaskRunState, BenchmarkTaskVersionCreationState
 from kagglesdk.benchmarks.types.benchmark_task_run_service import BatchScheduleBenchmarkModelVersionResult
+from kagglesdk.benchmarks.types.benchmark_types import BenchmarkTaskOptions
 from kagglesdk.kaggle_object import *
 from typing import List, Optional
 
@@ -111,6 +112,18 @@ class ApiBenchmarkTask(KaggleObject):
       When this task version was created.
     creation_error_message (str)
       Error message from task version creation, if it failed.
+    is_public (bool)
+      Whether the task itself is public.
+    source_kernel_id (int)
+      ID of the backing notebook (kernel) associated with the task, if any.
+    is_backing_notebook_published (bool)
+      Whether the backing notebook (`source_kernel_id`) is published (public).
+      Null when the task has no backing notebook.
+    options (BenchmarkTaskOptions)
+      Options persisted on the task version (e.g. data sources). Echoed back
+      from CreateBenchmarkTask so callers can see what was attached, and
+      returned on reads so the CLI can display the currently-attached sources.
+      De-duplicated relative to the request input.
   """
 
   def __init__(self):
@@ -120,6 +133,10 @@ class ApiBenchmarkTask(KaggleObject):
     self._creation_state = BenchmarkTaskVersionCreationState.BENCHMARK_TASK_VERSION_CREATION_STATE_UNSPECIFIED
     self._create_time = None
     self._creation_error_message = None
+    self._is_public = None
+    self._source_kernel_id = None
+    self._is_backing_notebook_published = None
+    self._options = None
     self._freeze()
 
   @property
@@ -208,6 +225,70 @@ class ApiBenchmarkTask(KaggleObject):
     if not isinstance(creation_error_message, str):
       raise TypeError('creation_error_message must be of type str')
     self._creation_error_message = creation_error_message
+
+  @property
+  def is_public(self) -> bool:
+    """Whether the task itself is public."""
+    return self._is_public or False
+
+  @is_public.setter
+  def is_public(self, is_public: Optional[bool]):
+    if is_public is None:
+      del self.is_public
+      return
+    if not isinstance(is_public, bool):
+      raise TypeError('is_public must be of type bool')
+    self._is_public = is_public
+
+  @property
+  def source_kernel_id(self) -> int:
+    """ID of the backing notebook (kernel) associated with the task, if any."""
+    return self._source_kernel_id or 0
+
+  @source_kernel_id.setter
+  def source_kernel_id(self, source_kernel_id: Optional[int]):
+    if source_kernel_id is None:
+      del self.source_kernel_id
+      return
+    if not isinstance(source_kernel_id, int):
+      raise TypeError('source_kernel_id must be of type int')
+    self._source_kernel_id = source_kernel_id
+
+  @property
+  def is_backing_notebook_published(self) -> bool:
+    r"""
+    Whether the backing notebook (`source_kernel_id`) is published (public).
+    Null when the task has no backing notebook.
+    """
+    return self._is_backing_notebook_published or False
+
+  @is_backing_notebook_published.setter
+  def is_backing_notebook_published(self, is_backing_notebook_published: Optional[bool]):
+    if is_backing_notebook_published is None:
+      del self.is_backing_notebook_published
+      return
+    if not isinstance(is_backing_notebook_published, bool):
+      raise TypeError('is_backing_notebook_published must be of type bool')
+    self._is_backing_notebook_published = is_backing_notebook_published
+
+  @property
+  def options(self) -> Optional['BenchmarkTaskOptions']:
+    r"""
+    Options persisted on the task version (e.g. data sources). Echoed back
+    from CreateBenchmarkTask so callers can see what was attached, and
+    returned on reads so the CLI can display the currently-attached sources.
+    De-duplicated relative to the request input.
+    """
+    return self._options or None
+
+  @options.setter
+  def options(self, options: Optional[Optional['BenchmarkTaskOptions']]):
+    if options is None:
+      del self.options
+      return
+    if not isinstance(options, BenchmarkTaskOptions):
+      raise TypeError('options must be of type BenchmarkTaskOptions')
+    self._options = options
 
 
 class ApiBenchmarkTaskRun(KaggleObject):
@@ -425,11 +506,23 @@ class ApiCreateBenchmarkTaskRequest(KaggleObject):
       decorator in the code.
     text (str)
       The task's (or task version's) source code
+    options (BenchmarkTaskOptions)
+      Optional task options (e.g. data sources) to attach to the underlying
+      notebook for this task version. Changing the options bumps the task
+      version.
+
+      Semantics for omitted/empty fields: each sub-field within `options` is
+      applied as-given. Omitting `options` entirely on a new version is
+      equivalent to sending an empty `BenchmarkTaskOptions`, which clears
+      all previously-attached sources for that version. Callers that want to
+      preserve the previous version's options must echo them back on each
+      push.
   """
 
   def __init__(self):
     self._slug = ""
     self._text = ""
+    self._options = None
     self._freeze()
 
   @property
@@ -464,6 +557,31 @@ class ApiCreateBenchmarkTaskRequest(KaggleObject):
       raise TypeError('text must be of type str')
     self._text = text
 
+  @property
+  def options(self) -> Optional['BenchmarkTaskOptions']:
+    r"""
+    Optional task options (e.g. data sources) to attach to the underlying
+    notebook for this task version. Changing the options bumps the task
+    version.
+
+    Semantics for omitted/empty fields: each sub-field within `options` is
+    applied as-given. Omitting `options` entirely on a new version is
+    equivalent to sending an empty `BenchmarkTaskOptions`, which clears
+    all previously-attached sources for that version. Callers that want to
+    preserve the previous version's options must echo them back on each
+    push.
+    """
+    return self._options or None
+
+  @options.setter
+  def options(self, options: Optional[Optional['BenchmarkTaskOptions']]):
+    if options is None:
+      del self.options
+      return
+    if not isinstance(options, BenchmarkTaskOptions):
+      raise TypeError('options must be of type BenchmarkTaskOptions')
+    self._options = options
+
   def endpoint(self):
     path = '/api/v1/benchmarks/tasks/push'
     return path.format_map(self.to_field_map(self))
@@ -482,10 +600,15 @@ class ApiDownloadBenchmarkTaskRunOutputRequest(KaggleObject):
   r"""
   Attributes:
     run_id (int)
+    include_source (bool)
+      When true, the returned zip also contains the kernel session's source
+      files. For benchmark task runs (which are notebook kernels) that means
+      `__notebook__.ipynb` and `__notebook_source__.ipynb`.
   """
 
   def __init__(self):
     self._run_id = 0
+    self._include_source = False
     self._freeze()
 
   @property
@@ -500,6 +623,24 @@ class ApiDownloadBenchmarkTaskRunOutputRequest(KaggleObject):
     if not isinstance(run_id, int):
       raise TypeError('run_id must be of type int')
     self._run_id = run_id
+
+  @property
+  def include_source(self) -> bool:
+    r"""
+    When true, the returned zip also contains the kernel session's source
+    files. For benchmark task runs (which are notebook kernels) that means
+    `__notebook__.ipynb` and `__notebook_source__.ipynb`.
+    """
+    return self._include_source
+
+  @include_source.setter
+  def include_source(self, include_source: bool):
+    if include_source is None:
+      del self.include_source
+      return
+    if not isinstance(include_source, bool):
+      raise TypeError('include_source must be of type bool')
+    self._include_source = include_source
 
   def endpoint(self):
     path = '/api/v1/benchmarks/tasks/runs/{run_id}/output'
@@ -601,6 +742,38 @@ class ApiGetBenchmarkTaskRequest(KaggleObject):
   @staticmethod
   def endpoint_path():
     return '/api/v1/benchmarks/tasks/{slug.task_slug}'
+
+
+class ApiGetBenchmarkTaskRunLogsRequest(KaggleObject):
+  r"""
+  Attributes:
+    run_id (int)
+  """
+
+  def __init__(self):
+    self._run_id = 0
+    self._freeze()
+
+  @property
+  def run_id(self) -> int:
+    return self._run_id
+
+  @run_id.setter
+  def run_id(self, run_id: int):
+    if run_id is None:
+      del self.run_id
+      return
+    if not isinstance(run_id, int):
+      raise TypeError('run_id must be of type int')
+    self._run_id = run_id
+
+  def endpoint(self):
+    path = '/api/v1/benchmarks/tasks/runs/{run_id}/logs'
+    return path.format_map(self.to_field_map(self))
+
+  @staticmethod
+  def endpoint_path():
+    return '/api/v1/benchmarks/tasks/runs/{run_id}/logs'
 
 
 class ApiListBenchmarkTaskRunsRequest(KaggleObject):
@@ -923,6 +1096,68 @@ class ApiListBenchmarkTasksResponse(KaggleObject):
     return self.next_page_token
 
 
+class ApiPublishBenchmarkTaskRequest(KaggleObject):
+  r"""
+  Attributes:
+    slug (ApiBenchmarkTaskSlug)
+      The task to publish.
+    publish_backing_notebook (bool)
+      When true, also publishes the backing notebook (`source_kernel_id`) in
+      the same request. When false/unset, the backing notebook is left alone.
+      Unpublishing the notebook is not supported through this endpoint.
+  """
+
+  def __init__(self):
+    self._slug = None
+    self._publish_backing_notebook = False
+    self._freeze()
+
+  @property
+  def slug(self) -> Optional['ApiBenchmarkTaskSlug']:
+    """The task to publish."""
+    return self._slug
+
+  @slug.setter
+  def slug(self, slug: Optional['ApiBenchmarkTaskSlug']):
+    if slug is None:
+      del self.slug
+      return
+    if not isinstance(slug, ApiBenchmarkTaskSlug):
+      raise TypeError('slug must be of type ApiBenchmarkTaskSlug')
+    self._slug = slug
+
+  @property
+  def publish_backing_notebook(self) -> bool:
+    r"""
+    When true, also publishes the backing notebook (`source_kernel_id`) in
+    the same request. When false/unset, the backing notebook is left alone.
+    Unpublishing the notebook is not supported through this endpoint.
+    """
+    return self._publish_backing_notebook
+
+  @publish_backing_notebook.setter
+  def publish_backing_notebook(self, publish_backing_notebook: bool):
+    if publish_backing_notebook is None:
+      del self.publish_backing_notebook
+      return
+    if not isinstance(publish_backing_notebook, bool):
+      raise TypeError('publish_backing_notebook must be of type bool')
+    self._publish_backing_notebook = publish_backing_notebook
+
+  def endpoint(self):
+    path = '/api/v1/benchmarks/tasks/{slug.task_slug}/publish'
+    return path.format_map(self.to_field_map(self))
+
+
+  @staticmethod
+  def method():
+    return 'POST'
+
+  @staticmethod
+  def body_fields():
+    return '*'
+
+
 ApiBatchScheduleBenchmarkTaskRunsRequest._fields = [
   FieldMetadata("taskSlugs", "task_slugs", "_task_slugs", ApiBenchmarkTaskSlug, [], ListSerializer(KaggleObjectSerializer())),
   FieldMetadata("modelVersionSlugs", "model_version_slugs", "_model_version_slugs", str, [], ListSerializer(PredefinedSerializer())),
@@ -939,6 +1174,10 @@ ApiBenchmarkTask._fields = [
   FieldMetadata("creationState", "creation_state", "_creation_state", BenchmarkTaskVersionCreationState, BenchmarkTaskVersionCreationState.BENCHMARK_TASK_VERSION_CREATION_STATE_UNSPECIFIED, EnumSerializer()),
   FieldMetadata("createTime", "create_time", "_create_time", datetime, None, DateTimeSerializer()),
   FieldMetadata("creationErrorMessage", "creation_error_message", "_creation_error_message", str, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("isPublic", "is_public", "_is_public", bool, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("sourceKernelId", "source_kernel_id", "_source_kernel_id", int, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("isBackingNotebookPublished", "is_backing_notebook_published", "_is_backing_notebook_published", bool, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("options", "options", "_options", BenchmarkTaskOptions, None, KaggleObjectSerializer(), optional=True),
 ]
 
 ApiBenchmarkTaskRun._fields = [
@@ -960,10 +1199,12 @@ ApiBenchmarkTaskSlug._fields = [
 ApiCreateBenchmarkTaskRequest._fields = [
   FieldMetadata("slug", "slug", "_slug", str, "", PredefinedSerializer()),
   FieldMetadata("text", "text", "_text", str, "", PredefinedSerializer()),
+  FieldMetadata("options", "options", "_options", BenchmarkTaskOptions, None, KaggleObjectSerializer(), optional=True),
 ]
 
 ApiDownloadBenchmarkTaskRunOutputRequest._fields = [
   FieldMetadata("runId", "run_id", "_run_id", int, 0, PredefinedSerializer()),
+  FieldMetadata("includeSource", "include_source", "_include_source", bool, False, PredefinedSerializer()),
 ]
 
 ApiGetBenchmarkTaskQuotaRequest._fields = []
@@ -975,6 +1216,10 @@ ApiGetBenchmarkTaskQuotaResponse._fields = [
 
 ApiGetBenchmarkTaskRequest._fields = [
   FieldMetadata("slug", "slug", "_slug", ApiBenchmarkTaskSlug, None, KaggleObjectSerializer()),
+]
+
+ApiGetBenchmarkTaskRunLogsRequest._fields = [
+  FieldMetadata("runId", "run_id", "_run_id", int, 0, PredefinedSerializer()),
 ]
 
 ApiListBenchmarkTaskRunsRequest._fields = [
@@ -1003,5 +1248,10 @@ ApiListBenchmarkTasksResponse._fields = [
   FieldMetadata("tasks", "tasks", "_tasks", ApiBenchmarkTask, [], ListSerializer(KaggleObjectSerializer())),
   FieldMetadata("totalResults", "total_results", "_total_results", int, 0, PredefinedSerializer()),
   FieldMetadata("nextPageToken", "next_page_token", "_next_page_token", str, "", PredefinedSerializer()),
+]
+
+ApiPublishBenchmarkTaskRequest._fields = [
+  FieldMetadata("slug", "slug", "_slug", ApiBenchmarkTaskSlug, None, KaggleObjectSerializer()),
+  FieldMetadata("publishBackingNotebook", "publish_backing_notebook", "_publish_backing_notebook", bool, False, PredefinedSerializer()),
 ]
 

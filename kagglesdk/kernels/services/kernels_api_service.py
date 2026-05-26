@@ -2,7 +2,7 @@ from kagglesdk.common.types.file_download import FileDownload
 from kagglesdk.common.types.http_redirect import HttpRedirect
 from kagglesdk.common.types.operations import Operation
 from kagglesdk.kaggle_http_client import KaggleHttpClient
-from kagglesdk.kernels.types.kernels_api_service import ApiCancelKernelSessionRequest, ApiCancelKernelSessionResponse, ApiCreateKernelSessionRequest, ApiDeleteKernelRequest, ApiDeleteKernelResponse, ApiDownloadKernelOutputRequest, ApiDownloadKernelOutputZipRequest, ApiGetKernelRequest, ApiGetKernelResponse, ApiGetKernelSessionStatusRequest, ApiGetKernelSessionStatusResponse, ApiListKernelFilesRequest, ApiListKernelFilesResponse, ApiListKernelSessionOutputRequest, ApiListKernelSessionOutputResponse, ApiListKernelsRequest, ApiListKernelsResponse, ApiSaveKernelRequest, ApiSaveKernelResponse
+from kagglesdk.kernels.types.kernels_api_service import ApiCancelKernelSessionRequest, ApiCancelKernelSessionResponse, ApiCreateKernelSessionRequest, ApiDeleteKernelRequest, ApiDeleteKernelResponse, ApiDownloadKernelOutputRequest, ApiDownloadKernelOutputZipRequest, ApiGetKernelRequest, ApiGetKernelResponse, ApiGetKernelSessionLogsStreamRequest, ApiGetKernelSessionStatusRequest, ApiGetKernelSessionStatusResponse, ApiListKernelFilesRequest, ApiListKernelFilesResponse, ApiListKernelSessionOutputRequest, ApiListKernelSessionOutputResponse, ApiListKernelsRequest, ApiListKernelsResponse, ApiSaveKernelRequest, ApiSaveKernelResponse
 
 class KernelsApiClient(object):
 
@@ -144,3 +144,27 @@ class KernelsApiClient(object):
       request = ApiCreateKernelSessionRequest()
 
     return self._client.call("kernels.KernelsApiService", "CreateKernelSession", request, Operation)
+
+  def get_kernel_session_logs_stream(self, request: ApiGetKernelSessionLogsStreamRequest = None) -> FileDownload:
+    r"""
+    Streams the log output of a notebook session.
+
+    While the session is running (or shortly after), the midtier proxies
+    to the per-session log endpoint published by the session manager and
+    returns Server-Sent Events (Content-Type: text/event-stream) until the
+    upstream sends an `END_OF_LOG` sentinel or the client disconnects.
+
+    If the session has already terminated by the time the request arrives,
+    the live stream URL is no longer available; the midtier instead returns
+    the persisted log file as written by the worker (Content-Type:
+    application/json). Callers should branch on the response Content-Type.
+
+    Args:
+      request (ApiGetKernelSessionLogsStreamRequest):
+        The request object; initialized to empty instance if not specified.
+    """
+
+    if request is None:
+      request = ApiGetKernelSessionLogsStreamRequest()
+
+    return self._client.call("kernels.KernelsApiService", "GetKernelSessionLogsStream", request, FileDownload)

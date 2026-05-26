@@ -2,7 +2,7 @@ from datetime import datetime
 from kagglesdk.common.types.cropped_image_upload import CroppedImageUpload
 from kagglesdk.community.types.content_enums import ContentState
 from kagglesdk.discussions.types.forum_message import CommentForumMessage
-from kagglesdk.discussions.types.writeup_enums import WriteUpLinkLocation, WriteUpLinkMediaType, WriteUpType
+from kagglesdk.discussions.types.writeup_enums import ResolvedWriteUpLinkType, WriteUpLinkLocation, WriteUpLinkMediaType, WriteUpType
 from kagglesdk.kaggle_object import *
 from kagglesdk.licenses.types.licenses_types import License
 from kagglesdk.security.types.security_types import KaggleResourceType
@@ -11,6 +11,232 @@ from kagglesdk.users.types.legacy_organizations_service import OrganizationCard
 from kagglesdk.users.types.progression_service import Medal
 from kagglesdk.users.types.user_avatar import UserAvatar
 from typing import Optional, List
+
+class ResolvedFileSummary(KaggleObject):
+  r"""
+  Summary of the files contained in a dataset or notebook output.
+  Used exclusively by the MCP server via ResolvedWriteUpLink.
+
+  Attributes:
+    total_file_count (int)
+      Total number of files
+    total_size (int)
+      Total size in bytes
+    file_types (str)
+      List of file type extensions (e.g. 'csv', 'json')
+    sample_file_names (str)
+      A sample of file names from the resource
+  """
+
+  def __init__(self):
+    self._total_file_count = 0
+    self._total_size = 0
+    self._file_types = []
+    self._sample_file_names = []
+    self._freeze()
+
+  @property
+  def total_file_count(self) -> int:
+    """Total number of files"""
+    return self._total_file_count
+
+  @total_file_count.setter
+  def total_file_count(self, total_file_count: int):
+    if total_file_count is None:
+      del self.total_file_count
+      return
+    if not isinstance(total_file_count, int):
+      raise TypeError('total_file_count must be of type int')
+    self._total_file_count = total_file_count
+
+  @property
+  def total_size(self) -> int:
+    """Total size in bytes"""
+    return self._total_size
+
+  @total_size.setter
+  def total_size(self, total_size: int):
+    if total_size is None:
+      del self.total_size
+      return
+    if not isinstance(total_size, int):
+      raise TypeError('total_size must be of type int')
+    self._total_size = total_size
+
+  @property
+  def file_types(self) -> Optional[List[str]]:
+    """List of file type extensions (e.g. 'csv', 'json')"""
+    return self._file_types
+
+  @file_types.setter
+  def file_types(self, file_types: Optional[List[str]]):
+    if file_types is None:
+      del self.file_types
+      return
+    if not isinstance(file_types, list):
+      raise TypeError('file_types must be of type list')
+    if not all([isinstance(t, str) for t in file_types]):
+      raise TypeError('file_types must contain only items of type str')
+    self._file_types = file_types
+
+  @property
+  def sample_file_names(self) -> Optional[List[str]]:
+    """A sample of file names from the resource"""
+    return self._sample_file_names
+
+  @sample_file_names.setter
+  def sample_file_names(self, sample_file_names: Optional[List[str]]):
+    if sample_file_names is None:
+      del self.sample_file_names
+      return
+    if not isinstance(sample_file_names, list):
+      raise TypeError('sample_file_names must be of type list')
+    if not all([isinstance(t, str) for t in sample_file_names]):
+      raise TypeError('sample_file_names must contain only items of type str')
+    self._sample_file_names = sample_file_names
+
+
+class ResolvedWriteUpLink(KaggleObject):
+  r"""
+  A fully-resolved view of a WriteUpLink used exclusively by the MCP server
+  to provide rich context about each link. Includes download URLs and file
+  metadata fetched from underlying entities (datasets, notebooks, models, etc.)
+  as well as thumbnail and metadata for YouTube videos and external links
+  (GitHub, etc.).
+
+  Attributes:
+    title (str)
+      Title of the resolved resource
+    description (str)
+      Description of the resolved resource
+    type (ResolvedWriteUpLinkType)
+      The type of content this link points to
+    download_url (str)
+      Download URL for Kaggle resources (e.g. datasets, notebooks, models, etc.)
+    file_summary (ResolvedFileSummary)
+      File summary for dataset links
+    thumbnail_url (str)
+      Thumbnail image URL for the resolved resource (e.g. YouTube video
+      thumbnail, Open Graph image for external links, dataset card image)
+    original_url (str)
+      The original URL from the WriteUpLink, preserving the connection to the
+      resource
+  """
+
+  def __init__(self):
+    self._title = ""
+    self._description = ""
+    self._type = ResolvedWriteUpLinkType.RESOLVED_WRITE_UP_LINK_TYPE_UNSPECIFIED
+    self._download_url = ""
+    self._file_summary = None
+    self._thumbnail_url = ""
+    self._original_url = ""
+    self._freeze()
+
+  @property
+  def title(self) -> str:
+    """Title of the resolved resource"""
+    return self._title
+
+  @title.setter
+  def title(self, title: str):
+    if title is None:
+      del self.title
+      return
+    if not isinstance(title, str):
+      raise TypeError('title must be of type str')
+    self._title = title
+
+  @property
+  def description(self) -> str:
+    """Description of the resolved resource"""
+    return self._description
+
+  @description.setter
+  def description(self, description: str):
+    if description is None:
+      del self.description
+      return
+    if not isinstance(description, str):
+      raise TypeError('description must be of type str')
+    self._description = description
+
+  @property
+  def type(self) -> 'ResolvedWriteUpLinkType':
+    """The type of content this link points to"""
+    return self._type
+
+  @type.setter
+  def type(self, type: 'ResolvedWriteUpLinkType'):
+    if type is None:
+      del self.type
+      return
+    if not isinstance(type, ResolvedWriteUpLinkType):
+      raise TypeError('type must be of type ResolvedWriteUpLinkType')
+    self._type = type
+
+  @property
+  def download_url(self) -> str:
+    """Download URL for Kaggle resources (e.g. datasets, notebooks, models, etc.)"""
+    return self._download_url
+
+  @download_url.setter
+  def download_url(self, download_url: str):
+    if download_url is None:
+      del self.download_url
+      return
+    if not isinstance(download_url, str):
+      raise TypeError('download_url must be of type str')
+    self._download_url = download_url
+
+  @property
+  def file_summary(self) -> Optional['ResolvedFileSummary']:
+    """File summary for dataset links"""
+    return self._file_summary or None
+
+  @file_summary.setter
+  def file_summary(self, file_summary: Optional[Optional['ResolvedFileSummary']]):
+    if file_summary is None:
+      del self.file_summary
+      return
+    if not isinstance(file_summary, ResolvedFileSummary):
+      raise TypeError('file_summary must be of type ResolvedFileSummary')
+    self._file_summary = file_summary
+
+  @property
+  def original_url(self) -> str:
+    r"""
+    The original URL from the WriteUpLink, preserving the connection to the
+    resource
+    """
+    return self._original_url
+
+  @original_url.setter
+  def original_url(self, original_url: str):
+    if original_url is None:
+      del self.original_url
+      return
+    if not isinstance(original_url, str):
+      raise TypeError('original_url must be of type str')
+    self._original_url = original_url
+
+  @property
+  def thumbnail_url(self) -> str:
+    r"""
+    Thumbnail image URL for the resolved resource (e.g. YouTube video
+    thumbnail, Open Graph image for external links, dataset card image)
+    """
+    return self._thumbnail_url
+
+  @thumbnail_url.setter
+  def thumbnail_url(self, thumbnail_url: str):
+    if thumbnail_url is None:
+      del self.thumbnail_url
+      return
+    if not isinstance(thumbnail_url, str):
+      raise TypeError('thumbnail_url must be of type str')
+    self._thumbnail_url = thumbnail_url
+
 
 class WriteUp(KaggleObject):
   r"""
@@ -67,6 +293,14 @@ class WriteUp(KaggleObject):
       hackathon competition
     publish_time (datetime)
       Time when WriteUp was last published
+    saved_cover_image_url (str)
+      Raw (un-fallback'd) saved cover image URL from the DB. Unlike
+      `cover_image_url`, this is not substituted with a thumbnail/carousel/
+      competition fallback when empty. Consumed by the editor so authors aren't
+      misled into thinking a borrowed image is their saved cover.
+    saved_thumbnail_image_url (str)
+      Raw (un-fallback'd) saved thumbnail image URL from the DB. See
+      `saved_cover_image_url` for rationale.
   """
 
   def __init__(self):
@@ -95,6 +329,8 @@ class WriteUp(KaggleObject):
     self._can_pin = False
     self._collaborators = []
     self._publish_time = None
+    self._saved_cover_image_url = ""
+    self._saved_thumbnail_image_url = ""
     self._freeze()
 
   @property
@@ -458,6 +694,42 @@ class WriteUp(KaggleObject):
     if not isinstance(publish_time, datetime):
       raise TypeError('publish_time must be of type datetime')
     self._publish_time = publish_time
+
+  @property
+  def saved_cover_image_url(self) -> str:
+    r"""
+    Raw (un-fallback'd) saved cover image URL from the DB. Unlike
+    `cover_image_url`, this is not substituted with a thumbnail/carousel/
+    competition fallback when empty. Consumed by the editor so authors aren't
+    misled into thinking a borrowed image is their saved cover.
+    """
+    return self._saved_cover_image_url
+
+  @saved_cover_image_url.setter
+  def saved_cover_image_url(self, saved_cover_image_url: str):
+    if saved_cover_image_url is None:
+      del self.saved_cover_image_url
+      return
+    if not isinstance(saved_cover_image_url, str):
+      raise TypeError('saved_cover_image_url must be of type str')
+    self._saved_cover_image_url = saved_cover_image_url
+
+  @property
+  def saved_thumbnail_image_url(self) -> str:
+    r"""
+    Raw (un-fallback'd) saved thumbnail image URL from the DB. See
+    `saved_cover_image_url` for rationale.
+    """
+    return self._saved_thumbnail_image_url
+
+  @saved_thumbnail_image_url.setter
+  def saved_thumbnail_image_url(self, saved_thumbnail_image_url: str):
+    if saved_thumbnail_image_url is None:
+      del self.saved_thumbnail_image_url
+      return
+    if not isinstance(saved_thumbnail_image_url, str):
+      raise TypeError('saved_thumbnail_image_url must be of type str')
+    self._saved_thumbnail_image_url = saved_thumbnail_image_url
 
 
 class WriteUpImageInfo(KaggleObject):
@@ -1060,6 +1332,23 @@ class WriteUpLinkResource(KaggleObject):
     self._is_phone_verified = is_phone_verified
 
 
+ResolvedFileSummary._fields = [
+  FieldMetadata("totalFileCount", "total_file_count", "_total_file_count", int, 0, PredefinedSerializer()),
+  FieldMetadata("totalSize", "total_size", "_total_size", int, 0, PredefinedSerializer()),
+  FieldMetadata("fileTypes", "file_types", "_file_types", str, [], ListSerializer(PredefinedSerializer())),
+  FieldMetadata("sampleFileNames", "sample_file_names", "_sample_file_names", str, [], ListSerializer(PredefinedSerializer())),
+]
+
+ResolvedWriteUpLink._fields = [
+  FieldMetadata("title", "title", "_title", str, "", PredefinedSerializer()),
+  FieldMetadata("description", "description", "_description", str, "", PredefinedSerializer()),
+  FieldMetadata("type", "type", "_type", ResolvedWriteUpLinkType, ResolvedWriteUpLinkType.RESOLVED_WRITE_UP_LINK_TYPE_UNSPECIFIED, EnumSerializer()),
+  FieldMetadata("downloadUrl", "download_url", "_download_url", str, "", PredefinedSerializer()),
+  FieldMetadata("fileSummary", "file_summary", "_file_summary", ResolvedFileSummary, None, KaggleObjectSerializer(), optional=True),
+  FieldMetadata("thumbnailUrl", "thumbnail_url", "_thumbnail_url", str, "", PredefinedSerializer()),
+  FieldMetadata("originalUrl", "original_url", "_original_url", str, "", PredefinedSerializer()),
+]
+
 WriteUp._fields = [
   FieldMetadata("id", "id", "_id", int, 0, PredefinedSerializer()),
   FieldMetadata("topicId", "topic_id", "_topic_id", int, 0, PredefinedSerializer()),
@@ -1086,6 +1375,8 @@ WriteUp._fields = [
   FieldMetadata("canPin", "can_pin", "_can_pin", bool, False, PredefinedSerializer()),
   FieldMetadata("collaborators", "collaborators", "_collaborators", UserAvatar, [], ListSerializer(KaggleObjectSerializer())),
   FieldMetadata("publishTime", "publish_time", "_publish_time", datetime, None, DateTimeSerializer()),
+  FieldMetadata("savedCoverImageUrl", "saved_cover_image_url", "_saved_cover_image_url", str, "", PredefinedSerializer()),
+  FieldMetadata("savedThumbnailImageUrl", "saved_thumbnail_image_url", "_saved_thumbnail_image_url", str, "", PredefinedSerializer()),
 ]
 
 WriteUpImageInfo._fields = [

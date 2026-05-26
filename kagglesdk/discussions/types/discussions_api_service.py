@@ -443,6 +443,125 @@ class ApiGetTopicResponse(KaggleObject):
     self._topic = topic
 
 
+class ApiListBenchmarkTopicsRequest(KaggleObject):
+  r"""
+  Attributes:
+    owner_slug (str)
+      The owner (user or organization) slug for the benchmark.
+    benchmark_slug (str)
+      The benchmark slug.
+    sort_by (TopicListSortBy)
+      Sort order for the results.
+    page_size (int)
+      Page size for results.
+    page_token (str)
+      Page token used for pagination.
+    search_query (str)
+      Optional search query to filter topics by.
+  """
+
+  def __init__(self):
+    self._owner_slug = ""
+    self._benchmark_slug = ""
+    self._sort_by = None
+    self._page_size = None
+    self._page_token = None
+    self._search_query = None
+    self._freeze()
+
+  @property
+  def owner_slug(self) -> str:
+    """The owner (user or organization) slug for the benchmark."""
+    return self._owner_slug
+
+  @owner_slug.setter
+  def owner_slug(self, owner_slug: str):
+    if owner_slug is None:
+      del self.owner_slug
+      return
+    if not isinstance(owner_slug, str):
+      raise TypeError('owner_slug must be of type str')
+    self._owner_slug = owner_slug
+
+  @property
+  def benchmark_slug(self) -> str:
+    """The benchmark slug."""
+    return self._benchmark_slug
+
+  @benchmark_slug.setter
+  def benchmark_slug(self, benchmark_slug: str):
+    if benchmark_slug is None:
+      del self.benchmark_slug
+      return
+    if not isinstance(benchmark_slug, str):
+      raise TypeError('benchmark_slug must be of type str')
+    self._benchmark_slug = benchmark_slug
+
+  @property
+  def sort_by(self) -> 'TopicListSortBy':
+    """Sort order for the results."""
+    return self._sort_by or TopicListSortBy.TOPIC_LIST_SORT_BY_UNSPECIFIED
+
+  @sort_by.setter
+  def sort_by(self, sort_by: Optional['TopicListSortBy']):
+    if sort_by is None:
+      del self.sort_by
+      return
+    if not isinstance(sort_by, TopicListSortBy):
+      raise TypeError('sort_by must be of type TopicListSortBy')
+    self._sort_by = sort_by
+
+  @property
+  def page_size(self) -> int:
+    """Page size for results."""
+    return self._page_size or 0
+
+  @page_size.setter
+  def page_size(self, page_size: Optional[int]):
+    if page_size is None:
+      del self.page_size
+      return
+    if not isinstance(page_size, int):
+      raise TypeError('page_size must be of type int')
+    self._page_size = page_size
+
+  @property
+  def page_token(self) -> str:
+    """Page token used for pagination."""
+    return self._page_token or ""
+
+  @page_token.setter
+  def page_token(self, page_token: Optional[str]):
+    if page_token is None:
+      del self.page_token
+      return
+    if not isinstance(page_token, str):
+      raise TypeError('page_token must be of type str')
+    self._page_token = page_token
+
+  @property
+  def search_query(self) -> str:
+    """Optional search query to filter topics by."""
+    return self._search_query or ""
+
+  @search_query.setter
+  def search_query(self, search_query: Optional[str]):
+    if search_query is None:
+      del self.search_query
+      return
+    if not isinstance(search_query, str):
+      raise TypeError('search_query must be of type str')
+    self._search_query = search_query
+
+  def endpoint(self):
+    path = '/api/v1/benchmarks/{owner_slug}/{benchmark_slug}/topics/list'
+    return path.format_map(self.to_field_map(self))
+
+  @staticmethod
+  def endpoint_path():
+    return '/api/v1/benchmarks/{owner_slug}/{benchmark_slug}/topics/list'
+
+
 class ApiListCommentsRequest(KaggleObject):
   r"""
   Attributes:
@@ -556,6 +675,125 @@ class ApiListCommentsResponse(KaggleObject):
     return self.next_page_token
 
 
+class ApiListDatasetTopicsRequest(KaggleObject):
+  r"""
+  Attributes:
+    owner_slug (str)
+      The owner (user or organization) slug for the dataset.
+    dataset_slug (str)
+      The dataset slug.
+    sort_by (TopicListSortBy)
+      Sort order for the results.
+    page_size (int)
+      Page size for results.
+    page_token (str)
+      Page token used for pagination.
+    search_query (str)
+      Optional search query to filter topics by.
+  """
+
+  def __init__(self):
+    self._owner_slug = ""
+    self._dataset_slug = ""
+    self._sort_by = None
+    self._page_size = None
+    self._page_token = None
+    self._search_query = None
+    self._freeze()
+
+  @property
+  def owner_slug(self) -> str:
+    """The owner (user or organization) slug for the dataset."""
+    return self._owner_slug
+
+  @owner_slug.setter
+  def owner_slug(self, owner_slug: str):
+    if owner_slug is None:
+      del self.owner_slug
+      return
+    if not isinstance(owner_slug, str):
+      raise TypeError('owner_slug must be of type str')
+    self._owner_slug = owner_slug
+
+  @property
+  def dataset_slug(self) -> str:
+    """The dataset slug."""
+    return self._dataset_slug
+
+  @dataset_slug.setter
+  def dataset_slug(self, dataset_slug: str):
+    if dataset_slug is None:
+      del self.dataset_slug
+      return
+    if not isinstance(dataset_slug, str):
+      raise TypeError('dataset_slug must be of type str')
+    self._dataset_slug = dataset_slug
+
+  @property
+  def sort_by(self) -> 'TopicListSortBy':
+    """Sort order for the results."""
+    return self._sort_by or TopicListSortBy.TOPIC_LIST_SORT_BY_UNSPECIFIED
+
+  @sort_by.setter
+  def sort_by(self, sort_by: Optional['TopicListSortBy']):
+    if sort_by is None:
+      del self.sort_by
+      return
+    if not isinstance(sort_by, TopicListSortBy):
+      raise TypeError('sort_by must be of type TopicListSortBy')
+    self._sort_by = sort_by
+
+  @property
+  def page_size(self) -> int:
+    """Page size for results."""
+    return self._page_size or 0
+
+  @page_size.setter
+  def page_size(self, page_size: Optional[int]):
+    if page_size is None:
+      del self.page_size
+      return
+    if not isinstance(page_size, int):
+      raise TypeError('page_size must be of type int')
+    self._page_size = page_size
+
+  @property
+  def page_token(self) -> str:
+    """Page token used for pagination."""
+    return self._page_token or ""
+
+  @page_token.setter
+  def page_token(self, page_token: Optional[str]):
+    if page_token is None:
+      del self.page_token
+      return
+    if not isinstance(page_token, str):
+      raise TypeError('page_token must be of type str')
+    self._page_token = page_token
+
+  @property
+  def search_query(self) -> str:
+    """Optional search query to filter topics by."""
+    return self._search_query or ""
+
+  @search_query.setter
+  def search_query(self, search_query: Optional[str]):
+    if search_query is None:
+      del self.search_query
+      return
+    if not isinstance(search_query, str):
+      raise TypeError('search_query must be of type str')
+    self._search_query = search_query
+
+  def endpoint(self):
+    path = '/api/v1/datasets/{owner_slug}/{dataset_slug}/topics/list'
+    return path.format_map(self.to_field_map(self))
+
+  @staticmethod
+  def endpoint_path():
+    return '/api/v1/datasets/{owner_slug}/{dataset_slug}/topics/list'
+
+
 class ApiListForumsRequest(KaggleObject):
   r"""
   """
@@ -590,6 +828,125 @@ class ApiListForumsResponse(KaggleObject):
     if not all([isinstance(t, ApiDiscussionForum) for t in forums]):
       raise TypeError('forums must contain only items of type ApiDiscussionForum')
     self._forums = forums
+
+
+class ApiListModelTopicsRequest(KaggleObject):
+  r"""
+  Attributes:
+    owner_slug (str)
+      The owner (user or organization) slug for the model.
+    model_slug (str)
+      The model slug.
+    sort_by (TopicListSortBy)
+      Sort order for the results.
+    page_size (int)
+      Page size for results.
+    page_token (str)
+      Page token used for pagination.
+    search_query (str)
+      Optional search query to filter topics by.
+  """
+
+  def __init__(self):
+    self._owner_slug = ""
+    self._model_slug = ""
+    self._sort_by = None
+    self._page_size = None
+    self._page_token = None
+    self._search_query = None
+    self._freeze()
+
+  @property
+  def owner_slug(self) -> str:
+    """The owner (user or organization) slug for the model."""
+    return self._owner_slug
+
+  @owner_slug.setter
+  def owner_slug(self, owner_slug: str):
+    if owner_slug is None:
+      del self.owner_slug
+      return
+    if not isinstance(owner_slug, str):
+      raise TypeError('owner_slug must be of type str')
+    self._owner_slug = owner_slug
+
+  @property
+  def model_slug(self) -> str:
+    """The model slug."""
+    return self._model_slug
+
+  @model_slug.setter
+  def model_slug(self, model_slug: str):
+    if model_slug is None:
+      del self.model_slug
+      return
+    if not isinstance(model_slug, str):
+      raise TypeError('model_slug must be of type str')
+    self._model_slug = model_slug
+
+  @property
+  def sort_by(self) -> 'TopicListSortBy':
+    """Sort order for the results."""
+    return self._sort_by or TopicListSortBy.TOPIC_LIST_SORT_BY_UNSPECIFIED
+
+  @sort_by.setter
+  def sort_by(self, sort_by: Optional['TopicListSortBy']):
+    if sort_by is None:
+      del self.sort_by
+      return
+    if not isinstance(sort_by, TopicListSortBy):
+      raise TypeError('sort_by must be of type TopicListSortBy')
+    self._sort_by = sort_by
+
+  @property
+  def page_size(self) -> int:
+    """Page size for results."""
+    return self._page_size or 0
+
+  @page_size.setter
+  def page_size(self, page_size: Optional[int]):
+    if page_size is None:
+      del self.page_size
+      return
+    if not isinstance(page_size, int):
+      raise TypeError('page_size must be of type int')
+    self._page_size = page_size
+
+  @property
+  def page_token(self) -> str:
+    """Page token used for pagination."""
+    return self._page_token or ""
+
+  @page_token.setter
+  def page_token(self, page_token: Optional[str]):
+    if page_token is None:
+      del self.page_token
+      return
+    if not isinstance(page_token, str):
+      raise TypeError('page_token must be of type str')
+    self._page_token = page_token
+
+  @property
+  def search_query(self) -> str:
+    """Optional search query to filter topics by."""
+    return self._search_query or ""
+
+  @search_query.setter
+  def search_query(self, search_query: Optional[str]):
+    if search_query is None:
+      del self.search_query
+      return
+    if not isinstance(search_query, str):
+      raise TypeError('search_query must be of type str')
+    self._search_query = search_query
+
+  def endpoint(self):
+    path = '/api/v1/models/{owner_slug}/{model_slug}/topics/list'
+    return path.format_map(self.to_field_map(self))
+
+  @staticmethod
+  def endpoint_path():
+    return '/api/v1/models/{owner_slug}/{model_slug}/topics/list'
 
 
 class ApiListTopicsRequest(KaggleObject):
@@ -832,6 +1189,15 @@ ApiGetTopicResponse._fields = [
   FieldMetadata("topic", "topic", "_topic", ApiDiscussionTopic, None, KaggleObjectSerializer()),
 ]
 
+ApiListBenchmarkTopicsRequest._fields = [
+  FieldMetadata("ownerSlug", "owner_slug", "_owner_slug", str, "", PredefinedSerializer()),
+  FieldMetadata("benchmarkSlug", "benchmark_slug", "_benchmark_slug", str, "", PredefinedSerializer()),
+  FieldMetadata("sortBy", "sort_by", "_sort_by", TopicListSortBy, None, EnumSerializer(), optional=True),
+  FieldMetadata("pageSize", "page_size", "_page_size", int, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("pageToken", "page_token", "_page_token", str, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("searchQuery", "search_query", "_search_query", str, None, PredefinedSerializer(), optional=True),
+]
+
 ApiListCommentsRequest._fields = [
   FieldMetadata("topicId", "topic_id", "_topic_id", int, 0, PredefinedSerializer()),
   FieldMetadata("pageSize", "page_size", "_page_size", int, None, PredefinedSerializer(), optional=True),
@@ -843,10 +1209,28 @@ ApiListCommentsResponse._fields = [
   FieldMetadata("nextPageToken", "next_page_token", "_next_page_token", str, "", PredefinedSerializer()),
 ]
 
+ApiListDatasetTopicsRequest._fields = [
+  FieldMetadata("ownerSlug", "owner_slug", "_owner_slug", str, "", PredefinedSerializer()),
+  FieldMetadata("datasetSlug", "dataset_slug", "_dataset_slug", str, "", PredefinedSerializer()),
+  FieldMetadata("sortBy", "sort_by", "_sort_by", TopicListSortBy, None, EnumSerializer(), optional=True),
+  FieldMetadata("pageSize", "page_size", "_page_size", int, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("pageToken", "page_token", "_page_token", str, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("searchQuery", "search_query", "_search_query", str, None, PredefinedSerializer(), optional=True),
+]
+
 ApiListForumsRequest._fields = []
 
 ApiListForumsResponse._fields = [
   FieldMetadata("forums", "forums", "_forums", ApiDiscussionForum, [], ListSerializer(KaggleObjectSerializer())),
+]
+
+ApiListModelTopicsRequest._fields = [
+  FieldMetadata("ownerSlug", "owner_slug", "_owner_slug", str, "", PredefinedSerializer()),
+  FieldMetadata("modelSlug", "model_slug", "_model_slug", str, "", PredefinedSerializer()),
+  FieldMetadata("sortBy", "sort_by", "_sort_by", TopicListSortBy, None, EnumSerializer(), optional=True),
+  FieldMetadata("pageSize", "page_size", "_page_size", int, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("pageToken", "page_token", "_page_token", str, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("searchQuery", "search_query", "_search_query", str, None, PredefinedSerializer(), optional=True),
 ]
 
 ApiListTopicsRequest._fields = [

@@ -1,4 +1,4 @@
-from kagglesdk.discussions.types.discussions_api_service import ApiGetTopicRequest, ApiGetTopicResponse, ApiListCommentsRequest, ApiListCommentsResponse, ApiListForumsRequest, ApiListForumsResponse, ApiListTopicsRequest, ApiListTopicsResponse
+from kagglesdk.discussions.types.discussions_api_service import ApiGetTopicRequest, ApiGetTopicResponse, ApiListBenchmarkTopicsRequest, ApiListCommentsRequest, ApiListCommentsResponse, ApiListDatasetTopicsRequest, ApiListForumsRequest, ApiListForumsResponse, ApiListModelTopicsRequest, ApiListTopicsRequest, ApiListTopicsResponse
 from kagglesdk.kaggle_http_client import KaggleHttpClient
 
 class DiscussionApiClient(object):
@@ -61,3 +61,45 @@ class DiscussionApiClient(object):
       request = ApiListCommentsRequest()
 
     return self._client.call("discussions.DiscussionApiService", "ListComments", request, ApiListCommentsResponse)
+
+  def list_dataset_topics(self, request: ApiListDatasetTopicsRequest = None) -> ApiListTopicsResponse:
+    r"""
+    List discussion topics for a dataset.
+
+    Args:
+      request (ApiListDatasetTopicsRequest):
+        The request object; initialized to empty instance if not specified.
+    """
+
+    if request is None:
+      request = ApiListDatasetTopicsRequest()
+
+    return self._client.call("discussions.DiscussionApiService", "ListDatasetTopics", request, ApiListTopicsResponse)
+
+  def list_model_topics(self, request: ApiListModelTopicsRequest = None) -> ApiListTopicsResponse:
+    r"""
+    List discussion topics for a model.
+
+    Args:
+      request (ApiListModelTopicsRequest):
+        The request object; initialized to empty instance if not specified.
+    """
+
+    if request is None:
+      request = ApiListModelTopicsRequest()
+
+    return self._client.call("discussions.DiscussionApiService", "ListModelTopics", request, ApiListTopicsResponse)
+
+  def list_benchmark_topics(self, request: ApiListBenchmarkTopicsRequest = None) -> ApiListTopicsResponse:
+    r"""
+    List discussion topics for a benchmark.
+
+    Args:
+      request (ApiListBenchmarkTopicsRequest):
+        The request object; initialized to empty instance if not specified.
+    """
+
+    if request is None:
+      request = ApiListBenchmarkTopicsRequest()
+
+    return self._client.call("discussions.DiscussionApiService", "ListBenchmarkTopics", request, ApiListTopicsResponse)

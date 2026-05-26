@@ -662,6 +662,48 @@ class BenchmarkResult(KaggleObject):
     self._evaluation_date = evaluation_date
 
 
+class BenchmarkTaskOptions(KaggleObject):
+  r"""
+  Options persisted on a BenchmarkTaskVersion. Currently only carries
+  data-source attachments; more fields (model/competition/kernel sources,
+  compute knobs) will be added incrementally, so field numbers 2-20 are
+  reserved. Defined here (rather than under the API surface) because the
+  type is shared between the SDK read shape and the public API proto.
+
+  Attributes:
+    dataset_data_sources (str)
+      Dataset data sources attached to the underlying notebook. Each entry is
+      '{owner}/{dataset-slug}'. The latest published version of the dataset is
+      attached; pinning to a specific version ('owner/dataset/versions/N') is
+      not yet supported.
+  """
+
+  def __init__(self):
+    self._dataset_data_sources = []
+    self._freeze()
+
+  @property
+  def dataset_data_sources(self) -> Optional[List[str]]:
+    r"""
+    Dataset data sources attached to the underlying notebook. Each entry is
+    '{owner}/{dataset-slug}'. The latest published version of the dataset is
+    attached; pinning to a specific version ('owner/dataset/versions/N') is
+    not yet supported.
+    """
+    return self._dataset_data_sources
+
+  @dataset_data_sources.setter
+  def dataset_data_sources(self, dataset_data_sources: Optional[List[str]]):
+    if dataset_data_sources is None:
+      del self.dataset_data_sources
+      return
+    if not isinstance(dataset_data_sources, list):
+      raise TypeError('dataset_data_sources must be of type list')
+    if not all([isinstance(t, str) for t in dataset_data_sources]):
+      raise TypeError('dataset_data_sources must contain only items of type str')
+    self._dataset_data_sources = dataset_data_sources
+
+
 class CustomResult(KaggleObject):
   r"""
   Attributes:
@@ -850,6 +892,10 @@ BenchmarkResult._fields = [
   FieldMetadata("numericResultPublic", "numeric_result_public", "_numeric_result_public", NumericResult, None, KaggleObjectSerializer(), optional=True),
   FieldMetadata("evaluationDate", "evaluation_date", "_evaluation_date", datetime, None, DateTimeSerializer(), optional=True),
   FieldMetadata("taskVersionId", "task_version_id", "_task_version_id", int, None, PredefinedSerializer(), optional=True),
+]
+
+BenchmarkTaskOptions._fields = [
+  FieldMetadata("datasetDataSources", "dataset_data_sources", "_dataset_data_sources", str, [], ListSerializer(PredefinedSerializer())),
 ]
 
 CustomResult._fields = [
