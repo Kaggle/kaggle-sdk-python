@@ -1,6 +1,6 @@
 from kagglesdk.common.types.file_download import FileDownload
 from kagglesdk.common.types.http_redirect import HttpRedirect
-from kagglesdk.competitions.types.competition_api_service import ApiCompetition, ApiCreateCodeSubmissionRequest, ApiCreateCodeSubmissionResponse, ApiCreateSubmissionRequest, ApiCreateSubmissionResponse, ApiDownloadDataFileRequest, ApiDownloadDataFilesRequest, ApiDownloadLeaderboardRequest, ApiGetCompetitionDataFilesSummaryRequest, ApiGetCompetitionRequest, ApiGetEpisodeAgentLogsRequest, ApiGetEpisodeReplayRequest, ApiGetLeaderboardRequest, ApiGetLeaderboardResponse, ApiGetSubmissionRequest, ApiListCompetitionPagesRequest, ApiListCompetitionPagesResponse, ApiListCompetitionsRequest, ApiListCompetitionsResponse, ApiListCompetitionTopicsRequest, ApiListCompetitionTopicsResponse, ApiListDataFilesRequest, ApiListDataFilesResponse, ApiListDataTreeFilesRequest, ApiListSubmissionEpisodesRequest, ApiListSubmissionEpisodesResponse, ApiListSubmissionsRequest, ApiListSubmissionsResponse, ApiListTopicMessagesRequest, ApiListTopicMessagesResponse, ApiStartSubmissionUploadRequest, ApiStartSubmissionUploadResponse, ApiSubmission
+from kagglesdk.competitions.types.competition_api_service import ApiCompetition, ApiCreateCodeSubmissionRequest, ApiCreateCodeSubmissionResponse, ApiCreateSubmissionRequest, ApiCreateSubmissionResponse, ApiDownloadDataFileRequest, ApiDownloadDataFilesRequest, ApiDownloadLeaderboardRequest, ApiGetCompetitionDataFilesSummaryRequest, ApiGetCompetitionRequest, ApiGetEpisodeAgentLogsRequest, ApiGetEpisodeReplayRequest, ApiGetLeaderboardRequest, ApiGetLeaderboardResponse, ApiGetSubmissionRequest, ApiListCompetitionPagesRequest, ApiListCompetitionPagesResponse, ApiListCompetitionsRequest, ApiListCompetitionsResponse, ApiListCompetitionTopicsRequest, ApiListCompetitionTopicsResponse, ApiListDataFilesRequest, ApiListDataFilesResponse, ApiListDataTreeFilesRequest, ApiListSubmissionEpisodesRequest, ApiListSubmissionEpisodesResponse, ApiListSubmissionsRequest, ApiListSubmissionsResponse, ApiListTeamPublicSubmissionsRequest, ApiListTeamPublicSubmissionsResponse, ApiListTopicMessagesRequest, ApiListTopicMessagesResponse, ApiStartSubmissionUploadRequest, ApiStartSubmissionUploadResponse, ApiSubmission
 from kagglesdk.datasets.databundles.types.databundle_api_types import ApiDirectoryContent, ApiFilesSummary
 from kagglesdk.kaggle_http_client import KaggleHttpClient
 
@@ -32,6 +32,18 @@ class CompetitionApiClient(object):
       request = ApiListSubmissionsRequest()
 
     return self._client.call("competitions.CompetitionApiService", "ListSubmissions", request, ApiListSubmissionsResponse)
+
+  def list_team_public_submissions(self, request: ApiListTeamPublicSubmissionsRequest = None) -> ApiListTeamPublicSubmissionsResponse:
+    r"""
+    Args:
+      request (ApiListTeamPublicSubmissionsRequest):
+        The request object; initialized to empty instance if not specified.
+    """
+
+    if request is None:
+      request = ApiListTeamPublicSubmissionsRequest()
+
+    return self._client.call("competitions.CompetitionApiService", "ListTeamPublicSubmissions", request, ApiListTeamPublicSubmissionsResponse)
 
   def list_data_files(self, request: ApiListDataFilesRequest = None) -> ApiListDataFilesResponse:
     r"""
