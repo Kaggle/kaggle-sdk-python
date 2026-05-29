@@ -2646,6 +2646,64 @@ class ApiListSubmissionsResponse(KaggleObject):
     return self.next_page_token
 
 
+class ApiListTeamPublicSubmissionsRequest(KaggleObject):
+  r"""
+  Attributes:
+    team_id (int)
+  """
+
+  def __init__(self):
+    self._team_id = 0
+    self._freeze()
+
+  @property
+  def team_id(self) -> int:
+    return self._team_id
+
+  @team_id.setter
+  def team_id(self, team_id: int):
+    if team_id is None:
+      del self.team_id
+      return
+    if not isinstance(team_id, int):
+      raise TypeError('team_id must be of type int')
+    self._team_id = team_id
+
+  def endpoint(self):
+    path = '/api/v1/competitions/teams/{team_id}/public-submissions'
+    return path.format_map(self.to_field_map(self))
+
+  @staticmethod
+  def endpoint_path():
+    return '/api/v1/competitions/teams/{team_id}/public-submissions'
+
+
+class ApiListTeamPublicSubmissionsResponse(KaggleObject):
+  r"""
+  Attributes:
+    submissions (ApiPublicSubmission)
+  """
+
+  def __init__(self):
+    self._submissions = []
+    self._freeze()
+
+  @property
+  def submissions(self) -> Optional[List[Optional['ApiPublicSubmission']]]:
+    return self._submissions
+
+  @submissions.setter
+  def submissions(self, submissions: Optional[List[Optional['ApiPublicSubmission']]]):
+    if submissions is None:
+      del self.submissions
+      return
+    if not isinstance(submissions, list):
+      raise TypeError('submissions must be of type list')
+    if not all([isinstance(t, ApiPublicSubmission) for t in submissions]):
+      raise TypeError('submissions must contain only items of type ApiPublicSubmission')
+    self._submissions = submissions
+
+
 class ApiListTopicMessagesRequest(KaggleObject):
   r"""
   Attributes:
@@ -2755,6 +2813,63 @@ class ApiListTopicMessagesResponse(KaggleObject):
     if not all([isinstance(t, ApiTopicMessage) for t in messages]):
       raise TypeError('messages must contain only items of type ApiTopicMessage')
     self._messages = messages
+
+
+class ApiPublicSubmission(KaggleObject):
+  r"""
+  Public-safe subset of a submission. Only fields safe to expose to any user
+  who can read the team's competition.
+
+  Attributes:
+    id (int)
+    date_submitted (datetime)
+    public_score (str)
+  """
+
+  def __init__(self):
+    self._id = 0
+    self._date_submitted = None
+    self._public_score = ""
+    self._freeze()
+
+  @property
+  def id(self) -> int:
+    return self._id
+
+  @id.setter
+  def id(self, id: int):
+    if id is None:
+      del self.id
+      return
+    if not isinstance(id, int):
+      raise TypeError('id must be of type int')
+    self._id = id
+
+  @property
+  def date_submitted(self) -> datetime:
+    return self._date_submitted
+
+  @date_submitted.setter
+  def date_submitted(self, date_submitted: datetime):
+    if date_submitted is None:
+      del self.date_submitted
+      return
+    if not isinstance(date_submitted, datetime):
+      raise TypeError('date_submitted must be of type datetime')
+    self._date_submitted = date_submitted
+
+  @property
+  def public_score(self) -> str:
+    return self._public_score
+
+  @public_score.setter
+  def public_score(self, public_score: str):
+    if public_score is None:
+      del self.public_score
+      return
+    if not isinstance(public_score, str):
+      raise TypeError('public_score must be of type str')
+    self._public_score = public_score
 
 
 class ApiStartSubmissionUploadRequest(KaggleObject):
@@ -3486,6 +3601,14 @@ ApiListSubmissionsResponse._fields = [
   FieldMetadata("nextPageToken", "next_page_token", "_next_page_token", str, "", PredefinedSerializer()),
 ]
 
+ApiListTeamPublicSubmissionsRequest._fields = [
+  FieldMetadata("teamId", "team_id", "_team_id", int, 0, PredefinedSerializer()),
+]
+
+ApiListTeamPublicSubmissionsResponse._fields = [
+  FieldMetadata("submissions", "submissions", "_submissions", ApiPublicSubmission, [], ListSerializer(KaggleObjectSerializer())),
+]
+
 ApiListTopicMessagesRequest._fields = [
   FieldMetadata("competitionName", "competition_name", "_competition_name", str, "", PredefinedSerializer()),
   FieldMetadata("topicId", "topic_id", "_topic_id", int, 0, PredefinedSerializer()),
@@ -3495,6 +3618,12 @@ ApiListTopicMessagesRequest._fields = [
 
 ApiListTopicMessagesResponse._fields = [
   FieldMetadata("messages", "messages", "_messages", ApiTopicMessage, [], ListSerializer(KaggleObjectSerializer())),
+]
+
+ApiPublicSubmission._fields = [
+  FieldMetadata("id", "id", "_id", int, 0, PredefinedSerializer()),
+  FieldMetadata("dateSubmitted", "date_submitted", "_date_submitted", datetime, None, DateTimeSerializer()),
+  FieldMetadata("publicScore", "public_score", "_public_score", str, "", PredefinedSerializer()),
 ]
 
 ApiStartSubmissionUploadRequest._fields = [
