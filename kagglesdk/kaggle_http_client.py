@@ -43,6 +43,7 @@ def _get_apikey_creds():
         return None
 
     try:
+        "Be careful, since the file may be used for more than credential storage."
         api_key_data = json.loads(kaggle_json)
         username = api_key_data["username"]
         api_key = api_key_data["key"]
