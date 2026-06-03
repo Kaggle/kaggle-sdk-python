@@ -1,5 +1,5 @@
 from datetime import datetime
-from kagglesdk.benchmarks.types.benchmark_enums import BenchmarkTaskRunState, BenchmarkTaskVersionCreationState
+from kagglesdk.benchmarks.types.benchmark_enums import BenchmarkTaskRunState, BenchmarkTaskVersionCreationState, BenchmarkTaskVersionSource
 from kagglesdk.benchmarks.types.benchmark_task_run_service import BatchScheduleBenchmarkModelVersionResult
 from kagglesdk.benchmarks.types.benchmark_types import BenchmarkTaskOptions
 from kagglesdk.kaggle_object import *
@@ -124,6 +124,11 @@ class ApiBenchmarkTask(KaggleObject):
       from CreateBenchmarkTask so callers can see what was attached, and
       returned on reads so the CLI can display the currently-attached sources.
       De-duplicated relative to the request input.
+    source (BenchmarkTaskVersionSource)
+      How this task version was produced (sandbox publish, CLI, notebook
+      editor, etc.). Mirrors BenchmarkTaskVersion.source from the internal
+      proto; carried through so API consumers can label sandbox-origin
+      tasks distinctly from manually authored ones.
   """
 
   def __init__(self):
@@ -137,6 +142,7 @@ class ApiBenchmarkTask(KaggleObject):
     self._source_kernel_id = None
     self._is_backing_notebook_published = None
     self._options = None
+    self._source = BenchmarkTaskVersionSource.BENCHMARK_TASK_VERSION_SOURCE_UNSPECIFIED
     self._freeze()
 
   @property
@@ -289,6 +295,25 @@ class ApiBenchmarkTask(KaggleObject):
     if not isinstance(options, BenchmarkTaskOptions):
       raise TypeError('options must be of type BenchmarkTaskOptions')
     self._options = options
+
+  @property
+  def source(self) -> 'BenchmarkTaskVersionSource':
+    r"""
+    How this task version was produced (sandbox publish, CLI, notebook
+    editor, etc.). Mirrors BenchmarkTaskVersion.source from the internal
+    proto; carried through so API consumers can label sandbox-origin
+    tasks distinctly from manually authored ones.
+    """
+    return self._source
+
+  @source.setter
+  def source(self, source: 'BenchmarkTaskVersionSource'):
+    if source is None:
+      del self.source
+      return
+    if not isinstance(source, BenchmarkTaskVersionSource):
+      raise TypeError('source must be of type BenchmarkTaskVersionSource')
+    self._source = source
 
 
 class ApiBenchmarkTaskRun(KaggleObject):
@@ -1178,6 +1203,7 @@ ApiBenchmarkTask._fields = [
   FieldMetadata("sourceKernelId", "source_kernel_id", "_source_kernel_id", int, None, PredefinedSerializer(), optional=True),
   FieldMetadata("isBackingNotebookPublished", "is_backing_notebook_published", "_is_backing_notebook_published", bool, None, PredefinedSerializer(), optional=True),
   FieldMetadata("options", "options", "_options", BenchmarkTaskOptions, None, KaggleObjectSerializer(), optional=True),
+  FieldMetadata("source", "source", "_source", BenchmarkTaskVersionSource, BenchmarkTaskVersionSource.BENCHMARK_TASK_VERSION_SOURCE_UNSPECIFIED, EnumSerializer()),
 ]
 
 ApiBenchmarkTaskRun._fields = [

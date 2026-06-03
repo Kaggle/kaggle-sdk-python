@@ -591,11 +591,13 @@ class ApiGetKernelRequest(KaggleObject):
   Attributes:
     user_name (str)
     kernel_slug (str)
+    version_number (int)
   """
 
   def __init__(self):
     self._user_name = ""
     self._kernel_slug = ""
+    self._version_number = None
     self._freeze()
 
   @property
@@ -623,6 +625,19 @@ class ApiGetKernelRequest(KaggleObject):
     if not isinstance(kernel_slug, str):
       raise TypeError('kernel_slug must be of type str')
     self._kernel_slug = kernel_slug
+
+  @property
+  def version_number(self) -> int:
+    return self._version_number or 0
+
+  @version_number.setter
+  def version_number(self, version_number: Optional[int]):
+    if version_number is None:
+      del self.version_number
+      return
+    if not isinstance(version_number, int):
+      raise TypeError('version_number must be of type int')
+    self._version_number = version_number
 
   def endpoint(self):
     path = '/api/v1/kernels/pull'
@@ -2572,6 +2587,7 @@ ApiGetAcceleratorQuotaStatisticsResponse._fields = [
 ApiGetKernelRequest._fields = [
   FieldMetadata("userName", "user_name", "_user_name", str, "", PredefinedSerializer()),
   FieldMetadata("kernelSlug", "kernel_slug", "_kernel_slug", str, "", PredefinedSerializer()),
+  FieldMetadata("versionNumber", "version_number", "_version_number", int, None, PredefinedSerializer(), optional=True),
 ]
 
 ApiGetKernelResponse._fields = [
