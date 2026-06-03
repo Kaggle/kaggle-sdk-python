@@ -301,6 +301,9 @@ class WriteUp(KaggleObject):
     saved_thumbnail_image_url (str)
       Raw (un-fallback'd) saved thumbnail image URL from the DB. See
       `saved_cover_image_url` for rationale.
+    doi (str)
+      A DataCite DOI reference identifier, if available.
+      e.g. '12.34567/KAGGLE/W/1234567'
   """
 
   def __init__(self):
@@ -331,6 +334,7 @@ class WriteUp(KaggleObject):
     self._publish_time = None
     self._saved_cover_image_url = ""
     self._saved_thumbnail_image_url = ""
+    self._doi = None
     self._freeze()
 
   @property
@@ -730,6 +734,23 @@ class WriteUp(KaggleObject):
     if not isinstance(saved_thumbnail_image_url, str):
       raise TypeError('saved_thumbnail_image_url must be of type str')
     self._saved_thumbnail_image_url = saved_thumbnail_image_url
+
+  @property
+  def doi(self) -> str:
+    r"""
+    A DataCite DOI reference identifier, if available.
+    e.g. '12.34567/KAGGLE/W/1234567'
+    """
+    return self._doi or ""
+
+  @doi.setter
+  def doi(self, doi: Optional[str]):
+    if doi is None:
+      del self.doi
+      return
+    if not isinstance(doi, str):
+      raise TypeError('doi must be of type str')
+    self._doi = doi
 
 
 class WriteUpImageInfo(KaggleObject):
@@ -1377,6 +1398,7 @@ WriteUp._fields = [
   FieldMetadata("publishTime", "publish_time", "_publish_time", datetime, None, DateTimeSerializer()),
   FieldMetadata("savedCoverImageUrl", "saved_cover_image_url", "_saved_cover_image_url", str, "", PredefinedSerializer()),
   FieldMetadata("savedThumbnailImageUrl", "saved_thumbnail_image_url", "_saved_thumbnail_image_url", str, "", PredefinedSerializer()),
+  FieldMetadata("doi", "doi", "_doi", str, None, PredefinedSerializer(), optional=True),
 ]
 
 WriteUpImageInfo._fields = [
