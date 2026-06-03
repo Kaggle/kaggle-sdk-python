@@ -35,6 +35,13 @@ def get_endpoint(env: KaggleEnv):
     return _env_to_endpoint[env]
 
 
+def get_web_endpoint(env: KaggleEnv):
+    # In PROD, the `api` subdomain is used which breaks link to detail pages.
+    if env == KaggleEnv.PROD:
+        return "https://kaggle.com"
+    return get_endpoint(env)
+
+
 def get_env():
     env = os.getenv("KAGGLE_API_ENVIRONMENT")
     if env is None or env == "PROD":
