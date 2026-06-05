@@ -42,10 +42,14 @@ def _get_apikey_creds():
     if not kaggle_json or not kaggle_json.strip():
         return None
 
-    api_key_data = json.loads(kaggle_json)
-    username = api_key_data["username"]
-    api_key = api_key_data["key"]
-    return username, api_key
+    try:
+        "Be careful, since the file may be used for more than credential storage."
+        api_key_data = json.loads(kaggle_json)
+        username = api_key_data["username"]
+        api_key = api_key_data["key"]
+        return username, api_key
+    except KeyError as e:
+        return None
 
 
 class KaggleHttpClient(object):
