@@ -1,4 +1,4 @@
-from kagglesdk.discussions.types.discussions_api_service import ApiGetTopicRequest, ApiGetTopicResponse, ApiListBenchmarkTopicsRequest, ApiListCommentsRequest, ApiListCommentsResponse, ApiListDatasetTopicsRequest, ApiListForumsRequest, ApiListForumsResponse, ApiListModelTopicsRequest, ApiListTopicsRequest, ApiListTopicsResponse
+from kagglesdk.discussions.types.discussions_api_service import ApiGetTopicRequest, ApiGetTopicResponse, ApiListBenchmarkTopicsRequest, ApiListCommentsRequest, ApiListCommentsResponse, ApiListDatasetTopicsRequest, ApiListForumsRequest, ApiListForumsResponse, ApiListKernelTopicsRequest, ApiListModelTopicsRequest, ApiListTopicsRequest, ApiListTopicsResponse
 from kagglesdk.kaggle_http_client import KaggleHttpClient
 
 class DiscussionApiClient(object):
@@ -103,3 +103,17 @@ class DiscussionApiClient(object):
       request = ApiListBenchmarkTopicsRequest()
 
     return self._client.call("discussions.DiscussionApiService", "ListBenchmarkTopics", request, ApiListTopicsResponse)
+
+  def list_kernel_topics(self, request: ApiListKernelTopicsRequest = None) -> ApiListTopicsResponse:
+    r"""
+    List discussion topics for a kernel.
+
+    Args:
+      request (ApiListKernelTopicsRequest):
+        The request object; initialized to empty instance if not specified.
+    """
+
+    if request is None:
+      request = ApiListKernelTopicsRequest()
+
+    return self._client.call("discussions.DiscussionApiService", "ListKernelTopics", request, ApiListTopicsResponse)

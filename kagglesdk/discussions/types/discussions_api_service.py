@@ -830,6 +830,125 @@ class ApiListForumsResponse(KaggleObject):
     self._forums = forums
 
 
+class ApiListKernelTopicsRequest(KaggleObject):
+  r"""
+  Attributes:
+    owner_slug (str)
+      The owner (user or organization) slug for the kernel.
+    kernel_slug (str)
+      The kernel slug.
+    sort_by (TopicListSortBy)
+      Sort order for the results.
+    page_size (int)
+      Page size for results.
+    page_token (str)
+      Page token used for pagination.
+    search_query (str)
+      Optional search query to filter topics by.
+  """
+
+  def __init__(self):
+    self._owner_slug = ""
+    self._kernel_slug = ""
+    self._sort_by = None
+    self._page_size = None
+    self._page_token = None
+    self._search_query = None
+    self._freeze()
+
+  @property
+  def owner_slug(self) -> str:
+    """The owner (user or organization) slug for the kernel."""
+    return self._owner_slug
+
+  @owner_slug.setter
+  def owner_slug(self, owner_slug: str):
+    if owner_slug is None:
+      del self.owner_slug
+      return
+    if not isinstance(owner_slug, str):
+      raise TypeError('owner_slug must be of type str')
+    self._owner_slug = owner_slug
+
+  @property
+  def kernel_slug(self) -> str:
+    """The kernel slug."""
+    return self._kernel_slug
+
+  @kernel_slug.setter
+  def kernel_slug(self, kernel_slug: str):
+    if kernel_slug is None:
+      del self.kernel_slug
+      return
+    if not isinstance(kernel_slug, str):
+      raise TypeError('kernel_slug must be of type str')
+    self._kernel_slug = kernel_slug
+
+  @property
+  def sort_by(self) -> 'TopicListSortBy':
+    """Sort order for the results."""
+    return self._sort_by or TopicListSortBy.TOPIC_LIST_SORT_BY_UNSPECIFIED
+
+  @sort_by.setter
+  def sort_by(self, sort_by: Optional['TopicListSortBy']):
+    if sort_by is None:
+      del self.sort_by
+      return
+    if not isinstance(sort_by, TopicListSortBy):
+      raise TypeError('sort_by must be of type TopicListSortBy')
+    self._sort_by = sort_by
+
+  @property
+  def page_size(self) -> int:
+    """Page size for results."""
+    return self._page_size or 0
+
+  @page_size.setter
+  def page_size(self, page_size: Optional[int]):
+    if page_size is None:
+      del self.page_size
+      return
+    if not isinstance(page_size, int):
+      raise TypeError('page_size must be of type int')
+    self._page_size = page_size
+
+  @property
+  def page_token(self) -> str:
+    """Page token used for pagination."""
+    return self._page_token or ""
+
+  @page_token.setter
+  def page_token(self, page_token: Optional[str]):
+    if page_token is None:
+      del self.page_token
+      return
+    if not isinstance(page_token, str):
+      raise TypeError('page_token must be of type str')
+    self._page_token = page_token
+
+  @property
+  def search_query(self) -> str:
+    """Optional search query to filter topics by."""
+    return self._search_query or ""
+
+  @search_query.setter
+  def search_query(self, search_query: Optional[str]):
+    if search_query is None:
+      del self.search_query
+      return
+    if not isinstance(search_query, str):
+      raise TypeError('search_query must be of type str')
+    self._search_query = search_query
+
+  def endpoint(self):
+    path = '/api/v1/kernels/{owner_slug}/{kernel_slug}/topics/list'
+    return path.format_map(self.to_field_map(self))
+
+  @staticmethod
+  def endpoint_path():
+    return '/api/v1/kernels/{owner_slug}/{kernel_slug}/topics/list'
+
+
 class ApiListModelTopicsRequest(KaggleObject):
   r"""
   Attributes:
@@ -1222,6 +1341,15 @@ ApiListForumsRequest._fields = []
 
 ApiListForumsResponse._fields = [
   FieldMetadata("forums", "forums", "_forums", ApiDiscussionForum, [], ListSerializer(KaggleObjectSerializer())),
+]
+
+ApiListKernelTopicsRequest._fields = [
+  FieldMetadata("ownerSlug", "owner_slug", "_owner_slug", str, "", PredefinedSerializer()),
+  FieldMetadata("kernelSlug", "kernel_slug", "_kernel_slug", str, "", PredefinedSerializer()),
+  FieldMetadata("sortBy", "sort_by", "_sort_by", TopicListSortBy, None, EnumSerializer(), optional=True),
+  FieldMetadata("pageSize", "page_size", "_page_size", int, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("pageToken", "page_token", "_page_token", str, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("searchQuery", "search_query", "_search_query", str, None, PredefinedSerializer(), optional=True),
 ]
 
 ApiListModelTopicsRequest._fields = [
