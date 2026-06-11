@@ -591,13 +591,13 @@ class ApiGetKernelRequest(KaggleObject):
   Attributes:
     user_name (str)
     kernel_slug (str)
-    version_number (int)
+    version_label (str)
   """
 
   def __init__(self):
     self._user_name = ""
     self._kernel_slug = ""
-    self._version_number = None
+    self._version_label = None
     self._freeze()
 
   @property
@@ -627,17 +627,17 @@ class ApiGetKernelRequest(KaggleObject):
     self._kernel_slug = kernel_slug
 
   @property
-  def version_number(self) -> int:
-    return self._version_number or 0
+  def version_label(self) -> str:
+    return self._version_label or ""
 
-  @version_number.setter
-  def version_number(self, version_number: Optional[int]):
-    if version_number is None:
-      del self.version_number
+  @version_label.setter
+  def version_label(self, version_label: Optional[str]):
+    if version_label is None:
+      del self.version_label
       return
-    if not isinstance(version_number, int):
-      raise TypeError('version_number must be of type int')
-    self._version_number = version_number
+    if not isinstance(version_label, str):
+      raise TypeError('version_label must be of type str')
+    self._version_label = version_label
 
   def endpoint(self):
     path = '/api/v1/kernels/pull'
@@ -687,33 +687,76 @@ class ApiGetKernelSessionLogsStreamRequest(KaggleObject):
   r"""
   Attributes:
     kernel_session_id (int)
-      ID of the notebook session whose live logs should be streamed.
     wait_for_logs_url_seconds (int)
       Maximum number of seconds to wait for the upstream log stream URL to be
       published by the session manager before giving up. The session manager
       only publishes the URL once the session has been allocated to a worker,
       so callers may need to wait while the session is queued. Defaults to 60
       seconds; capped to 300 seconds.
+    user_name (str)
+    kernel_slug (str)
+    version_label (str)
   """
 
   def __init__(self):
-    self._kernel_session_id = 0
+    self._kernel_session_id = None
     self._wait_for_logs_url_seconds = None
+    self._user_name = None
+    self._kernel_slug = None
+    self._version_label = None
     self._freeze()
 
   @property
   def kernel_session_id(self) -> int:
-    """ID of the notebook session whose live logs should be streamed."""
-    return self._kernel_session_id
+    return self._kernel_session_id or 0
 
   @kernel_session_id.setter
-  def kernel_session_id(self, kernel_session_id: int):
+  def kernel_session_id(self, kernel_session_id: Optional[int]):
     if kernel_session_id is None:
       del self.kernel_session_id
       return
     if not isinstance(kernel_session_id, int):
       raise TypeError('kernel_session_id must be of type int')
     self._kernel_session_id = kernel_session_id
+
+  @property
+  def user_name(self) -> str:
+    return self._user_name or ""
+
+  @user_name.setter
+  def user_name(self, user_name: Optional[str]):
+    if user_name is None:
+      del self.user_name
+      return
+    if not isinstance(user_name, str):
+      raise TypeError('user_name must be of type str')
+    self._user_name = user_name
+
+  @property
+  def kernel_slug(self) -> str:
+    return self._kernel_slug or ""
+
+  @kernel_slug.setter
+  def kernel_slug(self, kernel_slug: Optional[str]):
+    if kernel_slug is None:
+      del self.kernel_slug
+      return
+    if not isinstance(kernel_slug, str):
+      raise TypeError('kernel_slug must be of type str')
+    self._kernel_slug = kernel_slug
+
+  @property
+  def version_label(self) -> str:
+    return self._version_label or ""
+
+  @version_label.setter
+  def version_label(self, version_label: Optional[str]):
+    if version_label is None:
+      del self.version_label
+      return
+    if not isinstance(version_label, str):
+      raise TypeError('version_label must be of type str')
+    self._version_label = version_label
 
   @property
   def wait_for_logs_url_seconds(self) -> int:
@@ -749,11 +792,13 @@ class ApiGetKernelSessionStatusRequest(KaggleObject):
   Attributes:
     user_name (str)
     kernel_slug (str)
+    version_label (str)
   """
 
   def __init__(self):
     self._user_name = ""
     self._kernel_slug = ""
+    self._version_label = None
     self._freeze()
 
   @property
@@ -781,6 +826,19 @@ class ApiGetKernelSessionStatusRequest(KaggleObject):
     if not isinstance(kernel_slug, str):
       raise TypeError('kernel_slug must be of type str')
     self._kernel_slug = kernel_slug
+
+  @property
+  def version_label(self) -> str:
+    return self._version_label or ""
+
+  @version_label.setter
+  def version_label(self, version_label: Optional[str]):
+    if version_label is None:
+      del self.version_label
+      return
+    if not isinstance(version_label, str):
+      raise TypeError('version_label must be of type str')
+    self._version_label = version_label
 
   def endpoint(self):
     path = '/api/v1/kernels/status'
@@ -1341,6 +1399,7 @@ class ApiListKernelFilesRequest(KaggleObject):
     kernel_slug (str)
     page_size (int)
     page_token (str)
+    version_label (str)
   """
 
   def __init__(self):
@@ -1348,6 +1407,7 @@ class ApiListKernelFilesRequest(KaggleObject):
     self._kernel_slug = ""
     self._page_size = None
     self._page_token = None
+    self._version_label = None
     self._freeze()
 
   @property
@@ -1401,6 +1461,19 @@ class ApiListKernelFilesRequest(KaggleObject):
     if not isinstance(page_token, str):
       raise TypeError('page_token must be of type str')
     self._page_token = page_token
+
+  @property
+  def version_label(self) -> str:
+    return self._version_label or ""
+
+  @version_label.setter
+  def version_label(self, version_label: Optional[str]):
+    if version_label is None:
+      del self.version_label
+      return
+    if not isinstance(version_label, str):
+      raise TypeError('version_label must be of type str')
+    self._version_label = version_label
 
   def endpoint(self):
     path = '/api/v1/kernels/files'
@@ -1459,6 +1532,7 @@ class ApiListKernelSessionOutputRequest(KaggleObject):
     kernel_slug (str)
     page_size (int)
     page_token (str)
+    version_label (str)
   """
 
   def __init__(self):
@@ -1466,6 +1540,7 @@ class ApiListKernelSessionOutputRequest(KaggleObject):
     self._kernel_slug = ""
     self._page_size = None
     self._page_token = None
+    self._version_label = None
     self._freeze()
 
   @property
@@ -1519,6 +1594,19 @@ class ApiListKernelSessionOutputRequest(KaggleObject):
     if not isinstance(page_token, str):
       raise TypeError('page_token must be of type str')
     self._page_token = page_token
+
+  @property
+  def version_label(self) -> str:
+    return self._version_label or ""
+
+  @version_label.setter
+  def version_label(self, version_label: Optional[str]):
+    if version_label is None:
+      del self.version_label
+      return
+    if not isinstance(version_label, str):
+      raise TypeError('version_label must be of type str')
+    self._version_label = version_label
 
   def endpoint(self):
     path = '/api/v1/kernels/output'
@@ -2587,7 +2675,7 @@ ApiGetAcceleratorQuotaStatisticsResponse._fields = [
 ApiGetKernelRequest._fields = [
   FieldMetadata("userName", "user_name", "_user_name", str, "", PredefinedSerializer()),
   FieldMetadata("kernelSlug", "kernel_slug", "_kernel_slug", str, "", PredefinedSerializer()),
-  FieldMetadata("versionNumber", "version_number", "_version_number", int, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("versionLabel", "version_label", "_version_label", str, None, PredefinedSerializer(), optional=True),
 ]
 
 ApiGetKernelResponse._fields = [
@@ -2596,13 +2684,17 @@ ApiGetKernelResponse._fields = [
 ]
 
 ApiGetKernelSessionLogsStreamRequest._fields = [
-  FieldMetadata("kernelSessionId", "kernel_session_id", "_kernel_session_id", int, 0, PredefinedSerializer()),
+  FieldMetadata("kernelSessionId", "kernel_session_id", "_kernel_session_id", int, None, PredefinedSerializer(), optional=True),
   FieldMetadata("waitForLogsUrlSeconds", "wait_for_logs_url_seconds", "_wait_for_logs_url_seconds", int, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("userName", "user_name", "_user_name", str, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("kernelSlug", "kernel_slug", "_kernel_slug", str, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("versionLabel", "version_label", "_version_label", str, None, PredefinedSerializer(), optional=True),
 ]
 
 ApiGetKernelSessionStatusRequest._fields = [
   FieldMetadata("userName", "user_name", "_user_name", str, "", PredefinedSerializer()),
   FieldMetadata("kernelSlug", "kernel_slug", "_kernel_slug", str, "", PredefinedSerializer()),
+  FieldMetadata("versionLabel", "version_label", "_version_label", str, None, PredefinedSerializer(), optional=True),
 ]
 
 ApiGetKernelSessionStatusResponse._fields = [
@@ -2657,6 +2749,7 @@ ApiListKernelFilesRequest._fields = [
   FieldMetadata("kernelSlug", "kernel_slug", "_kernel_slug", str, "", PredefinedSerializer()),
   FieldMetadata("pageSize", "page_size", "_page_size", int, None, PredefinedSerializer(), optional=True),
   FieldMetadata("pageToken", "page_token", "_page_token", str, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("versionLabel", "version_label", "_version_label", str, None, PredefinedSerializer(), optional=True),
 ]
 
 ApiListKernelFilesResponse._fields = [
@@ -2669,6 +2762,7 @@ ApiListKernelSessionOutputRequest._fields = [
   FieldMetadata("kernelSlug", "kernel_slug", "_kernel_slug", str, "", PredefinedSerializer()),
   FieldMetadata("pageSize", "page_size", "_page_size", int, None, PredefinedSerializer(), optional=True),
   FieldMetadata("pageToken", "page_token", "_page_token", str, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("versionLabel", "version_label", "_version_label", str, None, PredefinedSerializer(), optional=True),
 ]
 
 ApiListKernelSessionOutputResponse._fields = [

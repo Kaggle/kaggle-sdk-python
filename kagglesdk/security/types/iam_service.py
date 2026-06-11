@@ -172,7 +172,7 @@ class IamPolicyBinding(KaggleObject):
       Specifies the principals requesting access for a Kaggle resource.
       If not specified or empty, revokes access to 'role'. Otherwise, sets the
       members to the specified value. In other words, overrides existing members
-      are overriden so if you want to add a new member, you need to specify
+      are overridden so if you want to add a new member, you need to specify
       existing members as well.
   """
 
@@ -204,7 +204,7 @@ class IamPolicyBinding(KaggleObject):
     Specifies the principals requesting access for a Kaggle resource.
     If not specified or empty, revokes access to 'role'. Otherwise, sets the
     members to the specified value. In other words, overrides existing members
-    are overriden so if you want to add a new member, you need to specify
+    are overridden so if you want to add a new member, you need to specify
     existing members as well.
     """
     return self._members
