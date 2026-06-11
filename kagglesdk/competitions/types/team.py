@@ -53,6 +53,10 @@ class Team(KaggleObject):
       ForumTopic of the team's solution writeup, if set.
     benchmark_model_version_id (int)
       Linked benchmark model version, if set.
+    benchmark_model_version_display_name (str)
+      DisplayName of the linked BenchmarkModelVersion, if set. Preferred over
+      team_name in surfaces where a single label per team is shown (e.g. the
+      Episode panel and replayer).
     team_members (UserAvatar)
       The list of users on the team.
   """
@@ -75,6 +79,7 @@ class Team(KaggleObject):
     self._team_up_intro = None
     self._write_up_forum_topic_id = None
     self._benchmark_model_version_id = None
+    self._benchmark_model_version_display_name = None
     self._team_members = []
     self._freeze()
 
@@ -346,6 +351,24 @@ class Team(KaggleObject):
     self._benchmark_model_version_id = benchmark_model_version_id
 
   @property
+  def benchmark_model_version_display_name(self) -> str:
+    r"""
+    DisplayName of the linked BenchmarkModelVersion, if set. Preferred over
+    team_name in surfaces where a single label per team is shown (e.g. the
+    Episode panel and replayer).
+    """
+    return self._benchmark_model_version_display_name or ""
+
+  @benchmark_model_version_display_name.setter
+  def benchmark_model_version_display_name(self, benchmark_model_version_display_name: Optional[str]):
+    if benchmark_model_version_display_name is None:
+      del self.benchmark_model_version_display_name
+      return
+    if not isinstance(benchmark_model_version_display_name, str):
+      raise TypeError('benchmark_model_version_display_name must be of type str')
+    self._benchmark_model_version_display_name = benchmark_model_version_display_name
+
+  @property
   def team_members(self) -> Optional[List[Optional['UserAvatar']]]:
     """The list of users on the team."""
     return self._team_members
@@ -434,6 +457,7 @@ Team._fields = [
   FieldMetadata("teamUpIntro", "team_up_intro", "_team_up_intro", str, None, PredefinedSerializer(), optional=True),
   FieldMetadata("writeUpForumTopicId", "write_up_forum_topic_id", "_write_up_forum_topic_id", int, None, PredefinedSerializer(), optional=True),
   FieldMetadata("benchmarkModelVersionId", "benchmark_model_version_id", "_benchmark_model_version_id", int, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("benchmarkModelVersionDisplayName", "benchmark_model_version_display_name", "_benchmark_model_version_display_name", str, None, PredefinedSerializer(), optional=True),
   FieldMetadata("teamMembers", "team_members", "_team_members", UserAvatar, [], ListSerializer(KaggleObjectSerializer())),
 ]
 

@@ -43,12 +43,12 @@ def _get_apikey_creds():
         return None
 
     try:
-        "Be careful, since the file may be used for more than credential storage."
+        # Be careful, since the file may be used for more than credential storage.
         api_key_data = json.loads(kaggle_json)
         username = api_key_data["username"]
         api_key = api_key_data["key"]
         return username, api_key
-    except KeyError as e:
+    except KeyError:
         return None
 
 
@@ -59,14 +59,14 @@ class KaggleHttpClient(object):
     _xsrf_header_name = "X-XSRF-TOKEN"
 
     def __init__(
-        self,
-        env: KaggleEnv = None,
-        verbose: bool = False,
-        username: str = None,
-        password: str = None,
-        api_token: str = None,
-        user_agent: str = "kaggle-api/v1.7.0",  # Was: V2
-        response_processor=None,
+            self,
+            env: KaggleEnv = None,
+            verbose: bool = False,
+            username: str = None,
+            password: str = None,
+            api_token: str = None,
+            user_agent: str = "kaggle-api/v1.7.0",  # Was: V2
+            response_processor=None,
     ):
         self._env = env or get_env()
         self._signed_in = None
@@ -80,21 +80,25 @@ class KaggleHttpClient(object):
         self._response_processor = response_processor
 
     def call(
-        self,
-        service_name: str,
-        request_name: str,
-        request: KaggleObject,
-        response_type: Type[KaggleObject],
+            self,
+            service_name: str,
+            request_name: str,
+            request: KaggleObject,
+            response_type: Type[KaggleObject],
     ):
         self._init_session()
         http_request = self._prepare_request(service_name, request_name, request)
 
         # Merge environment settings into session
-        settings = self._session.merge_environment_settings(http_request.url, {}, None, None, None)
+        settings = self._session.merge_environment_settings(
+            http_request.url, {}, None, None, None
+        )
 
         # Use stream=True for file downloads to avoid loading entire file into memory
         # See: https://github.com/Kaggle/kaggle-api/issues/754
-        if response_type is not None and (response_type == FileDownload or response_type == HttpRedirect):
+        if response_type is not None and (
+                response_type == FileDownload or response_type == HttpRedirect
+        ):
             settings["stream"] = True
 
         http_response = self._session.send(http_request, **settings)
@@ -102,7 +106,9 @@ class KaggleHttpClient(object):
         response = self._prepare_response(response_type, http_response)
         return response
 
-    def _prepare_request(self, service_name: str, request_name: str, request: KaggleObject):
+    def _prepare_request(
+            self, service_name: str, request_name: str, request: KaggleObject
+    ):
         request_url = self._get_request_url(service_name, request_name)
         http_request = requests.Request(
             method="POST",
@@ -122,7 +128,9 @@ class KaggleHttpClient(object):
             if "application/json" in http_response.headers["Content-Type"]:
                 resp = http_response.json()
                 if "code" in resp and resp["code"] >= 400:
-                    raise requests.exceptions.HTTPError(resp["message"], response=http_response)
+                    raise requests.exceptions.HTTPError(
+                        resp["message"], response=http_response
+                    )
         except KeyError:
             pass
         http_response.raise_for_status()
@@ -137,7 +145,9 @@ class KaggleHttpClient(object):
         if not self._verbose:
             return
         self._print("---------------------Request----------------------")
-        self._print(f"{request.method} {request.url}\n{_headers_to_str(request.headers)}\n\n{request.body}")
+        self._print(
+            f"{request.method} {request.url}\n{_headers_to_str(request.headers)}\n\n{request.body}"
+        )
         self._print("--------------------------------------------------")
 
     def _print_response(self, response, body=True):
@@ -166,7 +176,9 @@ class KaggleHttpClient(object):
             return self._session
 
         self._session = requests.Session()
-        self._session.headers.update({"User-Agent": self._user_agent, "Content-Type": "application/json"})
+        self._session.headers.update(
+            {"User-Agent": self._user_agent, "Content-Type": "application/json"}
+        )
 
         iap_token = self._get_iap_token_if_required()
         if iap_token is not None:
@@ -207,17 +219,19 @@ class KaggleHttpClient(object):
 
         self._session.headers.update(
             {
-                KaggleHttpClient._xsrf_header_name: self._session.cookies[KaggleHttpClient._xsrf_cookie_name],
+                KaggleHttpClient._xsrf_header_name: self._session.cookies[
+                    KaggleHttpClient._xsrf_cookie_name
+                ],
             }
         )
 
     def build_start_oauth_url(
-        self,
-        client_id: str,
-        redirect_uri: str,
-        scope: list[str],
-        state: str,
-        code_challenge: str,
+            self,
+            client_id: str,
+            redirect_uri: str,
+            scope: list[str],
+            state: str,
+            code_challenge: str,
     ) -> str:
         params = {
             "response_type": "code",
@@ -238,7 +252,9 @@ class KaggleHttpClient(object):
         return f"{self.get_non_api_endpoint()}/account/api/oauth/token"
 
     def get_non_api_endpoint(self) -> str:
-        return "https://www.kaggle.com" if self._env == KaggleEnv.PROD else self._endpoint
+        return (
+            "https://www.kaggle.com" if self._env == KaggleEnv.PROD else self._endpoint
+        )
 
     class BearerAuth(requests.auth.AuthBase):
 
@@ -254,7 +270,7 @@ class KaggleHttpClient(object):
             return
 
         if self._api_token is None:
-            (api_token, _) = get_access_token_from_env()
+            api_token, _ = get_access_token_from_env()
             self._api_token = api_token
 
         if self._api_token is not None:
@@ -276,5 +292,7 @@ class KaggleHttpClient(object):
     def _get_request_url(self, service_name: str, request_name: str):
         # On prod, API endpoints are served under https://api.kaggle.com/v1,
         # but on staging/admin/local, they are served under http://localhost/api/v1.
-        base_url = self._endpoint if self._env == KaggleEnv.PROD else f"{self._endpoint}/api"
+        base_url = (
+            self._endpoint if self._env == KaggleEnv.PROD else f"{self._endpoint}/api"
+        )
         return f"{base_url}/v1/{service_name}/{request_name}"

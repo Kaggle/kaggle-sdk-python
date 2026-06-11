@@ -255,6 +255,9 @@ class BenchmarkModelVersion(KaggleObject):
       Input modalities supported by this model version.
     output_modalities (Modality)
       Output modalities supported by this model version.
+    deprecation_time (datetime)
+      Timestamp when this model version was deprecated. A future value indicates
+      a scheduled deprecation. Null/unset means not deprecated.
   """
 
   def __init__(self):
@@ -275,6 +278,7 @@ class BenchmarkModelVersion(KaggleObject):
     self._importance_level = None
     self._input_modalities = []
     self._output_modalities = []
+    self._deprecation_time = None
     self._freeze()
 
   @property
@@ -529,6 +533,23 @@ class BenchmarkModelVersion(KaggleObject):
     if not all([isinstance(t, Modality) for t in output_modalities]):
       raise TypeError('output_modalities must contain only items of type Modality')
     self._output_modalities = output_modalities
+
+  @property
+  def deprecation_time(self) -> datetime:
+    r"""
+    Timestamp when this model version was deprecated. A future value indicates
+    a scheduled deprecation. Null/unset means not deprecated.
+    """
+    return self._deprecation_time or None
+
+  @deprecation_time.setter
+  def deprecation_time(self, deprecation_time: Optional[datetime]):
+    if deprecation_time is None:
+      del self.deprecation_time
+      return
+    if not isinstance(deprecation_time, datetime):
+      raise TypeError('deprecation_time must be of type datetime')
+    self._deprecation_time = deprecation_time
 
 
 class BenchmarkResult(KaggleObject):
@@ -882,6 +903,7 @@ BenchmarkModelVersion._fields = [
   FieldMetadata("importanceLevel", "importance_level", "_importance_level", BenchmarkModelImportanceLevel, None, EnumSerializer(), optional=True),
   FieldMetadata("inputModalities", "input_modalities", "_input_modalities", Modality, [], ListSerializer(EnumSerializer())),
   FieldMetadata("outputModalities", "output_modalities", "_output_modalities", Modality, [], ListSerializer(EnumSerializer())),
+  FieldMetadata("deprecationTime", "deprecation_time", "_deprecation_time", datetime, None, DateTimeSerializer(), optional=True),
 ]
 
 BenchmarkResult._fields = [
