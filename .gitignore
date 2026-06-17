@@ -1,3 +1,5 @@
 __pycache__/
 dist/
 .idea
+.claude/settings.local.json
+.kagent-context/**
