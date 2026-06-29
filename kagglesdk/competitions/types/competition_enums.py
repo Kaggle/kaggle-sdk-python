@@ -10,6 +10,12 @@ class CompetitionListTab(enum.Enum):
   COMPETITION_LIST_TAB_UNLAUNCHED_COMMUNITY = 5
   COMPETITION_LIST_TAB_EVERYTHING = 6
 
+class CompetitionPrivacy(enum.Enum):
+  COMPETITION_PRIVACY_UNSPECIFIED = 0
+  PUBLIC = 1
+  LIMITED = 2
+  PRIVATE = 3
+
 class CompetitionSortBy(enum.Enum):
   COMPETITION_SORT_BY_GROUPED = 0
   """TODO(aip.dev/126): (-- api-linter: core::0126::unspecified=disabled --)"""
@@ -26,6 +32,7 @@ class HackathonTrackPrizeType(enum.Enum):
   HACKATHON_TRACK_PRIZE_TYPE_KUDOS = 1
   HACKATHON_TRACK_PRIZE_TYPE_NON_MONETARY = 2
   HACKATHON_TRACK_PRIZE_TYPE_MONETARY = 3
+  HACKATHON_TRACK_PRIZE_TYPE_SWAG = 4
 
 class HostSegment(enum.Enum):
   r"""

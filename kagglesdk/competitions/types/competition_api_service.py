@@ -1,5 +1,6 @@
 from datetime import datetime
-from kagglesdk.competitions.types.competition_enums import CompetitionListTab, CompetitionSortBy, HostSegment, SubmissionGroup, SubmissionSortBy
+from kagglesdk.competitions.types.competition import Reward
+from kagglesdk.competitions.types.competition_enums import CompetitionListTab, CompetitionPrivacy, CompetitionSortBy, HostSegment, SubmissionGroup, SubmissionSortBy
 from kagglesdk.competitions.types.episode import EpisodeAgentState, EpisodeState, EpisodeType
 from kagglesdk.competitions.types.submission_status import SubmissionStatus
 from kagglesdk.discussions.types.discussions_enums import CommentListSortBy, TopicListSortBy
@@ -555,17 +556,31 @@ class ApiCompetition(KaggleObject):
 
 class ApiCompetitionPage(KaggleObject):
   r"""
+  NOTE: writable field names must stay in sync with `kaggle.competitions.Page`
+  — UpdateCompetitionPage forwards the mask verbatim to UpdatePage.
+
   Attributes:
     name (str)
       Page name (e.g. 'description', 'rules', 'evaluation', 'data-description',
       'prizes').
     content (str)
       The rendered content of the page.
+    is_published (bool)
+      Whether the page is publicly visible. Defaults to false on create so hosts
+      can stage content before publishing.
+    post_title (str)
+      Optional post title shown above the page content. Defaults to the page
+      name on create.
+    mime_type (str)
+      MIME type of `content`. Defaults to 'text/html' on create.
   """
 
   def __init__(self):
     self._name = ""
     self._content = ""
+    self._is_published = None
+    self._post_title = None
+    self._mime_type = None
     self._freeze()
 
   @property
@@ -598,6 +613,54 @@ class ApiCompetitionPage(KaggleObject):
     if not isinstance(content, str):
       raise TypeError('content must be of type str')
     self._content = content
+
+  @property
+  def is_published(self) -> bool:
+    r"""
+    Whether the page is publicly visible. Defaults to false on create so hosts
+    can stage content before publishing.
+    """
+    return self._is_published or False
+
+  @is_published.setter
+  def is_published(self, is_published: Optional[bool]):
+    if is_published is None:
+      del self.is_published
+      return
+    if not isinstance(is_published, bool):
+      raise TypeError('is_published must be of type bool')
+    self._is_published = is_published
+
+  @property
+  def post_title(self) -> str:
+    r"""
+    Optional post title shown above the page content. Defaults to the page
+    name on create.
+    """
+    return self._post_title or ""
+
+  @post_title.setter
+  def post_title(self, post_title: Optional[str]):
+    if post_title is None:
+      del self.post_title
+      return
+    if not isinstance(post_title, str):
+      raise TypeError('post_title must be of type str')
+    self._post_title = post_title
+
+  @property
+  def mime_type(self) -> str:
+    """MIME type of `content`. Defaults to 'text/html' on create."""
+    return self._mime_type or ""
+
+  @mime_type.setter
+  def mime_type(self, mime_type: Optional[str]):
+    if mime_type is None:
+      del self.mime_type
+      return
+    if not isinstance(mime_type, str):
+      raise TypeError('mime_type must be of type str')
+    self._mime_type = mime_type
 
 
 class ApiCompetitionTopic(KaggleObject):
@@ -889,6 +952,404 @@ class ApiCreateCodeSubmissionResponse(KaggleObject):
     if not isinstance(ref, int):
       raise TypeError('ref must be of type int')
     self._ref = ref
+
+
+class ApiCreateCompetitionPageRequest(KaggleObject):
+  r"""
+  Attributes:
+    competition_name (str)
+    page (ApiCompetitionPage)
+  """
+
+  def __init__(self):
+    self._competition_name = ""
+    self._page = None
+    self._freeze()
+
+  @property
+  def competition_name(self) -> str:
+    return self._competition_name
+
+  @competition_name.setter
+  def competition_name(self, competition_name: str):
+    if competition_name is None:
+      del self.competition_name
+      return
+    if not isinstance(competition_name, str):
+      raise TypeError('competition_name must be of type str')
+    self._competition_name = competition_name
+
+  @property
+  def page(self) -> Optional['ApiCompetitionPage']:
+    return self._page
+
+  @page.setter
+  def page(self, page: Optional['ApiCompetitionPage']):
+    if page is None:
+      del self.page
+      return
+    if not isinstance(page, ApiCompetitionPage):
+      raise TypeError('page must be of type ApiCompetitionPage')
+    self._page = page
+
+  def endpoint(self):
+    path = '/api/v1/competitions/{competition_name}/pages'
+    return path.format_map(self.to_field_map(self))
+
+
+  @staticmethod
+  def method():
+    return 'POST'
+
+  @staticmethod
+  def body_fields():
+    return '*'
+
+
+class ApiCreateCompetitionRequest(KaggleObject):
+  r"""
+  Attributes:
+    title (str)
+      Required. The competition's display title.
+    slug (str)
+      Required. URL slug; must be unique site-wide. Lowercase, hyphens, must not
+      be all digits or all hyphens.
+    brief_description (str)
+      Required. One-line subtitle shown under the title.
+    privacy (CompetitionPrivacy)
+      Required. Visibility — PUBLIC, LIMITED, or PRIVATE.
+    clone_competition_id (int)
+      Optional. If set, clone configuration / pages / data / evaluation setup
+      from this competition.
+    disable_kernels (bool)
+      Optional. If true, notebook submissions are disabled.
+    restrict_link_to_email_list (bool)
+      Optional. Restrict invite-link joiners to a host-maintained allowlist of
+      emails/domains.
+    license_id (int)
+      Optional. License ID for the competition data. See ListCompetitionLicenses.
+    organization_id (int)
+      Optional. Tie this competition to an organization (grants read-only access
+      to all org members).
+    clone_exclude_competition_data (bool)
+      Optional. If cloning, skip copying the data (solution, sandbox
+      submissions, images, databundles).
+    clone_page_names (str)
+      Optional. If cloning, only copy these page names. Empty = copy all.
+    reward (Reward)
+      Optional. Prize / reward summary.
+    hackathon (bool)
+      Optional. Create as a hackathon competition.
+    num_prizes (int)
+      Optional. Number of leaderboard prize positions.
+  """
+
+  def __init__(self):
+    self._title = ""
+    self._slug = ""
+    self._brief_description = ""
+    self._privacy = CompetitionPrivacy.COMPETITION_PRIVACY_UNSPECIFIED
+    self._clone_competition_id = None
+    self._disable_kernels = None
+    self._restrict_link_to_email_list = None
+    self._license_id = None
+    self._organization_id = None
+    self._clone_exclude_competition_data = None
+    self._clone_page_names = []
+    self._reward = None
+    self._hackathon = None
+    self._num_prizes = None
+    self._freeze()
+
+  @property
+  def title(self) -> str:
+    """Required. The competition's display title."""
+    return self._title
+
+  @title.setter
+  def title(self, title: str):
+    if title is None:
+      del self.title
+      return
+    if not isinstance(title, str):
+      raise TypeError('title must be of type str')
+    self._title = title
+
+  @property
+  def slug(self) -> str:
+    r"""
+    Required. URL slug; must be unique site-wide. Lowercase, hyphens, must not
+    be all digits or all hyphens.
+    """
+    return self._slug
+
+  @slug.setter
+  def slug(self, slug: str):
+    if slug is None:
+      del self.slug
+      return
+    if not isinstance(slug, str):
+      raise TypeError('slug must be of type str')
+    self._slug = slug
+
+  @property
+  def brief_description(self) -> str:
+    """Required. One-line subtitle shown under the title."""
+    return self._brief_description
+
+  @brief_description.setter
+  def brief_description(self, brief_description: str):
+    if brief_description is None:
+      del self.brief_description
+      return
+    if not isinstance(brief_description, str):
+      raise TypeError('brief_description must be of type str')
+    self._brief_description = brief_description
+
+  @property
+  def privacy(self) -> 'CompetitionPrivacy':
+    """Required. Visibility — PUBLIC, LIMITED, or PRIVATE."""
+    return self._privacy
+
+  @privacy.setter
+  def privacy(self, privacy: 'CompetitionPrivacy'):
+    if privacy is None:
+      del self.privacy
+      return
+    if not isinstance(privacy, CompetitionPrivacy):
+      raise TypeError('privacy must be of type CompetitionPrivacy')
+    self._privacy = privacy
+
+  @property
+  def clone_competition_id(self) -> int:
+    r"""
+    Optional. If set, clone configuration / pages / data / evaluation setup
+    from this competition.
+    """
+    return self._clone_competition_id or 0
+
+  @clone_competition_id.setter
+  def clone_competition_id(self, clone_competition_id: Optional[int]):
+    if clone_competition_id is None:
+      del self.clone_competition_id
+      return
+    if not isinstance(clone_competition_id, int):
+      raise TypeError('clone_competition_id must be of type int')
+    self._clone_competition_id = clone_competition_id
+
+  @property
+  def disable_kernels(self) -> bool:
+    """Optional. If true, notebook submissions are disabled."""
+    return self._disable_kernels or False
+
+  @disable_kernels.setter
+  def disable_kernels(self, disable_kernels: Optional[bool]):
+    if disable_kernels is None:
+      del self.disable_kernels
+      return
+    if not isinstance(disable_kernels, bool):
+      raise TypeError('disable_kernels must be of type bool')
+    self._disable_kernels = disable_kernels
+
+  @property
+  def restrict_link_to_email_list(self) -> bool:
+    r"""
+    Optional. Restrict invite-link joiners to a host-maintained allowlist of
+    emails/domains.
+    """
+    return self._restrict_link_to_email_list or False
+
+  @restrict_link_to_email_list.setter
+  def restrict_link_to_email_list(self, restrict_link_to_email_list: Optional[bool]):
+    if restrict_link_to_email_list is None:
+      del self.restrict_link_to_email_list
+      return
+    if not isinstance(restrict_link_to_email_list, bool):
+      raise TypeError('restrict_link_to_email_list must be of type bool')
+    self._restrict_link_to_email_list = restrict_link_to_email_list
+
+  @property
+  def license_id(self) -> int:
+    """Optional. License ID for the competition data. See ListCompetitionLicenses."""
+    return self._license_id or 0
+
+  @license_id.setter
+  def license_id(self, license_id: Optional[int]):
+    if license_id is None:
+      del self.license_id
+      return
+    if not isinstance(license_id, int):
+      raise TypeError('license_id must be of type int')
+    self._license_id = license_id
+
+  @property
+  def organization_id(self) -> int:
+    r"""
+    Optional. Tie this competition to an organization (grants read-only access
+    to all org members).
+    """
+    return self._organization_id or 0
+
+  @organization_id.setter
+  def organization_id(self, organization_id: Optional[int]):
+    if organization_id is None:
+      del self.organization_id
+      return
+    if not isinstance(organization_id, int):
+      raise TypeError('organization_id must be of type int')
+    self._organization_id = organization_id
+
+  @property
+  def clone_exclude_competition_data(self) -> bool:
+    r"""
+    Optional. If cloning, skip copying the data (solution, sandbox
+    submissions, images, databundles).
+    """
+    return self._clone_exclude_competition_data or False
+
+  @clone_exclude_competition_data.setter
+  def clone_exclude_competition_data(self, clone_exclude_competition_data: Optional[bool]):
+    if clone_exclude_competition_data is None:
+      del self.clone_exclude_competition_data
+      return
+    if not isinstance(clone_exclude_competition_data, bool):
+      raise TypeError('clone_exclude_competition_data must be of type bool')
+    self._clone_exclude_competition_data = clone_exclude_competition_data
+
+  @property
+  def clone_page_names(self) -> Optional[List[str]]:
+    """Optional. If cloning, only copy these page names. Empty = copy all."""
+    return self._clone_page_names
+
+  @clone_page_names.setter
+  def clone_page_names(self, clone_page_names: Optional[List[str]]):
+    if clone_page_names is None:
+      del self.clone_page_names
+      return
+    if not isinstance(clone_page_names, list):
+      raise TypeError('clone_page_names must be of type list')
+    if not all([isinstance(t, str) for t in clone_page_names]):
+      raise TypeError('clone_page_names must contain only items of type str')
+    self._clone_page_names = clone_page_names
+
+  @property
+  def reward(self) -> Optional['Reward']:
+    """Optional. Prize / reward summary."""
+    return self._reward or None
+
+  @reward.setter
+  def reward(self, reward: Optional[Optional['Reward']]):
+    if reward is None:
+      del self.reward
+      return
+    if not isinstance(reward, Reward):
+      raise TypeError('reward must be of type Reward')
+    self._reward = reward
+
+  @property
+  def hackathon(self) -> bool:
+    """Optional. Create as a hackathon competition."""
+    return self._hackathon or False
+
+  @hackathon.setter
+  def hackathon(self, hackathon: Optional[bool]):
+    if hackathon is None:
+      del self.hackathon
+      return
+    if not isinstance(hackathon, bool):
+      raise TypeError('hackathon must be of type bool')
+    self._hackathon = hackathon
+
+  @property
+  def num_prizes(self) -> int:
+    """Optional. Number of leaderboard prize positions."""
+    return self._num_prizes or 0
+
+  @num_prizes.setter
+  def num_prizes(self, num_prizes: Optional[int]):
+    if num_prizes is None:
+      del self.num_prizes
+      return
+    if not isinstance(num_prizes, int):
+      raise TypeError('num_prizes must be of type int')
+    self._num_prizes = num_prizes
+
+  def endpoint(self):
+    path = '/api/v1/competitions'
+    return path.format_map(self.to_field_map(self))
+
+
+  @staticmethod
+  def method():
+    return 'POST'
+
+  @staticmethod
+  def body_fields():
+    return '*'
+
+
+class ApiCreateCompetitionResponse(KaggleObject):
+  r"""
+  Attributes:
+    id (int)
+      The created competition's numeric ID.
+    ref (str)
+      Normalized URL slug of the created competition (lowercased; may differ
+      from the input `slug`, which is normalized server-side).
+    url (str)
+      Full URL to the new competition (https://<host>/competitions/<ref>).
+  """
+
+  def __init__(self):
+    self._id = 0
+    self._ref = ""
+    self._url = ""
+    self._freeze()
+
+  @property
+  def id(self) -> int:
+    """The created competition's numeric ID."""
+    return self._id
+
+  @id.setter
+  def id(self, id: int):
+    if id is None:
+      del self.id
+      return
+    if not isinstance(id, int):
+      raise TypeError('id must be of type int')
+    self._id = id
+
+  @property
+  def ref(self) -> str:
+    r"""
+    Normalized URL slug of the created competition (lowercased; may differ
+    from the input `slug`, which is normalized server-side).
+    """
+    return self._ref
+
+  @ref.setter
+  def ref(self, ref: str):
+    if ref is None:
+      del self.ref
+      return
+    if not isinstance(ref, str):
+      raise TypeError('ref must be of type str')
+    self._ref = ref
+
+  @property
+  def url(self) -> str:
+    """Full URL to the new competition (https://<host>/competitions/<ref>)."""
+    return self._url
+
+  @url.setter
+  def url(self, url: str):
+    if url is None:
+      del self.url
+      return
+    if not isinstance(url, str):
+      raise TypeError('url must be of type str')
+    self._url = url
 
 
 class ApiCreateSubmissionRequest(KaggleObject):
@@ -1773,6 +2234,64 @@ class ApiGetSubmissionRequest(KaggleObject):
   @staticmethod
   def method():
     return 'POST'
+
+
+class ApiLaunchCompetitionRequest(KaggleObject):
+  r"""
+  Attributes:
+    competition_name (str)
+    future_time (datetime)
+      Optional. UTC time in the future at which to launch the competition. If
+      omitted, the competition launches immediately.
+  """
+
+  def __init__(self):
+    self._competition_name = ""
+    self._future_time = None
+    self._freeze()
+
+  @property
+  def competition_name(self) -> str:
+    return self._competition_name
+
+  @competition_name.setter
+  def competition_name(self, competition_name: str):
+    if competition_name is None:
+      del self.competition_name
+      return
+    if not isinstance(competition_name, str):
+      raise TypeError('competition_name must be of type str')
+    self._competition_name = competition_name
+
+  @property
+  def future_time(self) -> datetime:
+    r"""
+    Optional. UTC time in the future at which to launch the competition. If
+    omitted, the competition launches immediately.
+    """
+    return self._future_time
+
+  @future_time.setter
+  def future_time(self, future_time: datetime):
+    if future_time is None:
+      del self.future_time
+      return
+    if not isinstance(future_time, datetime):
+      raise TypeError('future_time must be of type datetime')
+    self._future_time = future_time
+
+  def endpoint(self):
+    path = '/api/v1/competitions/{competition_name}/launch'
+    return path.format_map(self.to_field_map(self))
+
+
+  @staticmethod
+  def method():
+    return 'POST'
+
+  @staticmethod
+  def body_fields():
+    return '*'
 
 
 class ApiLeaderboardSubmission(KaggleObject):
@@ -3404,6 +3923,9 @@ ApiCompetition._fields = [
 ApiCompetitionPage._fields = [
   FieldMetadata("name", "name", "_name", str, "", PredefinedSerializer()),
   FieldMetadata("content", "content", "_content", str, "", PredefinedSerializer()),
+  FieldMetadata("isPublished", "is_published", "_is_published", bool, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("postTitle", "post_title", "_post_title", str, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("mimeType", "mime_type", "_mime_type", str, None, PredefinedSerializer(), optional=True),
 ]
 
 ApiCompetitionTopic._fields = [
@@ -3430,6 +3952,34 @@ ApiCreateCodeSubmissionRequest._fields = [
 ApiCreateCodeSubmissionResponse._fields = [
   FieldMetadata("message", "message", "_message", str, "", PredefinedSerializer()),
   FieldMetadata("ref", "ref", "_ref", int, 0, PredefinedSerializer()),
+]
+
+ApiCreateCompetitionPageRequest._fields = [
+  FieldMetadata("competitionName", "competition_name", "_competition_name", str, "", PredefinedSerializer()),
+  FieldMetadata("page", "page", "_page", ApiCompetitionPage, None, KaggleObjectSerializer()),
+]
+
+ApiCreateCompetitionRequest._fields = [
+  FieldMetadata("title", "title", "_title", str, "", PredefinedSerializer()),
+  FieldMetadata("slug", "slug", "_slug", str, "", PredefinedSerializer()),
+  FieldMetadata("briefDescription", "brief_description", "_brief_description", str, "", PredefinedSerializer()),
+  FieldMetadata("privacy", "privacy", "_privacy", CompetitionPrivacy, CompetitionPrivacy.COMPETITION_PRIVACY_UNSPECIFIED, EnumSerializer()),
+  FieldMetadata("cloneCompetitionId", "clone_competition_id", "_clone_competition_id", int, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("disableKernels", "disable_kernels", "_disable_kernels", bool, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("restrictLinkToEmailList", "restrict_link_to_email_list", "_restrict_link_to_email_list", bool, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("licenseId", "license_id", "_license_id", int, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("organizationId", "organization_id", "_organization_id", int, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("cloneExcludeCompetitionData", "clone_exclude_competition_data", "_clone_exclude_competition_data", bool, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("clonePageNames", "clone_page_names", "_clone_page_names", str, [], ListSerializer(PredefinedSerializer())),
+  FieldMetadata("reward", "reward", "_reward", Reward, None, KaggleObjectSerializer(), optional=True),
+  FieldMetadata("hackathon", "hackathon", "_hackathon", bool, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("numPrizes", "num_prizes", "_num_prizes", int, None, PredefinedSerializer(), optional=True),
+]
+
+ApiCreateCompetitionResponse._fields = [
+  FieldMetadata("id", "id", "_id", int, 0, PredefinedSerializer()),
+  FieldMetadata("ref", "ref", "_ref", str, "", PredefinedSerializer()),
+  FieldMetadata("url", "url", "_url", str, "", PredefinedSerializer()),
 ]
 
 ApiCreateSubmissionRequest._fields = [
@@ -3516,6 +4066,11 @@ ApiGetLeaderboardResponse._fields = [
 
 ApiGetSubmissionRequest._fields = [
   FieldMetadata("ref", "ref", "_ref", int, 0, PredefinedSerializer()),
+]
+
+ApiLaunchCompetitionRequest._fields = [
+  FieldMetadata("competitionName", "competition_name", "_competition_name", str, "", PredefinedSerializer()),
+  FieldMetadata("futureTime", "future_time", "_future_time", datetime, None, DateTimeSerializer()),
 ]
 
 ApiLeaderboardSubmission._fields = [
