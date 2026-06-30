@@ -179,7 +179,10 @@ class TimeDeltaSerializer(ObjectSerializer):
 
     @staticmethod
     def _from_dict_value(value):
-        (seconds, nanosRaw) = value.rstrip("s").split(".")
+        raw_value = value.rstrip("s")
+        if "." not in raw_value:
+            return timedelta(seconds=int(raw_value))
+        seconds, nanosRaw = raw_value.split(".", 1)
         nanos = int(nanosRaw) * TimeDeltaSerializer.SUBSECOND_SCALING_FACTORS[len(nanosRaw)]
         return timedelta(seconds=int(seconds), microseconds=int(int(nanos) / 1000))
 
