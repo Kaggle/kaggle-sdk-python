@@ -1,5 +1,10 @@
 import enum
 
+class CompetitionDatabundleType(enum.Enum):
+  COMPETITION_DATABUNDLE_TYPE_UNSPECIFIED = 0
+  COMPETITION_DATABUNDLE_TYPE_PUBLIC = 1
+  COMPETITION_DATABUNDLE_TYPE_RERUN = 2
+
 class CompetitionListTab(enum.Enum):
   COMPETITION_LIST_TAB_GENERAL = 0
   """TODO(aip.dev/126): (-- api-linter: core::0126::unspecified=disabled --)"""

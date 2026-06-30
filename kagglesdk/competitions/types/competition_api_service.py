@@ -1,7 +1,9 @@
 from datetime import datetime
+from google.protobuf.field_mask_pb2 import FieldMask
 from kagglesdk.competitions.types.competition import Reward
-from kagglesdk.competitions.types.competition_enums import CompetitionListTab, CompetitionPrivacy, CompetitionSortBy, HostSegment, SubmissionGroup, SubmissionSortBy
+from kagglesdk.competitions.types.competition_enums import CompetitionDatabundleType, CompetitionListTab, CompetitionPrivacy, CompetitionSortBy, HostSegment, SubmissionGroup, SubmissionSortBy
 from kagglesdk.competitions.types.episode import EpisodeAgentState, EpisodeState, EpisodeType
+from kagglesdk.competitions.types.host_service import CompetitionSettings
 from kagglesdk.competitions.types.submission_status import SubmissionStatus
 from kagglesdk.discussions.types.discussions_enums import CommentListSortBy, TopicListSortBy
 from kagglesdk.kaggle_object import *
@@ -554,6 +556,53 @@ class ApiCompetition(KaggleObject):
     self._date_created = date_created
 
 
+class ApiCompetitionDataFile(KaggleObject):
+  r"""
+  Attributes:
+    name (str)
+      File name. May include `/`-separated path segments to place the file in a
+      subdirectory (e.g. 'train/images/img1.jpg').
+    token (str)
+      Blob token returned by /api/v1/blobs/upload after the matching upload PUT.
+  """
+
+  def __init__(self):
+    self._name = ""
+    self._token = ""
+    self._freeze()
+
+  @property
+  def name(self) -> str:
+    r"""
+    File name. May include `/`-separated path segments to place the file in a
+    subdirectory (e.g. 'train/images/img1.jpg').
+    """
+    return self._name
+
+  @name.setter
+  def name(self, name: str):
+    if name is None:
+      del self.name
+      return
+    if not isinstance(name, str):
+      raise TypeError('name must be of type str')
+    self._name = name
+
+  @property
+  def token(self) -> str:
+    """Blob token returned by /api/v1/blobs/upload after the matching upload PUT."""
+    return self._token
+
+  @token.setter
+  def token(self, token: str):
+    if token is None:
+      del self.token
+      return
+    if not isinstance(token, str):
+      raise TypeError('token must be of type str')
+    self._token = token
+
+
 class ApiCompetitionPage(KaggleObject):
   r"""
   NOTE: writable field names must stay in sync with `kaggle.competitions.Page`
@@ -952,6 +1001,170 @@ class ApiCreateCodeSubmissionResponse(KaggleObject):
     if not isinstance(ref, int):
       raise TypeError('ref must be of type int')
     self._ref = ref
+
+
+class ApiCreateCompetitionDataRequest(KaggleObject):
+  r"""
+  Attributes:
+    competition_name (str)
+    version_notes (str)
+      Required. Notes describing this version (e.g. 'Added test set').
+    files (ApiCompetitionDataFile)
+      All files that should appear in this version of the competition data.
+      Each push replaces the prior version's file set in full.
+    competition_databundle_type (CompetitionDatabundleType)
+      Optional. PUBLIC (default) is the data participants download; RERUN is the
+      private host-only data swapped in during rerun scoring. RERUN requires the
+      CompetitionPrivateDatabundle feature flag.
+  """
+
+  def __init__(self):
+    self._competition_name = ""
+    self._version_notes = ""
+    self._files = []
+    self._competition_databundle_type = CompetitionDatabundleType.COMPETITION_DATABUNDLE_TYPE_UNSPECIFIED
+    self._freeze()
+
+  @property
+  def competition_name(self) -> str:
+    return self._competition_name
+
+  @competition_name.setter
+  def competition_name(self, competition_name: str):
+    if competition_name is None:
+      del self.competition_name
+      return
+    if not isinstance(competition_name, str):
+      raise TypeError('competition_name must be of type str')
+    self._competition_name = competition_name
+
+  @property
+  def version_notes(self) -> str:
+    """Required. Notes describing this version (e.g. 'Added test set')."""
+    return self._version_notes
+
+  @version_notes.setter
+  def version_notes(self, version_notes: str):
+    if version_notes is None:
+      del self.version_notes
+      return
+    if not isinstance(version_notes, str):
+      raise TypeError('version_notes must be of type str')
+    self._version_notes = version_notes
+
+  @property
+  def files(self) -> Optional[List[Optional['ApiCompetitionDataFile']]]:
+    r"""
+    All files that should appear in this version of the competition data.
+    Each push replaces the prior version's file set in full.
+    """
+    return self._files
+
+  @files.setter
+  def files(self, files: Optional[List[Optional['ApiCompetitionDataFile']]]):
+    if files is None:
+      del self.files
+      return
+    if not isinstance(files, list):
+      raise TypeError('files must be of type list')
+    if not all([isinstance(t, ApiCompetitionDataFile) for t in files]):
+      raise TypeError('files must contain only items of type ApiCompetitionDataFile')
+    self._files = files
+
+  @property
+  def competition_databundle_type(self) -> 'CompetitionDatabundleType':
+    r"""
+    Optional. PUBLIC (default) is the data participants download; RERUN is the
+    private host-only data swapped in during rerun scoring. RERUN requires the
+    CompetitionPrivateDatabundle feature flag.
+    """
+    return self._competition_databundle_type
+
+  @competition_databundle_type.setter
+  def competition_databundle_type(self, competition_databundle_type: 'CompetitionDatabundleType'):
+    if competition_databundle_type is None:
+      del self.competition_databundle_type
+      return
+    if not isinstance(competition_databundle_type, CompetitionDatabundleType):
+      raise TypeError('competition_databundle_type must be of type CompetitionDatabundleType')
+    self._competition_databundle_type = competition_databundle_type
+
+  def endpoint(self):
+    path = '/api/v1/competitions/{competition_name}/data'
+    return path.format_map(self.to_field_map(self))
+
+
+  @staticmethod
+  def method():
+    return 'POST'
+
+  @staticmethod
+  def body_fields():
+    return '*'
+
+
+class ApiCreateCompetitionDataResponse(KaggleObject):
+  r"""
+  Attributes:
+    url (str)
+      Public URL of the competition (e.g. https://kaggle.com/c/<slug>).
+    databundle_id (int)
+    databundle_version_id (int)
+  """
+
+  def __init__(self):
+    self._url = ""
+    self._databundle_id = 0
+    self._databundle_version_id = 0
+    self._freeze()
+
+  @property
+  def url(self) -> str:
+    """Public URL of the competition (e.g. https://kaggle.com/c/<slug>)."""
+    return self._url
+
+  @url.setter
+  def url(self, url: str):
+    if url is None:
+      del self.url
+      return
+    if not isinstance(url, str):
+      raise TypeError('url must be of type str')
+    self._url = url
+
+  @property
+  def databundle_id(self) -> int:
+    return self._databundle_id
+
+  @databundle_id.setter
+  def databundle_id(self, databundle_id: int):
+    if databundle_id is None:
+      del self.databundle_id
+      return
+    if not isinstance(databundle_id, int):
+      raise TypeError('databundle_id must be of type int')
+    self._databundle_id = databundle_id
+
+  @property
+  def databundle_version_id(self) -> int:
+    return self._databundle_version_id
+
+  @databundle_version_id.setter
+  def databundle_version_id(self, databundle_version_id: int):
+    if databundle_version_id is None:
+      del self.databundle_version_id
+      return
+    if not isinstance(databundle_version_id, int):
+      raise TypeError('databundle_version_id must be of type int')
+    self._databundle_version_id = databundle_version_id
+
+  @property
+  def databundleId(self):
+    return self.databundle_id
+
+  @property
+  def databundleVersionId(self):
+    return self.databundle_version_id
 
 
 class ApiCreateCompetitionPageRequest(KaggleObject):
@@ -1607,6 +1820,54 @@ class ApiDataFile(KaggleObject):
     if not isinstance(creation_date, datetime):
       raise TypeError('creation_date must be of type datetime')
     self._creation_date = creation_date
+
+
+class ApiDeleteCompetitionPageRequest(KaggleObject):
+  r"""
+  Attributes:
+    competition_name (str)
+    page_name (str)
+  """
+
+  def __init__(self):
+    self._competition_name = ""
+    self._page_name = ""
+    self._freeze()
+
+  @property
+  def competition_name(self) -> str:
+    return self._competition_name
+
+  @competition_name.setter
+  def competition_name(self, competition_name: str):
+    if competition_name is None:
+      del self.competition_name
+      return
+    if not isinstance(competition_name, str):
+      raise TypeError('competition_name must be of type str')
+    self._competition_name = competition_name
+
+  @property
+  def page_name(self) -> str:
+    return self._page_name
+
+  @page_name.setter
+  def page_name(self, page_name: str):
+    if page_name is None:
+      del self.page_name
+      return
+    if not isinstance(page_name, str):
+      raise TypeError('page_name must be of type str')
+    self._page_name = page_name
+
+  def endpoint(self):
+    path = '/api/v1/competitions/{competition_name}/pages/{page_name}/delete'
+    return path.format_map(self.to_field_map(self))
+
+
+  @staticmethod
+  def method():
+    return 'POST'
 
 
 class ApiDownloadDataFileRequest(KaggleObject):
@@ -3879,6 +4140,175 @@ class ApiTopicMessage(KaggleObject):
     self._replies = replies
 
 
+class ApiUpdateCompetitionPageRequest(KaggleObject):
+  r"""
+  Attributes:
+    competition_name (str)
+    page_name (str)
+      Current name of the page to update (used as the identifier). If
+      `update_mask` includes 'name', the page will be renamed to `page.name`.
+    page (ApiCompetitionPage)
+    update_mask (FieldMask)
+      Field paths within `page` to apply. Supported paths: name, content,
+      is_published, post_title, mime_type. 'order' is intentionally unsupported
+      here (use SwapPageOrders).
+  """
+
+  def __init__(self):
+    self._competition_name = ""
+    self._page_name = ""
+    self._page = None
+    self._update_mask = None
+    self._freeze()
+
+  @property
+  def competition_name(self) -> str:
+    return self._competition_name
+
+  @competition_name.setter
+  def competition_name(self, competition_name: str):
+    if competition_name is None:
+      del self.competition_name
+      return
+    if not isinstance(competition_name, str):
+      raise TypeError('competition_name must be of type str')
+    self._competition_name = competition_name
+
+  @property
+  def page_name(self) -> str:
+    r"""
+    Current name of the page to update (used as the identifier). If
+    `update_mask` includes 'name', the page will be renamed to `page.name`.
+    """
+    return self._page_name
+
+  @page_name.setter
+  def page_name(self, page_name: str):
+    if page_name is None:
+      del self.page_name
+      return
+    if not isinstance(page_name, str):
+      raise TypeError('page_name must be of type str')
+    self._page_name = page_name
+
+  @property
+  def page(self) -> Optional['ApiCompetitionPage']:
+    return self._page
+
+  @page.setter
+  def page(self, page: Optional['ApiCompetitionPage']):
+    if page is None:
+      del self.page
+      return
+    if not isinstance(page, ApiCompetitionPage):
+      raise TypeError('page must be of type ApiCompetitionPage')
+    self._page = page
+
+  @property
+  def update_mask(self) -> FieldMask:
+    r"""
+    Field paths within `page` to apply. Supported paths: name, content,
+    is_published, post_title, mime_type. 'order' is intentionally unsupported
+    here (use SwapPageOrders).
+    """
+    return self._update_mask
+
+  @update_mask.setter
+  def update_mask(self, update_mask: FieldMask):
+    if update_mask is None:
+      del self.update_mask
+      return
+    if not isinstance(update_mask, FieldMask):
+      raise TypeError('update_mask must be of type FieldMask')
+    self._update_mask = update_mask
+
+  def endpoint(self):
+    path = '/api/v1/competitions/{competition_name}/pages/{page_name}/update'
+    return path.format_map(self.to_field_map(self))
+
+
+  @staticmethod
+  def method():
+    return 'POST'
+
+  @staticmethod
+  def body_fields():
+    return '*'
+
+
+class ApiUpdateCompetitionSettingsRequest(KaggleObject):
+  r"""
+  Attributes:
+    competition_name (str)
+    settings (CompetitionSettings)
+      Only fields listed in update_mask are written. Reserved CompetitionSettings
+      fields (deadline, reward, num_prizes, max_team_size, etc.) are web-only.
+    update_mask (FieldMask)
+  """
+
+  def __init__(self):
+    self._competition_name = ""
+    self._settings = None
+    self._update_mask = None
+    self._freeze()
+
+  @property
+  def competition_name(self) -> str:
+    return self._competition_name
+
+  @competition_name.setter
+  def competition_name(self, competition_name: str):
+    if competition_name is None:
+      del self.competition_name
+      return
+    if not isinstance(competition_name, str):
+      raise TypeError('competition_name must be of type str')
+    self._competition_name = competition_name
+
+  @property
+  def settings(self) -> Optional['CompetitionSettings']:
+    r"""
+    Only fields listed in update_mask are written. Reserved CompetitionSettings
+    fields (deadline, reward, num_prizes, max_team_size, etc.) are web-only.
+    """
+    return self._settings
+
+  @settings.setter
+  def settings(self, settings: Optional['CompetitionSettings']):
+    if settings is None:
+      del self.settings
+      return
+    if not isinstance(settings, CompetitionSettings):
+      raise TypeError('settings must be of type CompetitionSettings')
+    self._settings = settings
+
+  @property
+  def update_mask(self) -> FieldMask:
+    return self._update_mask
+
+  @update_mask.setter
+  def update_mask(self, update_mask: FieldMask):
+    if update_mask is None:
+      del self.update_mask
+      return
+    if not isinstance(update_mask, FieldMask):
+      raise TypeError('update_mask must be of type FieldMask')
+    self._update_mask = update_mask
+
+  def endpoint(self):
+    path = '/api/v1/competitions/{competition_name}/settings/update'
+    return path.format_map(self.to_field_map(self))
+
+
+  @staticmethod
+  def method():
+    return 'POST'
+
+  @staticmethod
+  def body_fields():
+    return '*'
+
+
 ApiCategory._fields = [
   FieldMetadata("ref", "ref", "_ref", str, "", PredefinedSerializer()),
   FieldMetadata("name", "name", "_name", str, None, PredefinedSerializer(), optional=True),
@@ -3920,6 +4350,11 @@ ApiCompetition._fields = [
   FieldMetadata("dateCreated", "date_created", "_date_created", datetime, None, DateTimeSerializer()),
 ]
 
+ApiCompetitionDataFile._fields = [
+  FieldMetadata("name", "name", "_name", str, "", PredefinedSerializer()),
+  FieldMetadata("token", "token", "_token", str, "", PredefinedSerializer()),
+]
+
 ApiCompetitionPage._fields = [
   FieldMetadata("name", "name", "_name", str, "", PredefinedSerializer()),
   FieldMetadata("content", "content", "_content", str, "", PredefinedSerializer()),
@@ -3952,6 +4387,19 @@ ApiCreateCodeSubmissionRequest._fields = [
 ApiCreateCodeSubmissionResponse._fields = [
   FieldMetadata("message", "message", "_message", str, "", PredefinedSerializer()),
   FieldMetadata("ref", "ref", "_ref", int, 0, PredefinedSerializer()),
+]
+
+ApiCreateCompetitionDataRequest._fields = [
+  FieldMetadata("competitionName", "competition_name", "_competition_name", str, "", PredefinedSerializer()),
+  FieldMetadata("versionNotes", "version_notes", "_version_notes", str, "", PredefinedSerializer()),
+  FieldMetadata("files", "files", "_files", ApiCompetitionDataFile, [], ListSerializer(KaggleObjectSerializer())),
+  FieldMetadata("competitionDatabundleType", "competition_databundle_type", "_competition_databundle_type", CompetitionDatabundleType, CompetitionDatabundleType.COMPETITION_DATABUNDLE_TYPE_UNSPECIFIED, EnumSerializer()),
+]
+
+ApiCreateCompetitionDataResponse._fields = [
+  FieldMetadata("url", "url", "_url", str, "", PredefinedSerializer()),
+  FieldMetadata("databundleId", "databundle_id", "_databundle_id", int, 0, PredefinedSerializer()),
+  FieldMetadata("databundleVersionId", "databundle_version_id", "_databundle_version_id", int, 0, PredefinedSerializer()),
 ]
 
 ApiCreateCompetitionPageRequest._fields = [
@@ -4002,6 +4450,11 @@ ApiDataFile._fields = [
   FieldMetadata("totalBytes", "total_bytes", "_total_bytes", int, 0, PredefinedSerializer()),
   FieldMetadata("url", "url", "_url", str, None, PredefinedSerializer(), optional=True),
   FieldMetadata("creationDate", "creation_date", "_creation_date", datetime, None, DateTimeSerializer()),
+]
+
+ApiDeleteCompetitionPageRequest._fields = [
+  FieldMetadata("competitionName", "competition_name", "_competition_name", str, "", PredefinedSerializer()),
+  FieldMetadata("pageName", "page_name", "_page_name", str, "", PredefinedSerializer()),
 ]
 
 ApiDownloadDataFileRequest._fields = [
@@ -4219,5 +4672,18 @@ ApiTopicMessage._fields = [
   FieldMetadata("isDeleted", "is_deleted", "_is_deleted", bool, False, PredefinedSerializer()),
   FieldMetadata("isPinned", "is_pinned", "_is_pinned", bool, False, PredefinedSerializer()),
   FieldMetadata("replies", "replies", "_replies", ApiTopicMessage, [], ListSerializer(KaggleObjectSerializer())),
+]
+
+ApiUpdateCompetitionPageRequest._fields = [
+  FieldMetadata("competitionName", "competition_name", "_competition_name", str, "", PredefinedSerializer()),
+  FieldMetadata("pageName", "page_name", "_page_name", str, "", PredefinedSerializer()),
+  FieldMetadata("page", "page", "_page", ApiCompetitionPage, None, KaggleObjectSerializer()),
+  FieldMetadata("updateMask", "update_mask", "_update_mask", FieldMask, None, FieldMaskSerializer()),
+]
+
+ApiUpdateCompetitionSettingsRequest._fields = [
+  FieldMetadata("competitionName", "competition_name", "_competition_name", str, "", PredefinedSerializer()),
+  FieldMetadata("settings", "settings", "_settings", CompetitionSettings, None, KaggleObjectSerializer()),
+  FieldMetadata("updateMask", "update_mask", "_update_mask", FieldMask, None, FieldMaskSerializer()),
 ]
 
