@@ -25,6 +25,8 @@ from kagglesdk.kernels.types.kernels_types import (
     AccessBehavior,
     GetKernelListDetailsRequest,
 )
+from kagglesdk.kaggle_object import TimeDeltaSerializer
+from kagglesdk.kernels.types.kernels_api_service import ApiGetAcceleratorQuotaStatisticsResponse
 
 Selector = ListCompetitionsRequest.Selector
 
@@ -568,6 +570,32 @@ class BackgroundOperationTests(unittest.TestCase):
         self.assertEqual("", operation.error)
         self.assertTrue("progress" in operation)
         self.assertEqual("90%", operation.progress)
+
+
+class TimeDeltaSerializerTests(unittest.TestCase):
+
+    def test_whole_second_duration(self):
+        self.assertEqual(TimeDeltaSerializer._from_dict_value("0s"), datetime.timedelta(0))
+        self.assertEqual(
+            TimeDeltaSerializer._from_dict_value("151s"),
+            datetime.timedelta(seconds=151),
+        )
+
+    def test_fractional_second_duration(self):
+        self.assertEqual(
+            TimeDeltaSerializer._from_dict_value("151.500s"),
+            datetime.timedelta(seconds=151, microseconds=500000),
+        )
+
+    def test_quota_response_deserializes_whole_second_durations(self):
+        response = ApiGetAcceleratorQuotaStatisticsResponse.from_json(
+            '{"gpuQuota":{"timeUsed":"0s","totalTimeAllowed":"151s"}}'
+        )
+        self.assertEqual(response.gpu_quota.time_used, datetime.timedelta(0))
+        self.assertEqual(
+            response.gpu_quota.total_time_allowed,
+            datetime.timedelta(seconds=151),
+        )
 
 
 if __name__ == "__main__":
