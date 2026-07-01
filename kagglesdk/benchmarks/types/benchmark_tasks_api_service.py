@@ -1,6 +1,7 @@
 from datetime import datetime
 from kagglesdk.benchmarks.types.benchmark_enums import BenchmarkTaskRunState, BenchmarkTaskVersionCreationState, BenchmarkTaskVersionSource
 from kagglesdk.benchmarks.types.benchmark_task_run_service import BatchScheduleBenchmarkModelVersionResult
+from kagglesdk.benchmarks.types.benchmark_task_service import EnvVariable, UserSecret
 from kagglesdk.benchmarks.types.benchmark_types import BenchmarkTaskOptions
 from kagglesdk.kaggle_object import *
 from typing import List, Optional
@@ -542,12 +543,17 @@ class ApiCreateBenchmarkTaskRequest(KaggleObject):
       all previously-attached sources for that version. Callers that want to
       preserve the previous version's options must echo them back on each
       push.
+    definition (BenchmarkTaskDefinition)
+      What backs this task (notebook / docker image / Harbor git repo) and
+      any per-type configuration. Pairs with the BenchmarkTaskDefinitionType
+      enum stored on the entity.
   """
 
   def __init__(self):
     self._slug = ""
     self._text = ""
     self._options = None
+    self._definition = None
     self._freeze()
 
   @property
@@ -606,6 +612,24 @@ class ApiCreateBenchmarkTaskRequest(KaggleObject):
     if not isinstance(options, BenchmarkTaskOptions):
       raise TypeError('options must be of type BenchmarkTaskOptions')
     self._options = options
+
+  @property
+  def definition(self) -> Optional['BenchmarkTaskDefinition']:
+    r"""
+    What backs this task (notebook / docker image / Harbor git repo) and
+    any per-type configuration. Pairs with the BenchmarkTaskDefinitionType
+    enum stored on the entity.
+    """
+    return self._definition or None
+
+  @definition.setter
+  def definition(self, definition: Optional[Optional['BenchmarkTaskDefinition']]):
+    if definition is None:
+      del self.definition
+      return
+    if not isinstance(definition, BenchmarkTaskDefinition):
+      raise TypeError('definition must be of type BenchmarkTaskDefinition')
+    self._definition = definition
 
   def endpoint(self):
     path = '/api/v1/benchmarks/tasks/push'
@@ -1183,6 +1207,182 @@ class ApiPublishBenchmarkTaskRequest(KaggleObject):
     return '*'
 
 
+class BenchmarkTaskDefinition(KaggleObject):
+  r"""
+  Attributes:
+    notebook (BenchmarkTaskNotebookDefinition)
+    docker_image (BenchmarkTaskDockerImageDefinition)
+    harbor_git (BenchmarkTaskGitDefinition)
+  """
+
+  def __init__(self):
+    self._notebook = None
+    self._docker_image = None
+    self._harbor_git = None
+    self._freeze()
+
+  @property
+  def notebook(self) -> Optional['BenchmarkTaskNotebookDefinition']:
+    return self._notebook or None
+
+  @notebook.setter
+  def notebook(self, notebook: Optional['BenchmarkTaskNotebookDefinition']):
+    if notebook is None:
+      del self.notebook
+      return
+    if not isinstance(notebook, BenchmarkTaskNotebookDefinition):
+      raise TypeError('notebook must be of type BenchmarkTaskNotebookDefinition')
+    del self.docker_image
+    del self.harbor_git
+    self._notebook = notebook
+
+  @property
+  def docker_image(self) -> Optional['BenchmarkTaskDockerImageDefinition']:
+    return self._docker_image or None
+
+  @docker_image.setter
+  def docker_image(self, docker_image: Optional['BenchmarkTaskDockerImageDefinition']):
+    if docker_image is None:
+      del self.docker_image
+      return
+    if not isinstance(docker_image, BenchmarkTaskDockerImageDefinition):
+      raise TypeError('docker_image must be of type BenchmarkTaskDockerImageDefinition')
+    del self.notebook
+    del self.harbor_git
+    self._docker_image = docker_image
+
+  @property
+  def harbor_git(self) -> Optional['BenchmarkTaskGitDefinition']:
+    return self._harbor_git or None
+
+  @harbor_git.setter
+  def harbor_git(self, harbor_git: Optional['BenchmarkTaskGitDefinition']):
+    if harbor_git is None:
+      del self.harbor_git
+      return
+    if not isinstance(harbor_git, BenchmarkTaskGitDefinition):
+      raise TypeError('harbor_git must be of type BenchmarkTaskGitDefinition')
+    del self.notebook
+    del self.docker_image
+    self._harbor_git = harbor_git
+
+
+class BenchmarkTaskDockerImageDefinition(KaggleObject):
+  r"""
+  TODO(bml): Setup for docker images
+
+  """
+
+  pass
+
+class BenchmarkTaskGitDefinition(KaggleObject):
+  r"""
+  Harbor task definition in a GitHub repo subpath (at a specific commit SHA).
+
+  Attributes:
+    url (str)
+      HTTPS URL of the GitHub repo containing the Harbor task.
+    commit_hash (str)
+      Specific commit SHA for the repository to pin against.
+    subpath (str)
+      Subpath to the task within the repo.
+    env_variables (EnvVariable)
+      Optional. Environment variables to expose to the Harbor session container.
+    secrets (UserSecret)
+      Optional. Create/update UserSecrets inline before running.
+  """
+
+  def __init__(self):
+    self._url = ""
+    self._commit_hash = ""
+    self._subpath = ""
+    self._env_variables = []
+    self._secrets = []
+    self._freeze()
+
+  @property
+  def url(self) -> str:
+    """HTTPS URL of the GitHub repo containing the Harbor task."""
+    return self._url
+
+  @url.setter
+  def url(self, url: str):
+    if url is None:
+      del self.url
+      return
+    if not isinstance(url, str):
+      raise TypeError('url must be of type str')
+    self._url = url
+
+  @property
+  def commit_hash(self) -> str:
+    """Specific commit SHA for the repository to pin against."""
+    return self._commit_hash
+
+  @commit_hash.setter
+  def commit_hash(self, commit_hash: str):
+    if commit_hash is None:
+      del self.commit_hash
+      return
+    if not isinstance(commit_hash, str):
+      raise TypeError('commit_hash must be of type str')
+    self._commit_hash = commit_hash
+
+  @property
+  def subpath(self) -> str:
+    """Subpath to the task within the repo."""
+    return self._subpath
+
+  @subpath.setter
+  def subpath(self, subpath: str):
+    if subpath is None:
+      del self.subpath
+      return
+    if not isinstance(subpath, str):
+      raise TypeError('subpath must be of type str')
+    self._subpath = subpath
+
+  @property
+  def env_variables(self) -> Optional[List[Optional['EnvVariable']]]:
+    """Optional. Environment variables to expose to the Harbor session container."""
+    return self._env_variables
+
+  @env_variables.setter
+  def env_variables(self, env_variables: Optional[List[Optional['EnvVariable']]]):
+    if env_variables is None:
+      del self.env_variables
+      return
+    if not isinstance(env_variables, list):
+      raise TypeError('env_variables must be of type list')
+    if not all([isinstance(t, EnvVariable) for t in env_variables]):
+      raise TypeError('env_variables must contain only items of type EnvVariable')
+    self._env_variables = env_variables
+
+  @property
+  def secrets(self) -> Optional[List[Optional['UserSecret']]]:
+    """Optional. Create/update UserSecrets inline before running."""
+    return self._secrets
+
+  @secrets.setter
+  def secrets(self, secrets: Optional[List[Optional['UserSecret']]]):
+    if secrets is None:
+      del self.secrets
+      return
+    if not isinstance(secrets, list):
+      raise TypeError('secrets must be of type list')
+    if not all([isinstance(t, UserSecret) for t in secrets]):
+      raise TypeError('secrets must contain only items of type UserSecret')
+    self._secrets = secrets
+
+
+class BenchmarkTaskNotebookDefinition(KaggleObject):
+  r"""
+  TODO(bml): Get parity with text + options fields in the create request proto
+
+  """
+
+  pass
+
 ApiBatchScheduleBenchmarkTaskRunsRequest._fields = [
   FieldMetadata("taskSlugs", "task_slugs", "_task_slugs", ApiBenchmarkTaskSlug, [], ListSerializer(KaggleObjectSerializer())),
   FieldMetadata("modelVersionSlugs", "model_version_slugs", "_model_version_slugs", str, [], ListSerializer(PredefinedSerializer())),
@@ -1226,6 +1426,7 @@ ApiCreateBenchmarkTaskRequest._fields = [
   FieldMetadata("slug", "slug", "_slug", str, "", PredefinedSerializer()),
   FieldMetadata("text", "text", "_text", str, "", PredefinedSerializer()),
   FieldMetadata("options", "options", "_options", BenchmarkTaskOptions, None, KaggleObjectSerializer(), optional=True),
+  FieldMetadata("definition", "definition", "_definition", BenchmarkTaskDefinition, None, KaggleObjectSerializer(), optional=True),
 ]
 
 ApiDownloadBenchmarkTaskRunOutputRequest._fields = [
@@ -1280,4 +1481,22 @@ ApiPublishBenchmarkTaskRequest._fields = [
   FieldMetadata("slug", "slug", "_slug", ApiBenchmarkTaskSlug, None, KaggleObjectSerializer()),
   FieldMetadata("publishBackingNotebook", "publish_backing_notebook", "_publish_backing_notebook", bool, False, PredefinedSerializer()),
 ]
+
+BenchmarkTaskDefinition._fields = [
+  FieldMetadata("notebook", "notebook", "_notebook", BenchmarkTaskNotebookDefinition, None, KaggleObjectSerializer(), optional=True),
+  FieldMetadata("dockerImage", "docker_image", "_docker_image", BenchmarkTaskDockerImageDefinition, None, KaggleObjectSerializer(), optional=True),
+  FieldMetadata("harborGit", "harbor_git", "_harbor_git", BenchmarkTaskGitDefinition, None, KaggleObjectSerializer(), optional=True),
+]
+
+BenchmarkTaskDockerImageDefinition._fields = []
+
+BenchmarkTaskGitDefinition._fields = [
+  FieldMetadata("url", "url", "_url", str, "", PredefinedSerializer()),
+  FieldMetadata("commitHash", "commit_hash", "_commit_hash", str, "", PredefinedSerializer()),
+  FieldMetadata("subpath", "subpath", "_subpath", str, "", PredefinedSerializer()),
+  FieldMetadata("envVariables", "env_variables", "_env_variables", EnvVariable, [], ListSerializer(KaggleObjectSerializer())),
+  FieldMetadata("secrets", "secrets", "_secrets", UserSecret, [], ListSerializer(KaggleObjectSerializer())),
+]
+
+BenchmarkTaskNotebookDefinition._fields = []
 

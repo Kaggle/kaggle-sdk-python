@@ -2,6 +2,22 @@ import enum
 from kagglesdk.kaggle_object import *
 from typing import Optional
 
+class PubliclyCloneable(enum.Enum):
+  PUBLICLY_CLONEABLE_UNSPECIFIED = 0
+  """not cloneable"""
+  PUBLICLY_CLONEABLE_WITH_PRIVATE_SOLUTION_FILE = 1
+  r"""
+  publicly cloneable - cloning this competition will NOT give you access to
+  solution file
+  """
+  PUBLICLY_CLONEABLE_WITH_PUBLIC_SOLUTION_FILE = 2
+  r"""
+  publicly cloneable - cloning this competition will give you access to the
+  solution file
+  """
+  PUBLICLY_CLONEABLE_ENABLE_HACKATHON_CLONING = 3
+  """enables non-admin non-host users to clone a closed hackathon competition"""
+
 class RewardTypeId(enum.Enum):
   REWARD_TYPE_ID_UNSPECIFIED = 0
   USD = 1

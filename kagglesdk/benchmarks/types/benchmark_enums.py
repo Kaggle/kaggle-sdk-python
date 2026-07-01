@@ -38,8 +38,9 @@ class BenchmarkTaskVersionSource(enum.Enum):
   """Created by the LIH 'Benchmark Sandbox: Discover What Works' flow."""
   WEB = 2
   r"""
-  Created via the kaggle.com web client (e.g. CreateBenchmarkTaskFromPrompt
-  or saving a benchmark task from a kernel session).
+  Created via a kaggle.com web RPC (e.g. CreateBenchmarkTaskFromPrompt,
+  CreateBenchmarkTaskFromDockerImage, or saving a benchmark task from a
+  kernel session).
   """
   CLI = 3
   """Created via the Kaggle CLI / public BenchmarkTasksApi handler."""

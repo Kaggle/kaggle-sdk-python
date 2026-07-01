@@ -779,7 +779,7 @@ class ApiGetKernelSessionLogsStreamRequest(KaggleObject):
     self._wait_for_logs_url_seconds = wait_for_logs_url_seconds
 
   def endpoint(self):
-    path = '/api/v1/kernels/sessions/{kernel_session_id}/logs/stream'
+    path = 'Custom endpoint required'
     return path.format_map(self.to_field_map(self))
 
   @staticmethod
