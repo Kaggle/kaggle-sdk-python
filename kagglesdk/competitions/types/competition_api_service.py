@@ -1565,6 +1565,64 @@ class ApiCreateCompetitionResponse(KaggleObject):
     self._url = url
 
 
+class ApiCreateCompetitionSolutionRequest(KaggleObject):
+  r"""
+  Attributes:
+    competition_name (str)
+    blob_token (str)
+      Blob token returned by /api/v1/blobs/upload after the matching upload PUT.
+      The blob must be a single CSV in the same shape as a submission file.
+  """
+
+  def __init__(self):
+    self._competition_name = ""
+    self._blob_token = ""
+    self._freeze()
+
+  @property
+  def competition_name(self) -> str:
+    return self._competition_name
+
+  @competition_name.setter
+  def competition_name(self, competition_name: str):
+    if competition_name is None:
+      del self.competition_name
+      return
+    if not isinstance(competition_name, str):
+      raise TypeError('competition_name must be of type str')
+    self._competition_name = competition_name
+
+  @property
+  def blob_token(self) -> str:
+    r"""
+    Blob token returned by /api/v1/blobs/upload after the matching upload PUT.
+    The blob must be a single CSV in the same shape as a submission file.
+    """
+    return self._blob_token
+
+  @blob_token.setter
+  def blob_token(self, blob_token: str):
+    if blob_token is None:
+      del self.blob_token
+      return
+    if not isinstance(blob_token, str):
+      raise TypeError('blob_token must be of type str')
+    self._blob_token = blob_token
+
+  def endpoint(self):
+    path = '/api/v1/competitions/{competition_name}/solution'
+    return path.format_map(self.to_field_map(self))
+
+
+  @staticmethod
+  def method():
+    return 'POST'
+
+  @staticmethod
+  def body_fields():
+    return '*'
+
+
 class ApiCreateSubmissionRequest(KaggleObject):
   r"""
   Attributes:
@@ -4428,6 +4486,11 @@ ApiCreateCompetitionResponse._fields = [
   FieldMetadata("id", "id", "_id", int, 0, PredefinedSerializer()),
   FieldMetadata("ref", "ref", "_ref", str, "", PredefinedSerializer()),
   FieldMetadata("url", "url", "_url", str, "", PredefinedSerializer()),
+]
+
+ApiCreateCompetitionSolutionRequest._fields = [
+  FieldMetadata("competitionName", "competition_name", "_competition_name", str, "", PredefinedSerializer()),
+  FieldMetadata("blobToken", "blob_token", "_blob_token", str, "", PredefinedSerializer()),
 ]
 
 ApiCreateSubmissionRequest._fields = [

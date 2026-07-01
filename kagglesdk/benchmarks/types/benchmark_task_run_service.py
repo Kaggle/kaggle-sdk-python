@@ -16,6 +16,10 @@ class BatchScheduleBenchmarkModelVersionResult(KaggleObject):
     benchmark_task_version_id (int)
       One of the values provided in
       BatchScheduleBenchmarkTaskRunsRequest.benchmark_task_versions
+    parent_task_version_id (int)
+      When the requested benchmark_task_version_id is a child of another task
+      version, scheduling is redirected to the parent and this field reports the
+      parent's id. Unset when the requested task version was executed directly.
   """
 
   def __init__(self):
@@ -23,6 +27,7 @@ class BatchScheduleBenchmarkModelVersionResult(KaggleObject):
     self._run_scheduled = False
     self._run_skipped_reason = None
     self._benchmark_task_version_id = 0
+    self._parent_task_version_id = None
     self._freeze()
 
   @property
@@ -93,11 +98,30 @@ class BatchScheduleBenchmarkModelVersionResult(KaggleObject):
       raise TypeError('run_skipped_reason must be of type str')
     self._run_skipped_reason = run_skipped_reason
 
+  @property
+  def parent_task_version_id(self) -> int:
+    r"""
+    When the requested benchmark_task_version_id is a child of another task
+    version, scheduling is redirected to the parent and this field reports the
+    parent's id. Unset when the requested task version was executed directly.
+    """
+    return self._parent_task_version_id or 0
+
+  @parent_task_version_id.setter
+  def parent_task_version_id(self, parent_task_version_id: Optional[int]):
+    if parent_task_version_id is None:
+      del self.parent_task_version_id
+      return
+    if not isinstance(parent_task_version_id, int):
+      raise TypeError('parent_task_version_id must be of type int')
+    self._parent_task_version_id = parent_task_version_id
+
 
 BatchScheduleBenchmarkModelVersionResult._fields = [
   FieldMetadata("benchmarkModelVersionId", "benchmark_model_version_id", "_benchmark_model_version_id", int, 0, PredefinedSerializer()),
   FieldMetadata("runScheduled", "run_scheduled", "_run_scheduled", bool, False, PredefinedSerializer()),
   FieldMetadata("runSkippedReason", "run_skipped_reason", "_run_skipped_reason", str, None, PredefinedSerializer(), optional=True),
   FieldMetadata("benchmarkTaskVersionId", "benchmark_task_version_id", "_benchmark_task_version_id", int, 0, PredefinedSerializer()),
+  FieldMetadata("parentTaskVersionId", "parent_task_version_id", "_parent_task_version_id", int, None, PredefinedSerializer(), optional=True),
 ]
 
