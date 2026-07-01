@@ -256,8 +256,8 @@ class FieldMetadata(object):
         if self.json_name not in json_dict:
             return  # Ignore unknown fields
         value = json_dict[self.json_name]
-        if value == self.default_value:
-            return  # Ignore default values
+        if value is None or value == self.default_value:
+            return  # Ignore null and default values
         try:
             setattr(
                 instance,
