@@ -87,6 +87,18 @@ class CompetitionSettings(KaggleObject):
       Host-authored template Notebook the frontend wraps the user's artifact
       (e.g. skill.md) into before submitting. Parallels
       main_py_override_kernel_id.
+    gateway_kernel_id (int)
+      'Gateway Kernel Id' in the UI. Identifies the notebook whose latest
+      version is used as the source for the parent (gateway) container in
+      go/project-hearth rerun sessions.
+    rerun_max_stagger_minutes (float)
+      'Rerun Max Stagger Minutes' in the UI. Random delay added before a
+      scoring run kicks off (sampled from 0..this value, clamped to 60). Used
+      for sync-rerun / Hearth competitions to limit private dataset probing.
+    directly_responsible_user_id (int)
+      HOSTS SETTINGS GROUP: ADMIN ONLY (field numbers 120-139)
+      'Directly Responsible User' in the UI. Kaggle admin responsible for the
+      competition. Only used for logging purposes.
   """
 
   def __init__(self):
@@ -116,6 +128,9 @@ class CompetitionSettings(KaggleObject):
     self._max_cpu_runtime_minutes = None
     self._max_gpu_runtime_minutes = None
     self._rerun_override_kernel_id = None
+    self._gateway_kernel_id = None
+    self._rerun_max_stagger_minutes = 0.0
+    self._directly_responsible_user_id = None
     self._freeze()
 
   @property
@@ -522,6 +537,60 @@ class CompetitionSettings(KaggleObject):
       raise TypeError('rerun_override_kernel_id must be of type int')
     self._rerun_override_kernel_id = rerun_override_kernel_id
 
+  @property
+  def gateway_kernel_id(self) -> int:
+    r"""
+    'Gateway Kernel Id' in the UI. Identifies the notebook whose latest
+    version is used as the source for the parent (gateway) container in
+    go/project-hearth rerun sessions.
+    """
+    return self._gateway_kernel_id or 0
+
+  @gateway_kernel_id.setter
+  def gateway_kernel_id(self, gateway_kernel_id: Optional[int]):
+    if gateway_kernel_id is None:
+      del self.gateway_kernel_id
+      return
+    if not isinstance(gateway_kernel_id, int):
+      raise TypeError('gateway_kernel_id must be of type int')
+    self._gateway_kernel_id = gateway_kernel_id
+
+  @property
+  def rerun_max_stagger_minutes(self) -> float:
+    r"""
+    'Rerun Max Stagger Minutes' in the UI. Random delay added before a
+    scoring run kicks off (sampled from 0..this value, clamped to 60). Used
+    for sync-rerun / Hearth competitions to limit private dataset probing.
+    """
+    return self._rerun_max_stagger_minutes
+
+  @rerun_max_stagger_minutes.setter
+  def rerun_max_stagger_minutes(self, rerun_max_stagger_minutes: float):
+    if rerun_max_stagger_minutes is None:
+      del self.rerun_max_stagger_minutes
+      return
+    if not isinstance(rerun_max_stagger_minutes, float):
+      raise TypeError('rerun_max_stagger_minutes must be of type float')
+    self._rerun_max_stagger_minutes = rerun_max_stagger_minutes
+
+  @property
+  def directly_responsible_user_id(self) -> int:
+    r"""
+    HOSTS SETTINGS GROUP: ADMIN ONLY (field numbers 120-139)
+    'Directly Responsible User' in the UI. Kaggle admin responsible for the
+    competition. Only used for logging purposes.
+    """
+    return self._directly_responsible_user_id or 0
+
+  @directly_responsible_user_id.setter
+  def directly_responsible_user_id(self, directly_responsible_user_id: Optional[int]):
+    if directly_responsible_user_id is None:
+      del self.directly_responsible_user_id
+      return
+    if not isinstance(directly_responsible_user_id, int):
+      raise TypeError('directly_responsible_user_id must be of type int')
+    self._directly_responsible_user_id = directly_responsible_user_id
+
 
 CompetitionSettings._fields = [
   FieldMetadata("title", "title", "_title", str, "", PredefinedSerializer()),
@@ -550,5 +619,8 @@ CompetitionSettings._fields = [
   FieldMetadata("maxCpuRuntimeMinutes", "max_cpu_runtime_minutes", "_max_cpu_runtime_minutes", int, None, PredefinedSerializer(), optional=True),
   FieldMetadata("maxGpuRuntimeMinutes", "max_gpu_runtime_minutes", "_max_gpu_runtime_minutes", int, None, PredefinedSerializer(), optional=True),
   FieldMetadata("rerunOverrideKernelId", "rerun_override_kernel_id", "_rerun_override_kernel_id", int, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("gatewayKernelId", "gateway_kernel_id", "_gateway_kernel_id", int, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("rerunMaxStaggerMinutes", "rerun_max_stagger_minutes", "_rerun_max_stagger_minutes", float, 0.0, PredefinedSerializer()),
+  FieldMetadata("directlyResponsibleUserId", "directly_responsible_user_id", "_directly_responsible_user_id", int, None, PredefinedSerializer(), optional=True),
 ]
 

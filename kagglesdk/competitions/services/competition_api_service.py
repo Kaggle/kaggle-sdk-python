@@ -1,6 +1,6 @@
 from kagglesdk.common.types.file_download import FileDownload
 from kagglesdk.common.types.http_redirect import HttpRedirect
-from kagglesdk.competitions.types.competition_api_service import ApiCompetition, ApiCompetitionPage, ApiCreateCodeSubmissionRequest, ApiCreateCodeSubmissionResponse, ApiCreateCompetitionDataRequest, ApiCreateCompetitionDataResponse, ApiCreateCompetitionPageRequest, ApiCreateCompetitionRequest, ApiCreateCompetitionResponse, ApiCreateCompetitionSolutionRequest, ApiCreateSubmissionRequest, ApiCreateSubmissionResponse, ApiDeleteCompetitionPageRequest, ApiDownloadDataFileRequest, ApiDownloadDataFilesRequest, ApiDownloadLeaderboardRequest, ApiGetCompetitionDataFilesSummaryRequest, ApiGetCompetitionRequest, ApiGetEpisodeAgentLogsRequest, ApiGetEpisodeReplayRequest, ApiGetLeaderboardRequest, ApiGetLeaderboardResponse, ApiGetSubmissionRequest, ApiLaunchCompetitionRequest, ApiListCompetitionPagesRequest, ApiListCompetitionPagesResponse, ApiListCompetitionsRequest, ApiListCompetitionsResponse, ApiListCompetitionTopicsRequest, ApiListCompetitionTopicsResponse, ApiListDataFilesRequest, ApiListDataFilesResponse, ApiListDataTreeFilesRequest, ApiListSubmissionEpisodesRequest, ApiListSubmissionEpisodesResponse, ApiListSubmissionsRequest, ApiListSubmissionsResponse, ApiListTeamPublicSubmissionsRequest, ApiListTeamPublicSubmissionsResponse, ApiListTopicMessagesRequest, ApiListTopicMessagesResponse, ApiStartSubmissionUploadRequest, ApiStartSubmissionUploadResponse, ApiSubmission, ApiUpdateCompetitionPageRequest, ApiUpdateCompetitionSettingsRequest
+from kagglesdk.competitions.types.competition_api_service import ApiCompetition, ApiCompetitionPage, ApiCompetitionSolutionStatus, ApiCreateCodeSubmissionRequest, ApiCreateCodeSubmissionResponse, ApiCreateCompetitionDataRequest, ApiCreateCompetitionDataResponse, ApiCreateCompetitionPageRequest, ApiCreateCompetitionRequest, ApiCreateCompetitionResponse, ApiCreateCompetitionSampleSubmissionRequest, ApiCreateCompetitionSolutionRequest, ApiCreateSubmissionRequest, ApiCreateSubmissionResponse, ApiDeleteCompetitionPageRequest, ApiDownloadDataFileRequest, ApiDownloadDataFilesRequest, ApiDownloadLeaderboardRequest, ApiGetCompetitionDataFilesSummaryRequest, ApiGetCompetitionRequest, ApiGetCompetitionSettingsRequest, ApiGetCompetitionSolutionStatusRequest, ApiGetEpisodeAgentLogsRequest, ApiGetEpisodeReplayRequest, ApiGetLeaderboardRequest, ApiGetLeaderboardResponse, ApiGetSubmissionRequest, ApiLaunchCompetitionRequest, ApiListCompetitionHostsRequest, ApiListCompetitionHostsResponse, ApiListCompetitionPagesRequest, ApiListCompetitionPagesResponse, ApiListCompetitionsRequest, ApiListCompetitionsResponse, ApiListCompetitionTopicsRequest, ApiListCompetitionTopicsResponse, ApiListDataFilesRequest, ApiListDataFilesResponse, ApiListDataTreeFilesRequest, ApiListSubmissionEpisodesRequest, ApiListSubmissionEpisodesResponse, ApiListSubmissionsRequest, ApiListSubmissionsResponse, ApiListTeamPublicSubmissionsRequest, ApiListTeamPublicSubmissionsResponse, ApiListTopicMessagesRequest, ApiListTopicMessagesResponse, ApiStartSubmissionUploadRequest, ApiStartSubmissionUploadResponse, ApiSubmission, ApiUpdateCompetitionPageRequest, ApiUpdateCompetitionSettingsRequest
 from kagglesdk.competitions.types.host_service import CompetitionSettings
 from kagglesdk.datasets.databundles.types.databundle_api_types import ApiDirectoryContent, ApiFilesSummary
 from kagglesdk.kaggle_http_client import KaggleHttpClient
@@ -298,6 +298,18 @@ class CompetitionApiClient(object):
 
     return self._client.call("competitions.CompetitionApiService", "UpdateCompetitionSettings", request, CompetitionSettings)
 
+  def get_competition_settings(self, request: ApiGetCompetitionSettingsRequest = None) -> CompetitionSettings:
+    r"""
+    Args:
+      request (ApiGetCompetitionSettingsRequest):
+        The request object; initialized to empty instance if not specified.
+    """
+
+    if request is None:
+      request = ApiGetCompetitionSettingsRequest()
+
+    return self._client.call("competitions.CompetitionApiService", "GetCompetitionSettings", request, CompetitionSettings)
+
   def launch_competition(self, request: ApiLaunchCompetitionRequest = None):
     r"""
     Args:
@@ -341,6 +353,46 @@ class CompetitionApiClient(object):
       request = ApiCreateCompetitionSolutionRequest()
 
     self._client.call("competitions.CompetitionApiService", "CreateCompetitionSolution", request, None)
+
+  def get_competition_solution_status(self, request: ApiGetCompetitionSolutionStatusRequest = None) -> ApiCompetitionSolutionStatus:
+    r"""
+    Args:
+      request (ApiGetCompetitionSolutionStatusRequest):
+        The request object; initialized to empty instance if not specified.
+    """
+
+    if request is None:
+      request = ApiGetCompetitionSolutionStatusRequest()
+
+    return self._client.call("competitions.CompetitionApiService", "GetCompetitionSolutionStatus", request, ApiCompetitionSolutionStatus)
+
+  def create_competition_sample_submission(self, request: ApiCreateCompetitionSampleSubmissionRequest = None):
+    r"""
+    Not MCP-exported: the prerequisite blob upload step (start_blob_upload +
+    signed-URL PUT) has no MCP equivalent, so the tool would be unusable from
+    MCP clients today. Public REST + Python SDK only; the kaggle CLI drives it.
+
+    Args:
+      request (ApiCreateCompetitionSampleSubmissionRequest):
+        The request object; initialized to empty instance if not specified.
+    """
+
+    if request is None:
+      request = ApiCreateCompetitionSampleSubmissionRequest()
+
+    self._client.call("competitions.CompetitionApiService", "CreateCompetitionSampleSubmission", request, None)
+
+  def list_competition_hosts(self, request: ApiListCompetitionHostsRequest = None) -> ApiListCompetitionHostsResponse:
+    r"""
+    Args:
+      request (ApiListCompetitionHostsRequest):
+        The request object; initialized to empty instance if not specified.
+    """
+
+    if request is None:
+      request = ApiListCompetitionHostsRequest()
+
+    return self._client.call("competitions.CompetitionApiService", "ListCompetitionHosts", request, ApiListCompetitionHostsResponse)
 
   def list_competition_topics(self, request: ApiListCompetitionTopicsRequest = None) -> ApiListCompetitionTopicsResponse:
     r"""
