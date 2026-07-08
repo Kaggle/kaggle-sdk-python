@@ -29,5 +29,8 @@ dependencies = [
 "Homepage" = "https://github.com/Kaggle/kagglesdk"
 "Bug Tracker" = "https://github.com/Kaggle/kagglesdk/issues"
 
+[tool.uv]
+exclude-newer = "2026-03-31"
+
 [tool.hatch.version]
 path = "kagglesdk/__init__.py"
