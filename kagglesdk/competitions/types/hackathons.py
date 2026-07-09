@@ -1,3 +1,4 @@
+from datetime import datetime
 from kagglesdk.competitions.types.competition_enums import HackathonTrackPrizeType
 from kagglesdk.competitions.types.team import Team
 from kagglesdk.discussions.types.writeup_types import WriteUp
@@ -204,6 +205,7 @@ class HackathonWriteUp(KaggleObject):
     should_create_doi (bool)
       Whether or not the user indicated a DOI should be created for the hackathon
       writeup when the competition closes.
+    update_time (datetime)
   """
 
   def __init__(self):
@@ -217,6 +219,7 @@ class HackathonWriteUp(KaggleObject):
     self._owner_host_user_id = None
     self._owner_judge_user_id = None
     self._should_create_doi = None
+    self._update_time = None
     self._freeze()
 
   @property
@@ -357,6 +360,18 @@ class HackathonWriteUp(KaggleObject):
       raise TypeError('should_create_doi must be of type bool')
     self._should_create_doi = should_create_doi
 
+  @property
+  def update_time(self) -> datetime:
+    return self._update_time or None
+
+  @update_time.setter
+  def update_time(self, update_time: Optional[datetime]):
+    if update_time is None:
+      del self.update_time
+      return
+    if not isinstance(update_time, datetime):
+      raise TypeError('update_time must be of type datetime')
+    self._update_time = update_time
 
 HackathonTrack._fields = [
   FieldMetadata("id", "id", "_id", int, 0, PredefinedSerializer()),
@@ -386,5 +401,6 @@ HackathonWriteUp._fields = [
   FieldMetadata("ownerHostUserId", "owner_host_user_id", "_owner_host_user_id", int, None, PredefinedSerializer(), optional=True),
   FieldMetadata("ownerJudgeUserId", "owner_judge_user_id", "_owner_judge_user_id", int, None, PredefinedSerializer(), optional=True),
   FieldMetadata("shouldCreateDoi", "should_create_doi", "_should_create_doi", bool, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("updateTime", "update_time", "_update_time", datetime, None, DateTimeSerializer(), optional=True),
 ]
 
