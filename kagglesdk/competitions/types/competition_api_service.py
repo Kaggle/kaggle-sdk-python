@@ -7,7 +7,7 @@ from kagglesdk.competitions.types.host_service import CompetitionSettings
 from kagglesdk.competitions.types.submission_status import SubmissionStatus
 from kagglesdk.discussions.types.discussions_enums import CommentListSortBy, TopicListSortBy
 from kagglesdk.kaggle_object import *
-from typing import Optional, List
+from typing import Optional, List, Dict
 
 class ApiCategory(KaggleObject):
   r"""
@@ -603,6 +603,83 @@ class ApiCompetitionDataFile(KaggleObject):
     self._token = token
 
 
+class ApiCompetitionHost(KaggleObject):
+  r"""
+  Attributes:
+    id (int)
+      Numeric user ID.
+    user_name (str)
+      Kaggle user name (URL slug, e.g. 'fickleone').
+    display_name (str)
+      Human-readable display name.
+    profile_url (str)
+      Full URL to the user's profile page.
+  """
+
+  def __init__(self):
+    self._id = 0
+    self._user_name = None
+    self._display_name = None
+    self._profile_url = None
+    self._freeze()
+
+  @property
+  def id(self) -> int:
+    """Numeric user ID."""
+    return self._id
+
+  @id.setter
+  def id(self, id: int):
+    if id is None:
+      del self.id
+      return
+    if not isinstance(id, int):
+      raise TypeError('id must be of type int')
+    self._id = id
+
+  @property
+  def user_name(self) -> str:
+    """Kaggle user name (URL slug, e.g. 'fickleone')."""
+    return self._user_name or ""
+
+  @user_name.setter
+  def user_name(self, user_name: Optional[str]):
+    if user_name is None:
+      del self.user_name
+      return
+    if not isinstance(user_name, str):
+      raise TypeError('user_name must be of type str')
+    self._user_name = user_name
+
+  @property
+  def display_name(self) -> str:
+    """Human-readable display name."""
+    return self._display_name or ""
+
+  @display_name.setter
+  def display_name(self, display_name: Optional[str]):
+    if display_name is None:
+      del self.display_name
+      return
+    if not isinstance(display_name, str):
+      raise TypeError('display_name must be of type str')
+    self._display_name = display_name
+
+  @property
+  def profile_url(self) -> str:
+    """Full URL to the user's profile page."""
+    return self._profile_url or ""
+
+  @profile_url.setter
+  def profile_url(self, profile_url: Optional[str]):
+    if profile_url is None:
+      del self.profile_url
+      return
+    if not isinstance(profile_url, str):
+      raise TypeError('profile_url must be of type str')
+    self._profile_url = profile_url
+
+
 class ApiCompetitionPage(KaggleObject):
   r"""
   NOTE: writable field names must stay in sync with `kaggle.competitions.Page`
@@ -710,6 +787,172 @@ class ApiCompetitionPage(KaggleObject):
     if not isinstance(mime_type, str):
       raise TypeError('mime_type must be of type str')
     self._mime_type = mime_type
+
+
+class ApiCompetitionSolutionStatus(KaggleObject):
+  r"""
+  Attributes:
+    ready (bool)
+      True once all required setup steps for the solution file are complete and
+      the competition can score submissions. Poll this after
+      CreateCompetitionData / CreateCompetitionSolution until it flips true (or
+      `setup_error` is set).
+    setup_error (str)
+      Populated if preprocessing or sampling failed. The CLI should surface
+      this message and stop polling.
+    kernels_metric (bool)
+      True if the competition's scoring metric is Kernels-based. Kernels metrics
+      auto-detect their column mapping and `column_mapping` /
+      `required_metric_columns` are not used -- the host only needs to wait
+      for `ready` to flip true.
+    row_id_column_name (str)
+      For Kernels metrics only -- the row-id column auto-detected from the CSV.
+    column_mapping (str)
+      For legacy C# metrics: the current mapping from metric column name to
+      CSV column name. Populated with the auto-inferred mapping after
+      preprocessing completes; empty before that. The host commits the final
+      mapping by passing the same shape to UpdateCompetitionSolutionMapping.
+    required_metric_columns (ApiMetricColumn)
+      For legacy C# metrics: the metric column slots the host needs to fill.
+      Each entry's `name` is a key for `column_mapping`; `data_type` is the
+      expected parsed type (e.g. 'Double', 'Int32').
+    solution_info (ApiSolutionFileInfo)
+      Solution file metadata. Null until a solution has been uploaded.
+  """
+
+  def __init__(self):
+    self._ready = False
+    self._setup_error = None
+    self._kernels_metric = False
+    self._row_id_column_name = None
+    self._column_mapping = {}
+    self._required_metric_columns = []
+    self._solution_info = None
+    self._freeze()
+
+  @property
+  def ready(self) -> bool:
+    r"""
+    True once all required setup steps for the solution file are complete and
+    the competition can score submissions. Poll this after
+    CreateCompetitionData / CreateCompetitionSolution until it flips true (or
+    `setup_error` is set).
+    """
+    return self._ready
+
+  @ready.setter
+  def ready(self, ready: bool):
+    if ready is None:
+      del self.ready
+      return
+    if not isinstance(ready, bool):
+      raise TypeError('ready must be of type bool')
+    self._ready = ready
+
+  @property
+  def setup_error(self) -> str:
+    r"""
+    Populated if preprocessing or sampling failed. The CLI should surface
+    this message and stop polling.
+    """
+    return self._setup_error or ""
+
+  @setup_error.setter
+  def setup_error(self, setup_error: Optional[str]):
+    if setup_error is None:
+      del self.setup_error
+      return
+    if not isinstance(setup_error, str):
+      raise TypeError('setup_error must be of type str')
+    self._setup_error = setup_error
+
+  @property
+  def kernels_metric(self) -> bool:
+    r"""
+    True if the competition's scoring metric is Kernels-based. Kernels metrics
+    auto-detect their column mapping and `column_mapping` /
+    `required_metric_columns` are not used -- the host only needs to wait
+    for `ready` to flip true.
+    """
+    return self._kernels_metric
+
+  @kernels_metric.setter
+  def kernels_metric(self, kernels_metric: bool):
+    if kernels_metric is None:
+      del self.kernels_metric
+      return
+    if not isinstance(kernels_metric, bool):
+      raise TypeError('kernels_metric must be of type bool')
+    self._kernels_metric = kernels_metric
+
+  @property
+  def row_id_column_name(self) -> str:
+    """For Kernels metrics only -- the row-id column auto-detected from the CSV."""
+    return self._row_id_column_name or ""
+
+  @row_id_column_name.setter
+  def row_id_column_name(self, row_id_column_name: Optional[str]):
+    if row_id_column_name is None:
+      del self.row_id_column_name
+      return
+    if not isinstance(row_id_column_name, str):
+      raise TypeError('row_id_column_name must be of type str')
+    self._row_id_column_name = row_id_column_name
+
+  @property
+  def column_mapping(self) -> Optional[Dict[str, str]]:
+    r"""
+    For legacy C# metrics: the current mapping from metric column name to
+    CSV column name. Populated with the auto-inferred mapping after
+    preprocessing completes; empty before that. The host commits the final
+    mapping by passing the same shape to UpdateCompetitionSolutionMapping.
+    """
+    return self._column_mapping
+
+  @column_mapping.setter
+  def column_mapping(self, column_mapping: Optional[Dict[str, str]]):
+    if column_mapping is None:
+      del self.column_mapping
+      return
+    if not isinstance(column_mapping, dict):
+      raise TypeError('column_mapping must be of type dict')
+    if not all([isinstance(v, str) for k, v in column_mapping]):
+      raise TypeError('column_mapping must contain only items of type str')
+    self._column_mapping = column_mapping
+
+  @property
+  def required_metric_columns(self) -> Optional[List[Optional['ApiMetricColumn']]]:
+    r"""
+    For legacy C# metrics: the metric column slots the host needs to fill.
+    Each entry's `name` is a key for `column_mapping`; `data_type` is the
+    expected parsed type (e.g. 'Double', 'Int32').
+    """
+    return self._required_metric_columns
+
+  @required_metric_columns.setter
+  def required_metric_columns(self, required_metric_columns: Optional[List[Optional['ApiMetricColumn']]]):
+    if required_metric_columns is None:
+      del self.required_metric_columns
+      return
+    if not isinstance(required_metric_columns, list):
+      raise TypeError('required_metric_columns must be of type list')
+    if not all([isinstance(t, ApiMetricColumn) for t in required_metric_columns]):
+      raise TypeError('required_metric_columns must contain only items of type ApiMetricColumn')
+    self._required_metric_columns = required_metric_columns
+
+  @property
+  def solution_info(self) -> Optional['ApiSolutionFileInfo']:
+    """Solution file metadata. Null until a solution has been uploaded."""
+    return self._solution_info
+
+  @solution_info.setter
+  def solution_info(self, solution_info: Optional['ApiSolutionFileInfo']):
+    if solution_info is None:
+      del self.solution_info
+      return
+    if not isinstance(solution_info, ApiSolutionFileInfo):
+      raise TypeError('solution_info must be of type ApiSolutionFileInfo')
+    self._solution_info = solution_info
 
 
 class ApiCompetitionTopic(KaggleObject):
@@ -1565,6 +1808,66 @@ class ApiCreateCompetitionResponse(KaggleObject):
     self._url = url
 
 
+class ApiCreateCompetitionSampleSubmissionRequest(KaggleObject):
+  r"""
+  Attributes:
+    competition_name (str)
+    blob_token (str)
+      Blob token returned by /api/v1/blobs/upload after the matching upload PUT.
+      The blob must be a CSV in the same shape as a regular submission. The
+      submission lands on the sandbox team and is scored asynchronously.
+  """
+
+  def __init__(self):
+    self._competition_name = ""
+    self._blob_token = ""
+    self._freeze()
+
+  @property
+  def competition_name(self) -> str:
+    return self._competition_name
+
+  @competition_name.setter
+  def competition_name(self, competition_name: str):
+    if competition_name is None:
+      del self.competition_name
+      return
+    if not isinstance(competition_name, str):
+      raise TypeError('competition_name must be of type str')
+    self._competition_name = competition_name
+
+  @property
+  def blob_token(self) -> str:
+    r"""
+    Blob token returned by /api/v1/blobs/upload after the matching upload PUT.
+    The blob must be a CSV in the same shape as a regular submission. The
+    submission lands on the sandbox team and is scored asynchronously.
+    """
+    return self._blob_token
+
+  @blob_token.setter
+  def blob_token(self, blob_token: str):
+    if blob_token is None:
+      del self.blob_token
+      return
+    if not isinstance(blob_token, str):
+      raise TypeError('blob_token must be of type str')
+    self._blob_token = blob_token
+
+  def endpoint(self):
+    path = '/api/v1/competitions/{competition_name}/sample-submission'
+    return path.format_map(self.to_field_map(self))
+
+
+  @staticmethod
+  def method():
+    return 'POST'
+
+  @staticmethod
+  def body_fields():
+    return '*'
+
+
 class ApiCreateCompetitionSolutionRequest(KaggleObject):
   r"""
   Attributes:
@@ -2309,6 +2612,70 @@ class ApiGetCompetitionRequest(KaggleObject):
     return '/api/v1/competitions/get/{competition_name}'
 
 
+class ApiGetCompetitionSettingsRequest(KaggleObject):
+  r"""
+  Attributes:
+    competition_name (str)
+  """
+
+  def __init__(self):
+    self._competition_name = ""
+    self._freeze()
+
+  @property
+  def competition_name(self) -> str:
+    return self._competition_name
+
+  @competition_name.setter
+  def competition_name(self, competition_name: str):
+    if competition_name is None:
+      del self.competition_name
+      return
+    if not isinstance(competition_name, str):
+      raise TypeError('competition_name must be of type str')
+    self._competition_name = competition_name
+
+  def endpoint(self):
+    path = '/api/v1/competitions/{competition_name}/settings'
+    return path.format_map(self.to_field_map(self))
+
+  @staticmethod
+  def endpoint_path():
+    return '/api/v1/competitions/{competition_name}/settings'
+
+
+class ApiGetCompetitionSolutionStatusRequest(KaggleObject):
+  r"""
+  Attributes:
+    competition_name (str)
+  """
+
+  def __init__(self):
+    self._competition_name = ""
+    self._freeze()
+
+  @property
+  def competition_name(self) -> str:
+    return self._competition_name
+
+  @competition_name.setter
+  def competition_name(self, competition_name: str):
+    if competition_name is None:
+      del self.competition_name
+      return
+    if not isinstance(competition_name, str):
+      raise TypeError('competition_name must be of type str')
+    self._competition_name = competition_name
+
+  def endpoint(self):
+    path = '/api/v1/competitions/{competition_name}/solution'
+    return path.format_map(self.to_field_map(self))
+
+  @staticmethod
+  def endpoint_path():
+    return '/api/v1/competitions/{competition_name}/solution'
+
+
 class ApiGetEpisodeAgentLogsRequest(KaggleObject):
   r"""
   Attributes:
@@ -2680,6 +3047,64 @@ class ApiLeaderboardSubmission(KaggleObject):
     if not isinstance(score, str):
       raise TypeError('score must be of type str')
     self._score = score
+
+
+class ApiListCompetitionHostsRequest(KaggleObject):
+  r"""
+  Attributes:
+    competition_name (str)
+  """
+
+  def __init__(self):
+    self._competition_name = ""
+    self._freeze()
+
+  @property
+  def competition_name(self) -> str:
+    return self._competition_name
+
+  @competition_name.setter
+  def competition_name(self, competition_name: str):
+    if competition_name is None:
+      del self.competition_name
+      return
+    if not isinstance(competition_name, str):
+      raise TypeError('competition_name must be of type str')
+    self._competition_name = competition_name
+
+  def endpoint(self):
+    path = '/api/v1/competitions/{competition_name}/hosts'
+    return path.format_map(self.to_field_map(self))
+
+  @staticmethod
+  def endpoint_path():
+    return '/api/v1/competitions/{competition_name}/hosts'
+
+
+class ApiListCompetitionHostsResponse(KaggleObject):
+  r"""
+  Attributes:
+    hosts (ApiCompetitionHost)
+  """
+
+  def __init__(self):
+    self._hosts = []
+    self._freeze()
+
+  @property
+  def hosts(self) -> Optional[List[Optional['ApiCompetitionHost']]]:
+    return self._hosts
+
+  @hosts.setter
+  def hosts(self, hosts: Optional[List[Optional['ApiCompetitionHost']]]):
+    if hosts is None:
+      del self.hosts
+      return
+    if not isinstance(hosts, list):
+      raise TypeError('hosts must be of type list')
+    if not all([isinstance(t, ApiCompetitionHost) for t in hosts]):
+      raise TypeError('hosts must contain only items of type ApiCompetitionHost')
+    self._hosts = hosts
 
 
 class ApiListCompetitionPagesRequest(KaggleObject):
@@ -3653,6 +4078,45 @@ class ApiListTopicMessagesResponse(KaggleObject):
     self._messages = messages
 
 
+class ApiMetricColumn(KaggleObject):
+  r"""
+  Attributes:
+    name (str)
+    data_type (str)
+  """
+
+  def __init__(self):
+    self._name = ""
+    self._data_type = ""
+    self._freeze()
+
+  @property
+  def name(self) -> str:
+    return self._name
+
+  @name.setter
+  def name(self, name: str):
+    if name is None:
+      del self.name
+      return
+    if not isinstance(name, str):
+      raise TypeError('name must be of type str')
+    self._name = name
+
+  @property
+  def data_type(self) -> str:
+    return self._data_type
+
+  @data_type.setter
+  def data_type(self, data_type: str):
+    if data_type is None:
+      del self.data_type
+      return
+    if not isinstance(data_type, str):
+      raise TypeError('data_type must be of type str')
+    self._data_type = data_type
+
+
 class ApiPublicSubmission(KaggleObject):
   r"""
   Public-safe subset of a submission. Only fields safe to expose to any user
@@ -3708,6 +4172,105 @@ class ApiPublicSubmission(KaggleObject):
     if not isinstance(public_score, str):
       raise TypeError('public_score must be of type str')
     self._public_score = public_score
+
+
+class ApiSolutionFileInfo(KaggleObject):
+  r"""
+  Attributes:
+    file_name (str)
+    file_size_bytes (int)
+    upload_date (datetime)
+    total_rows (int)
+    public_rows (int)
+    private_rows (int)
+  """
+
+  def __init__(self):
+    self._file_name = None
+    self._file_size_bytes = None
+    self._upload_date = None
+    self._total_rows = None
+    self._public_rows = None
+    self._private_rows = None
+    self._freeze()
+
+  @property
+  def file_name(self) -> str:
+    return self._file_name or ""
+
+  @file_name.setter
+  def file_name(self, file_name: Optional[str]):
+    if file_name is None:
+      del self.file_name
+      return
+    if not isinstance(file_name, str):
+      raise TypeError('file_name must be of type str')
+    self._file_name = file_name
+
+  @property
+  def file_size_bytes(self) -> int:
+    return self._file_size_bytes or 0
+
+  @file_size_bytes.setter
+  def file_size_bytes(self, file_size_bytes: Optional[int]):
+    if file_size_bytes is None:
+      del self.file_size_bytes
+      return
+    if not isinstance(file_size_bytes, int):
+      raise TypeError('file_size_bytes must be of type int')
+    self._file_size_bytes = file_size_bytes
+
+  @property
+  def upload_date(self) -> datetime:
+    return self._upload_date
+
+  @upload_date.setter
+  def upload_date(self, upload_date: datetime):
+    if upload_date is None:
+      del self.upload_date
+      return
+    if not isinstance(upload_date, datetime):
+      raise TypeError('upload_date must be of type datetime')
+    self._upload_date = upload_date
+
+  @property
+  def total_rows(self) -> int:
+    return self._total_rows or 0
+
+  @total_rows.setter
+  def total_rows(self, total_rows: Optional[int]):
+    if total_rows is None:
+      del self.total_rows
+      return
+    if not isinstance(total_rows, int):
+      raise TypeError('total_rows must be of type int')
+    self._total_rows = total_rows
+
+  @property
+  def public_rows(self) -> int:
+    return self._public_rows or 0
+
+  @public_rows.setter
+  def public_rows(self, public_rows: Optional[int]):
+    if public_rows is None:
+      del self.public_rows
+      return
+    if not isinstance(public_rows, int):
+      raise TypeError('public_rows must be of type int')
+    self._public_rows = public_rows
+
+  @property
+  def private_rows(self) -> int:
+    return self._private_rows or 0
+
+  @private_rows.setter
+  def private_rows(self, private_rows: Optional[int]):
+    if private_rows is None:
+      del self.private_rows
+      return
+    if not isinstance(private_rows, int):
+      raise TypeError('private_rows must be of type int')
+    self._private_rows = private_rows
 
 
 class ApiStartSubmissionUploadRequest(KaggleObject):
@@ -4413,12 +4976,29 @@ ApiCompetitionDataFile._fields = [
   FieldMetadata("token", "token", "_token", str, "", PredefinedSerializer()),
 ]
 
+ApiCompetitionHost._fields = [
+  FieldMetadata("id", "id", "_id", int, 0, PredefinedSerializer()),
+  FieldMetadata("userName", "user_name", "_user_name", str, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("displayName", "display_name", "_display_name", str, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("profileUrl", "profile_url", "_profile_url", str, None, PredefinedSerializer(), optional=True),
+]
+
 ApiCompetitionPage._fields = [
   FieldMetadata("name", "name", "_name", str, "", PredefinedSerializer()),
   FieldMetadata("content", "content", "_content", str, "", PredefinedSerializer()),
   FieldMetadata("isPublished", "is_published", "_is_published", bool, None, PredefinedSerializer(), optional=True),
   FieldMetadata("postTitle", "post_title", "_post_title", str, None, PredefinedSerializer(), optional=True),
   FieldMetadata("mimeType", "mime_type", "_mime_type", str, None, PredefinedSerializer(), optional=True),
+]
+
+ApiCompetitionSolutionStatus._fields = [
+  FieldMetadata("ready", "ready", "_ready", bool, False, PredefinedSerializer()),
+  FieldMetadata("setupError", "setup_error", "_setup_error", str, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("kernelsMetric", "kernels_metric", "_kernels_metric", bool, False, PredefinedSerializer()),
+  FieldMetadata("rowIdColumnName", "row_id_column_name", "_row_id_column_name", str, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("columnMapping", "column_mapping", "_column_mapping", str, {}, MapSerializer(PredefinedSerializer())),
+  FieldMetadata("requiredMetricColumns", "required_metric_columns", "_required_metric_columns", ApiMetricColumn, [], ListSerializer(KaggleObjectSerializer())),
+  FieldMetadata("solutionInfo", "solution_info", "_solution_info", ApiSolutionFileInfo, None, KaggleObjectSerializer()),
 ]
 
 ApiCompetitionTopic._fields = [
@@ -4486,6 +5066,11 @@ ApiCreateCompetitionResponse._fields = [
   FieldMetadata("id", "id", "_id", int, 0, PredefinedSerializer()),
   FieldMetadata("ref", "ref", "_ref", str, "", PredefinedSerializer()),
   FieldMetadata("url", "url", "_url", str, "", PredefinedSerializer()),
+]
+
+ApiCreateCompetitionSampleSubmissionRequest._fields = [
+  FieldMetadata("competitionName", "competition_name", "_competition_name", str, "", PredefinedSerializer()),
+  FieldMetadata("blobToken", "blob_token", "_blob_token", str, "", PredefinedSerializer()),
 ]
 
 ApiCreateCompetitionSolutionRequest._fields = [
@@ -4559,6 +5144,14 @@ ApiGetCompetitionRequest._fields = [
   FieldMetadata("competitionName", "competition_name", "_competition_name", str, "", PredefinedSerializer()),
 ]
 
+ApiGetCompetitionSettingsRequest._fields = [
+  FieldMetadata("competitionName", "competition_name", "_competition_name", str, "", PredefinedSerializer()),
+]
+
+ApiGetCompetitionSolutionStatusRequest._fields = [
+  FieldMetadata("competitionName", "competition_name", "_competition_name", str, "", PredefinedSerializer()),
+]
+
 ApiGetEpisodeAgentLogsRequest._fields = [
   FieldMetadata("episodeId", "episode_id", "_episode_id", int, 0, PredefinedSerializer()),
   FieldMetadata("agentIndex", "agent_index", "_agent_index", int, 0, PredefinedSerializer()),
@@ -4594,6 +5187,14 @@ ApiLeaderboardSubmission._fields = [
   FieldMetadata("teamName", "team_name", "_team_name", str, None, PredefinedSerializer(), optional=True),
   FieldMetadata("submissionDate", "submission_date", "_submission_date", datetime, None, DateTimeSerializer()),
   FieldMetadata("score", "score", "_score", str, None, PredefinedSerializer(), optional=True),
+]
+
+ApiListCompetitionHostsRequest._fields = [
+  FieldMetadata("competitionName", "competition_name", "_competition_name", str, "", PredefinedSerializer()),
+]
+
+ApiListCompetitionHostsResponse._fields = [
+  FieldMetadata("hosts", "hosts", "_hosts", ApiCompetitionHost, [], ListSerializer(KaggleObjectSerializer())),
 ]
 
 ApiListCompetitionPagesRequest._fields = [
@@ -4691,10 +5292,24 @@ ApiListTopicMessagesResponse._fields = [
   FieldMetadata("messages", "messages", "_messages", ApiTopicMessage, [], ListSerializer(KaggleObjectSerializer())),
 ]
 
+ApiMetricColumn._fields = [
+  FieldMetadata("name", "name", "_name", str, "", PredefinedSerializer()),
+  FieldMetadata("dataType", "data_type", "_data_type", str, "", PredefinedSerializer()),
+]
+
 ApiPublicSubmission._fields = [
   FieldMetadata("id", "id", "_id", int, 0, PredefinedSerializer()),
   FieldMetadata("dateSubmitted", "date_submitted", "_date_submitted", datetime, None, DateTimeSerializer()),
   FieldMetadata("publicScore", "public_score", "_public_score", str, "", PredefinedSerializer()),
+]
+
+ApiSolutionFileInfo._fields = [
+  FieldMetadata("fileName", "file_name", "_file_name", str, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("fileSizeBytes", "file_size_bytes", "_file_size_bytes", int, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("uploadDate", "upload_date", "_upload_date", datetime, None, DateTimeSerializer()),
+  FieldMetadata("totalRows", "total_rows", "_total_rows", int, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("publicRows", "public_rows", "_public_rows", int, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("privateRows", "private_rows", "_private_rows", int, None, PredefinedSerializer(), optional=True),
 ]
 
 ApiStartSubmissionUploadRequest._fields = [

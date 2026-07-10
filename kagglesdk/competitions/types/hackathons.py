@@ -201,6 +201,9 @@ class HackathonWriteUp(KaggleObject):
     competition_id (int)
     owner_host_user_id (int)
     owner_judge_user_id (int)
+    should_create_doi (bool)
+      Whether or not the user indicated a DOI should be created for the hackathon
+      writeup when the competition closes.
   """
 
   def __init__(self):
@@ -213,6 +216,7 @@ class HackathonWriteUp(KaggleObject):
     self._competition_id = 0
     self._owner_host_user_id = None
     self._owner_judge_user_id = None
+    self._should_create_doi = None
     self._freeze()
 
   @property
@@ -336,6 +340,23 @@ class HackathonWriteUp(KaggleObject):
       raise TypeError('owner_judge_user_id must be of type int')
     self._owner_judge_user_id = owner_judge_user_id
 
+  @property
+  def should_create_doi(self) -> bool:
+    r"""
+    Whether or not the user indicated a DOI should be created for the hackathon
+    writeup when the competition closes.
+    """
+    return self._should_create_doi or False
+
+  @should_create_doi.setter
+  def should_create_doi(self, should_create_doi: Optional[bool]):
+    if should_create_doi is None:
+      del self.should_create_doi
+      return
+    if not isinstance(should_create_doi, bool):
+      raise TypeError('should_create_doi must be of type bool')
+    self._should_create_doi = should_create_doi
+
 
 HackathonTrack._fields = [
   FieldMetadata("id", "id", "_id", int, 0, PredefinedSerializer()),
@@ -364,5 +385,6 @@ HackathonWriteUp._fields = [
   FieldMetadata("competitionId", "competition_id", "_competition_id", int, 0, PredefinedSerializer()),
   FieldMetadata("ownerHostUserId", "owner_host_user_id", "_owner_host_user_id", int, None, PredefinedSerializer(), optional=True),
   FieldMetadata("ownerJudgeUserId", "owner_judge_user_id", "_owner_judge_user_id", int, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("shouldCreateDoi", "should_create_doi", "_should_create_doi", bool, None, PredefinedSerializer(), optional=True),
 ]
 

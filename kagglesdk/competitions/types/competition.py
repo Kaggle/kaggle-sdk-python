@@ -29,6 +29,7 @@ class RewardTypeId(enum.Enum):
   GBP = 7
   KNOWLEDGE = 8
   PRIZES = 9
+  NON_MONETARY = 10
 
 class Reward(KaggleObject):
   r"""
