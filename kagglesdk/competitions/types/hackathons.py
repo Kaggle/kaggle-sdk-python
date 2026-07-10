@@ -373,6 +373,7 @@ class HackathonWriteUp(KaggleObject):
       raise TypeError('update_time must be of type datetime')
     self._update_time = update_time
 
+
 HackathonTrack._fields = [
   FieldMetadata("id", "id", "_id", int, 0, PredefinedSerializer()),
   FieldMetadata("title", "title", "_title", str, "", PredefinedSerializer()),
