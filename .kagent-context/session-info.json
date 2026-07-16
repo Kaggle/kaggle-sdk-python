@@ -1,0 +1,39 @@
+{
+  "task_id": "addisonhoward-20260716182752-c4749de5",
+  "agent_type": "claude",
+  "session_id": "2c1df717-c472-445f-9dd3-90a87d787c5d",
+  "updated_at": "2026-07-16T18:34:30Z",
+  "resume_command": "claude --resume 2c1df717-c472-445f-9dd3-90a87d787c5d",
+  "usage": {
+    "total_cost_usd": 1.22438675,
+    "input_tokens": 3404,
+    "output_tokens": 1008,
+    "cache_read_input_tokens": 204342,
+    "cache_creation_input_tokens": 173687,
+    "duration_ms": 22098,
+    "duration_api_ms": 22196,
+    "num_turns": 7,
+    "model_usage": {
+      "claude-haiku-4-5@20251001": {
+        "inputTokens": 1257,
+        "outputTokens": 26,
+        "cacheReadInputTokens": 0,
+        "cacheCreationInputTokens": 0,
+        "webSearchRequests": 0,
+        "costUSD": 0.001387,
+        "contextWindow": 200000,
+        "maxOutputTokens": 32000
+      },
+      "claude-opus-4-8@default": {
+        "inputTokens": 2147,
+        "outputTokens": 982,
+        "cacheReadInputTokens": 204342,
+        "cacheCreationInputTokens": 173687,
+        "webSearchRequests": 0,
+        "costUSD": 1.22299975,
+        "contextWindow": 200000,
+        "maxOutputTokens": 64000
+      }
+    }
+  }
+}
