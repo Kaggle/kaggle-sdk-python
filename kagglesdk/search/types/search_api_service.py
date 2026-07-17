@@ -1174,7 +1174,7 @@ class ApiSearchUsersFilters(KaggleObject):
 
   Attributes:
     user_locations (str)
-      Filter to users that have one of the the specified locations. Expects the
+      Filter to users that have one of the specified locations. Expects the
       format: 'city, region, country' for each.
     tier (UserAchievementTier)
       Filter to users that have the specified performance tier.
@@ -1203,7 +1203,7 @@ class ApiSearchUsersFilters(KaggleObject):
   @property
   def user_locations(self) -> Optional[List[str]]:
     r"""
-    Filter to users that have one of the the specified locations. Expects the
+    Filter to users that have one of the specified locations. Expects the
     format: 'city, region, country' for each.
     """
     return self._user_locations
