@@ -6,6 +6,7 @@ from kagglesdk.blobs.services.blob_api_service import BlobApiClient
 from kagglesdk.common.services.operations_service import OperationsClient
 from kagglesdk.competitions.services.competition_api_service import CompetitionApiClient
 from kagglesdk.competitions.services.hackathon_api_service import HackathonApiClient
+from kagglesdk.competitions.services.hackathon_service import HackathonClient
 from kagglesdk.datasets.services.dataset_api_service import DatasetApiClient
 from kagglesdk.discussions.services.discussions_api_service import DiscussionApiClient
 from kagglesdk.discussions.services.writeups_api_service import WriteUpsApiClient
@@ -49,6 +50,7 @@ class KaggleClient(object):
     def __init__(self, http_client: KaggleHttpClient):
       self.competition_api_client = CompetitionApiClient(http_client)
       self.hackathon_api_client = HackathonApiClient(http_client)
+      self.hackathon_client = HackathonClient(http_client)
 
   class Datasets(object):
     def __init__(self, http_client: KaggleHttpClient):

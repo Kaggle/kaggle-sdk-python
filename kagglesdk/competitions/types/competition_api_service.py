@@ -2887,6 +2887,38 @@ class ApiGetLeaderboardResponse(KaggleObject):
     return self.next_page_token
 
 
+class ApiGetSubmissionLimitsRequest(KaggleObject):
+  r"""
+  Attributes:
+    competition_name (str)
+  """
+
+  def __init__(self):
+    self._competition_name = ""
+    self._freeze()
+
+  @property
+  def competition_name(self) -> str:
+    return self._competition_name
+
+  @competition_name.setter
+  def competition_name(self, competition_name: str):
+    if competition_name is None:
+      del self.competition_name
+      return
+    if not isinstance(competition_name, str):
+      raise TypeError('competition_name must be of type str')
+    self._competition_name = competition_name
+
+  def endpoint(self):
+    path = '/api/v1/competitions/{competition_name}/submissions/limits'
+    return path.format_map(self.to_field_map(self))
+
+  @staticmethod
+  def endpoint_path():
+    return '/api/v1/competitions/{competition_name}/submissions/limits'
+
+
 class ApiGetSubmissionRequest(KaggleObject):
   r"""
   Attributes:
@@ -4609,6 +4641,93 @@ class ApiSubmission(KaggleObject):
     self._url = url
 
 
+class ApiSubmissionLimits(KaggleObject):
+  r"""
+  The calling user's submission counts and remaining allowance for a
+  competition. Counts reflect the team the user is on (empty/zeros if the user
+  is not on a team yet).
+
+  Attributes:
+    num_today (int)
+      Number of valid submissions submitted after the beginning of today UTC.
+    num_total (int)
+      Number of valid submissions the team has ever made.
+    num_allowed_now (int)
+      Number of additional submissions allowed for the rest of today UTC.
+    limited_by_total (bool)
+      Whether num_allowed_now was limited by num_total (the competition's
+      lifetime submission cap) rather than the daily cap. Rare; occurs mainly
+      when teams merge and land near the total cap.
+  """
+
+  def __init__(self):
+    self._num_today = 0
+    self._num_total = 0
+    self._num_allowed_now = 0
+    self._limited_by_total = False
+    self._freeze()
+
+  @property
+  def num_today(self) -> int:
+    """Number of valid submissions submitted after the beginning of today UTC."""
+    return self._num_today
+
+  @num_today.setter
+  def num_today(self, num_today: int):
+    if num_today is None:
+      del self.num_today
+      return
+    if not isinstance(num_today, int):
+      raise TypeError('num_today must be of type int')
+    self._num_today = num_today
+
+  @property
+  def num_total(self) -> int:
+    """Number of valid submissions the team has ever made."""
+    return self._num_total
+
+  @num_total.setter
+  def num_total(self, num_total: int):
+    if num_total is None:
+      del self.num_total
+      return
+    if not isinstance(num_total, int):
+      raise TypeError('num_total must be of type int')
+    self._num_total = num_total
+
+  @property
+  def num_allowed_now(self) -> int:
+    """Number of additional submissions allowed for the rest of today UTC."""
+    return self._num_allowed_now
+
+  @num_allowed_now.setter
+  def num_allowed_now(self, num_allowed_now: int):
+    if num_allowed_now is None:
+      del self.num_allowed_now
+      return
+    if not isinstance(num_allowed_now, int):
+      raise TypeError('num_allowed_now must be of type int')
+    self._num_allowed_now = num_allowed_now
+
+  @property
+  def limited_by_total(self) -> bool:
+    r"""
+    Whether num_allowed_now was limited by num_total (the competition's
+    lifetime submission cap) rather than the daily cap. Rare; occurs mainly
+    when teams merge and land near the total cap.
+    """
+    return self._limited_by_total
+
+  @limited_by_total.setter
+  def limited_by_total(self, limited_by_total: bool):
+    if limited_by_total is None:
+      del self.limited_by_total
+      return
+    if not isinstance(limited_by_total, bool):
+      raise TypeError('limited_by_total must be of type bool')
+    self._limited_by_total = limited_by_total
+
+
 class ApiTopicMessage(KaggleObject):
   r"""
   Attributes:
@@ -5173,6 +5292,10 @@ ApiGetLeaderboardResponse._fields = [
   FieldMetadata("nextPageToken", "next_page_token", "_next_page_token", str, "", PredefinedSerializer()),
 ]
 
+ApiGetSubmissionLimitsRequest._fields = [
+  FieldMetadata("competitionName", "competition_name", "_competition_name", str, "", PredefinedSerializer()),
+]
+
 ApiGetSubmissionRequest._fields = [
   FieldMetadata("ref", "ref", "_ref", int, 0, PredefinedSerializer()),
 ]
@@ -5338,6 +5461,13 @@ ApiSubmission._fields = [
   FieldMetadata("submittedByRef", "submitted_by_ref", "_submitted_by_ref", str, None, PredefinedSerializer(), optional=True),
   FieldMetadata("teamName", "team_name", "_team_name", str, None, PredefinedSerializer(), optional=True),
   FieldMetadata("url", "url", "_url", str, None, PredefinedSerializer(), optional=True),
+]
+
+ApiSubmissionLimits._fields = [
+  FieldMetadata("numToday", "num_today", "_num_today", int, 0, PredefinedSerializer()),
+  FieldMetadata("numTotal", "num_total", "_num_total", int, 0, PredefinedSerializer()),
+  FieldMetadata("numAllowedNow", "num_allowed_now", "_num_allowed_now", int, 0, PredefinedSerializer()),
+  FieldMetadata("limitedByTotal", "limited_by_total", "_limited_by_total", bool, False, PredefinedSerializer()),
 ]
 
 ApiTopicMessage._fields = [

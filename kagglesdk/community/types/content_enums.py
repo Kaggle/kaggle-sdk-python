@@ -32,7 +32,7 @@ class ContentState(enum.Enum):
   SYSTEM_DELETED = 6
   r"""
   Deleted by an admin or by a system account for moderation purposes. This
-  data may need to be restored in the event of a successfull user appeal, and
+  data may need to be restored in the event of a successful user appeal, and
   should not be wiped out.
   """
   PENDING_PERMANENT_DELETE = 7
