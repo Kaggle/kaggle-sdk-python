@@ -30,20 +30,26 @@ class KaggleOAuth:
         def __init__(self):
             self.state = str(uuid.uuid4())
             self.code_verifier = KaggleOAuth.OAuthState._generate_code_verifier()
-            self.code_challenge = KaggleOAuth.OAuthState._generate_code_challenge(self.code_verifier)
+            self.code_challenge = KaggleOAuth.OAuthState._generate_code_challenge(
+                self.code_verifier
+            )
 
         def _generate_state(length: int = 32):
             return secrets.token_urlsafe(length)
 
         def _generate_code_verifier(length: int = 64) -> str:
             if not 42 <= length <= 128:
-                raise ValueError("Code verifier length must be between 42 and 128 characters.")
+                raise ValueError(
+                    "Code verifier length must be between 42 and 128 characters."
+                )
             return secrets.token_urlsafe(length)
 
         def _generate_code_challenge(code_verifier: str) -> str:
             code_verifier_bytes = code_verifier.encode("utf-8")
             code_challenge_bytes = hashlib.sha256(code_verifier_bytes).digest()
-            code_challenge_base64 = base64.urlsafe_b64encode(code_challenge_bytes).decode("utf-8")
+            code_challenge_base64 = base64.urlsafe_b64encode(
+                code_challenge_bytes
+            ).decode("utf-8")
             return code_challenge_base64
 
     class OAuthCallbackHandler(http.server.BaseHTTPRequestHandler):
@@ -88,11 +94,15 @@ class KaggleOAuth:
                     )
                     self._on_success(code)
                 else:
-                    self._logger.error(f"Invalid state! Expected: {self._oauth_state.state}, Received: {state}")
+                    self._logger.error(
+                        f"Invalid state! Expected: {self._oauth_state.state}, Received: {state}"
+                    )
                     self.send_response(400)
                     self.send_header("Content-type", "text/html")
                     self.end_headers()
-                    self.wfile.write(b"<html><body><h1>Authentication Failed!</h1></body></html>")
+                    self.wfile.write(
+                        b"<html><body><h1>Authentication Failed!</h1></body></html>"
+                    )
             else:
                 self._logger.debug(f"\nReceived Invalid OAuth Callback: {self.path}")
                 self.send_response(400)
@@ -115,7 +125,9 @@ class KaggleOAuth:
 
         return False
 
-    def _exchange_oauth_token(self, code: str, scopes: list[str], oauth_state: "KaggleOAuth.OAuthState"):
+    def _exchange_oauth_token(
+        self, code: str, scopes: list[str], oauth_state: "KaggleOAuth.OAuthState"
+    ):
         request = ExchangeOAuthTokenRequest()
         request.code = code
         request.code_verifier = oauth_state.code_verifier
@@ -126,12 +138,15 @@ class KaggleOAuth:
             client=self._client,
             refresh_token=response.refreshToken,
             access_token=response.accessToken,
-            access_token_expiration=datetime.now(timezone.utc) + timedelta(seconds=response.expires_in),
+            access_token_expiration=datetime.now(timezone.utc)
+            + timedelta(seconds=response.expires_in),
             username=response.username,
             scopes=scopes,
         )
 
-    def _run_oauth_flow(self, scopes: list[str], no_launch_browser: bool) -> KaggleCredentials:
+    def _run_oauth_flow(
+        self, scopes: list[str], no_launch_browser: bool
+    ) -> KaggleCredentials:
         use_browser = not no_launch_browser and KaggleOAuth._can_open_browser()
         redirect_uri = self._http_client.get_oauth_default_redirect_url()
         if use_browser:
@@ -173,7 +188,9 @@ class KaggleOAuth:
                     httpd.handle_request()
                 self._logger.debug("OAuth flow completed (or server stopped).")
         else:
-            print("\nGo to the following link in your browser, and complete the sign-in prompts at Kaggle:\n")
+            print(
+                "\nGo to the following link in your browser, and complete the sign-in prompts at Kaggle:\n"
+            )
             print(f"  {oauth_start_url}")
             print(
                 "\nOnce finished, enter the verification code provided in your browser: ",
@@ -192,7 +209,9 @@ class KaggleOAuth:
             raise Exception("Authentication failed.")
         return creds.introspect()
 
-    def authenticate(self, scopes: list[str], no_launch_browser: bool = False) -> KaggleCredentials:
+    def authenticate(
+        self, scopes: list[str], no_launch_browser: bool = False
+    ) -> KaggleCredentials:
         creds = self._run_oauth_flow(scopes, no_launch_browser)
         username = self._ensure_creds_valid(creds)
         creds.save()

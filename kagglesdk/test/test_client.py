@@ -29,7 +29,12 @@ class TestClient(unittest.TestCase):
     # Client
 
     def test_kaggle_client(self):
-        client = KaggleClient(env=KaggleEnv.PROD, verbose=False, username="dinosaur", password="xxxxxxxxxxxx")
+        client = KaggleClient(
+            env=KaggleEnv.PROD,
+            verbose=False,
+            username="dinosaur",
+            password="xxxxxxxxxxxx",
+        )
 
         self.assertEqual(client.username, "dinosaur")
         self.assertEqual(client.password, "xxxxxxxxxxxx")

@@ -1,31 +1,51 @@
-from kagglesdk.benchmarks.types.benchmarks_api_service import ApiBenchmarkLeaderboard, ApiGetBenchmarkLeaderboardRequest, ApiListBenchmarkModelsRequest, ApiListBenchmarkModelsResponse
+from kagglesdk.benchmarks.types.benchmarks_api_service import (
+    ApiBenchmarkLeaderboard,
+    ApiGetBenchmarkLeaderboardRequest,
+    ApiListBenchmarkModelsRequest,
+    ApiListBenchmarkModelsResponse,
+)
 from kagglesdk.kaggle_http_client import KaggleHttpClient
+
 
 class BenchmarksApiClient(object):
 
-  def __init__(self, client: KaggleHttpClient):
-    self._client = client
+    def __init__(self, client: KaggleHttpClient):
+        self._client = client
 
-  def get_benchmark_leaderboard(self, request: ApiGetBenchmarkLeaderboardRequest = None) -> ApiBenchmarkLeaderboard:
-    r"""
-    Args:
-      request (ApiGetBenchmarkLeaderboardRequest):
-        The request object; initialized to empty instance if not specified.
-    """
+    def get_benchmark_leaderboard(
+        self, request: ApiGetBenchmarkLeaderboardRequest = None
+    ) -> ApiBenchmarkLeaderboard:
+        r"""
+        Args:
+          request (ApiGetBenchmarkLeaderboardRequest):
+            The request object; initialized to empty instance if not specified.
+        """
 
-    if request is None:
-      request = ApiGetBenchmarkLeaderboardRequest()
+        if request is None:
+            request = ApiGetBenchmarkLeaderboardRequest()
 
-    return self._client.call("benchmarks.BenchmarksApiService", "GetBenchmarkLeaderboard", request, ApiBenchmarkLeaderboard)
+        return self._client.call(
+            "benchmarks.BenchmarksApiService",
+            "GetBenchmarkLeaderboard",
+            request,
+            ApiBenchmarkLeaderboard,
+        )
 
-  def list_benchmark_models(self, request: ApiListBenchmarkModelsRequest = None) -> ApiListBenchmarkModelsResponse:
-    r"""
-    Args:
-      request (ApiListBenchmarkModelsRequest):
-        The request object; initialized to empty instance if not specified.
-    """
+    def list_benchmark_models(
+        self, request: ApiListBenchmarkModelsRequest = None
+    ) -> ApiListBenchmarkModelsResponse:
+        r"""
+        Args:
+          request (ApiListBenchmarkModelsRequest):
+            The request object; initialized to empty instance if not specified.
+        """
 
-    if request is None:
-      request = ApiListBenchmarkModelsRequest()
+        if request is None:
+            request = ApiListBenchmarkModelsRequest()
 
-    return self._client.call("benchmarks.BenchmarksApiService", "ListBenchmarkModels", request, ApiListBenchmarkModelsResponse)
+        return self._client.call(
+            "benchmarks.BenchmarksApiService",
+            "ListBenchmarkModels",
+            request,
+            ApiListBenchmarkModelsResponse,
+        )

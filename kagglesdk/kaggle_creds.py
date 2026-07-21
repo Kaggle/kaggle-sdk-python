@@ -33,7 +33,9 @@ class KaggleCredentials:
 
     @classmethod
     def load(cls, client: KaggleClient, file_path: str = None) -> "KaggleCredentials":
-        file_path = os.path.expanduser(file_path or KaggleCredentials.DEFAULT_CREDENTIALS_FILE)
+        file_path = os.path.expanduser(
+            file_path or KaggleCredentials.DEFAULT_CREDENTIALS_FILE
+        )
         if not os.path.exists(file_path):
             return None
 
@@ -80,7 +82,9 @@ class KaggleCredentials:
             "refresh_token": self._refresh_token,
             "access_token": self._access_token or "",
             "access_token_expiration": (
-                self._access_token_expiration.isoformat() if self._access_token_expiration else ""
+                self._access_token_expiration.isoformat()
+                if self._access_token_expiration
+                else ""
             ),
             "username": self._username or "",
             "scopes": self._scopes or [],
@@ -110,14 +114,18 @@ class KaggleCredentials:
             raise Exception("Missing refresh token")
 
         response = self.generate_access_token()
-        self._access_token_expiration = datetime.now(timezone.utc) + timedelta(seconds=response.expires_in)
+        self._access_token_expiration = datetime.now(timezone.utc) + timedelta(
+            seconds=response.expires_in
+        )
         self._access_token = response.token
         self.save()
 
     def access_token_has_expired(self) -> bool:
-        return not self._access_token_expiration or self._access_token_expiration < datetime.now(
-            timezone.utc
-        ) - timedelta(minutes=30)
+        return (
+            not self._access_token_expiration
+            or self._access_token_expiration
+            < datetime.now(timezone.utc) - timedelta(minutes=30)
+        )
 
     def get_access_token(self) -> str:
         if not self._access_token or self.access_token_has_expired():
@@ -126,13 +134,17 @@ class KaggleCredentials:
             self.refresh_access_token()
         return self._access_token
 
-    def generate_access_token(self, expiration_duration: timedelta = None) -> GenerateAccessTokenResponse:
+    def generate_access_token(
+        self, expiration_duration: timedelta = None
+    ) -> GenerateAccessTokenResponse:
         if not self._refresh_token:
             return None
         request = GenerateAccessTokenRequest()
         request.refresh_token = self._refresh_token
         request.api_version = ApiVersion.API_VERSION_V1
-        request.expiration_duration = expiration_duration or KaggleCredentials.DEFAULT_ACCESS_TOKEN_EXPIRATION
+        request.expiration_duration = (
+            expiration_duration or KaggleCredentials.DEFAULT_ACCESS_TOKEN_EXPIRATION
+        )
         return self._client.users.account_client.generate_access_token(request)
 
     def revoke_token(self, reason: str) -> None:

@@ -1,5367 +1,6690 @@
 from datetime import datetime
 from google.protobuf.field_mask_pb2 import FieldMask
 from kagglesdk.competitions.types.competition import Reward
-from kagglesdk.competitions.types.competition_enums import CompetitionDatabundleType, CompetitionListTab, CompetitionPrivacy, CompetitionSortBy, HostSegment, SubmissionGroup, SubmissionSortBy
-from kagglesdk.competitions.types.episode import EpisodeAgentState, EpisodeState, EpisodeType
+from kagglesdk.competitions.types.competition_enums import (
+    CompetitionDatabundleType,
+    CompetitionListTab,
+    CompetitionPrivacy,
+    CompetitionSortBy,
+    HostSegment,
+    SubmissionGroup,
+    SubmissionSortBy,
+)
+from kagglesdk.competitions.types.episode import (
+    EpisodeAgentState,
+    EpisodeState,
+    EpisodeType,
+)
 from kagglesdk.competitions.types.host_service import CompetitionSettings
 from kagglesdk.competitions.types.submission_status import SubmissionStatus
-from kagglesdk.discussions.types.discussions_enums import CommentListSortBy, TopicListSortBy
+from kagglesdk.discussions.types.discussions_enums import (
+    CommentListSortBy,
+    TopicListSortBy,
+)
 from kagglesdk.kaggle_object import *
 from typing import Optional, List, Dict
 
+
 class ApiCategory(KaggleObject):
-  r"""
-  TODO(erdalsivri): Consider reusing with Kaggle.Sdk.Datasets.ApiCategory.
+    r"""
+    TODO(erdalsivri): Consider reusing with Kaggle.Sdk.Datasets.ApiCategory.
 
-  Attributes:
-    ref (str)
-    name (str)
-    description (str)
-    full_path (str)
-    competition_count (int)
-    dataset_count (int)
-    script_count (int)
-    total_count (int)
-  """
+    Attributes:
+      ref (str)
+      name (str)
+      description (str)
+      full_path (str)
+      competition_count (int)
+      dataset_count (int)
+      script_count (int)
+      total_count (int)
+    """
 
-  def __init__(self):
-    self._ref = ""
-    self._name = None
-    self._description = None
-    self._full_path = None
-    self._competition_count = 0
-    self._dataset_count = 0
-    self._script_count = 0
-    self._total_count = 0
-    self._freeze()
+    def __init__(self):
+        self._ref = ""
+        self._name = None
+        self._description = None
+        self._full_path = None
+        self._competition_count = 0
+        self._dataset_count = 0
+        self._script_count = 0
+        self._total_count = 0
+        self._freeze()
 
-  @property
-  def ref(self) -> str:
-    return self._ref
+    @property
+    def ref(self) -> str:
+        return self._ref
 
-  @ref.setter
-  def ref(self, ref: str):
-    if ref is None:
-      del self.ref
-      return
-    if not isinstance(ref, str):
-      raise TypeError('ref must be of type str')
-    self._ref = ref
+    @ref.setter
+    def ref(self, ref: str):
+        if ref is None:
+            del self.ref
+            return
+        if not isinstance(ref, str):
+            raise TypeError("ref must be of type str")
+        self._ref = ref
 
-  @property
-  def name(self) -> str:
-    return self._name or ""
+    @property
+    def name(self) -> str:
+        return self._name or ""
 
-  @name.setter
-  def name(self, name: Optional[str]):
-    if name is None:
-      del self.name
-      return
-    if not isinstance(name, str):
-      raise TypeError('name must be of type str')
-    self._name = name
+    @name.setter
+    def name(self, name: Optional[str]):
+        if name is None:
+            del self.name
+            return
+        if not isinstance(name, str):
+            raise TypeError("name must be of type str")
+        self._name = name
 
-  @property
-  def description(self) -> str:
-    return self._description or ""
+    @property
+    def description(self) -> str:
+        return self._description or ""
 
-  @description.setter
-  def description(self, description: Optional[str]):
-    if description is None:
-      del self.description
-      return
-    if not isinstance(description, str):
-      raise TypeError('description must be of type str')
-    self._description = description
+    @description.setter
+    def description(self, description: Optional[str]):
+        if description is None:
+            del self.description
+            return
+        if not isinstance(description, str):
+            raise TypeError("description must be of type str")
+        self._description = description
 
-  @property
-  def full_path(self) -> str:
-    return self._full_path or ""
+    @property
+    def full_path(self) -> str:
+        return self._full_path or ""
 
-  @full_path.setter
-  def full_path(self, full_path: Optional[str]):
-    if full_path is None:
-      del self.full_path
-      return
-    if not isinstance(full_path, str):
-      raise TypeError('full_path must be of type str')
-    self._full_path = full_path
+    @full_path.setter
+    def full_path(self, full_path: Optional[str]):
+        if full_path is None:
+            del self.full_path
+            return
+        if not isinstance(full_path, str):
+            raise TypeError("full_path must be of type str")
+        self._full_path = full_path
 
-  @property
-  def competition_count(self) -> int:
-    return self._competition_count
+    @property
+    def competition_count(self) -> int:
+        return self._competition_count
 
-  @competition_count.setter
-  def competition_count(self, competition_count: int):
-    if competition_count is None:
-      del self.competition_count
-      return
-    if not isinstance(competition_count, int):
-      raise TypeError('competition_count must be of type int')
-    self._competition_count = competition_count
+    @competition_count.setter
+    def competition_count(self, competition_count: int):
+        if competition_count is None:
+            del self.competition_count
+            return
+        if not isinstance(competition_count, int):
+            raise TypeError("competition_count must be of type int")
+        self._competition_count = competition_count
 
-  @property
-  def dataset_count(self) -> int:
-    return self._dataset_count
+    @property
+    def dataset_count(self) -> int:
+        return self._dataset_count
 
-  @dataset_count.setter
-  def dataset_count(self, dataset_count: int):
-    if dataset_count is None:
-      del self.dataset_count
-      return
-    if not isinstance(dataset_count, int):
-      raise TypeError('dataset_count must be of type int')
-    self._dataset_count = dataset_count
+    @dataset_count.setter
+    def dataset_count(self, dataset_count: int):
+        if dataset_count is None:
+            del self.dataset_count
+            return
+        if not isinstance(dataset_count, int):
+            raise TypeError("dataset_count must be of type int")
+        self._dataset_count = dataset_count
 
-  @property
-  def script_count(self) -> int:
-    return self._script_count
+    @property
+    def script_count(self) -> int:
+        return self._script_count
 
-  @script_count.setter
-  def script_count(self, script_count: int):
-    if script_count is None:
-      del self.script_count
-      return
-    if not isinstance(script_count, int):
-      raise TypeError('script_count must be of type int')
-    self._script_count = script_count
+    @script_count.setter
+    def script_count(self, script_count: int):
+        if script_count is None:
+            del self.script_count
+            return
+        if not isinstance(script_count, int):
+            raise TypeError("script_count must be of type int")
+        self._script_count = script_count
 
-  @property
-  def total_count(self) -> int:
-    return self._total_count
+    @property
+    def total_count(self) -> int:
+        return self._total_count
 
-  @total_count.setter
-  def total_count(self, total_count: int):
-    if total_count is None:
-      del self.total_count
-      return
-    if not isinstance(total_count, int):
-      raise TypeError('total_count must be of type int')
-    self._total_count = total_count
+    @total_count.setter
+    def total_count(self, total_count: int):
+        if total_count is None:
+            del self.total_count
+            return
+        if not isinstance(total_count, int):
+            raise TypeError("total_count must be of type int")
+        self._total_count = total_count
 
 
 class ApiCompetition(KaggleObject):
-  r"""
-  Attributes:
-    id (int)
-    ref (str)
-    title (str)
-    url (str)
-    description (str)
-    organization_name (str)
-    organization_ref (str)
-    category (str)
-    reward (str)
-    tags (ApiCategory)
-    deadline (datetime)
-    kernel_count (int)
-    team_count (int)
-    user_has_entered (bool)
-    user_rank (int)
-    merger_deadline (datetime)
-    new_entrant_deadline (datetime)
-    enabled_date (datetime)
-    max_daily_submissions (int)
-    max_team_size (int)
-    evaluation_metric (str)
-    awards_points (bool)
-    is_kernels_submissions_only (bool)
-    submissions_disabled (bool)
-    thumbnail_image_url (str)
-    host_name (str)
-    date_created (datetime)
-  """
+    r"""
+    Attributes:
+      id (int)
+      ref (str)
+      title (str)
+      url (str)
+      description (str)
+      organization_name (str)
+      organization_ref (str)
+      category (str)
+      reward (str)
+      tags (ApiCategory)
+      deadline (datetime)
+      kernel_count (int)
+      team_count (int)
+      user_has_entered (bool)
+      user_rank (int)
+      merger_deadline (datetime)
+      new_entrant_deadline (datetime)
+      enabled_date (datetime)
+      max_daily_submissions (int)
+      max_team_size (int)
+      evaluation_metric (str)
+      awards_points (bool)
+      is_kernels_submissions_only (bool)
+      submissions_disabled (bool)
+      thumbnail_image_url (str)
+      host_name (str)
+      date_created (datetime)
+    """
 
-  def __init__(self):
-    self._id = 0
-    self._ref = ""
-    self._title = None
-    self._url = None
-    self._description = None
-    self._organization_name = None
-    self._organization_ref = None
-    self._category = None
-    self._reward = None
-    self._tags = []
-    self._deadline = None
-    self._kernel_count = 0
-    self._team_count = 0
-    self._user_has_entered = False
-    self._user_rank = None
-    self._merger_deadline = None
-    self._new_entrant_deadline = None
-    self._enabled_date = None
-    self._max_daily_submissions = 0
-    self._max_team_size = None
-    self._evaluation_metric = None
-    self._awards_points = False
-    self._is_kernels_submissions_only = False
-    self._submissions_disabled = False
-    self._thumbnail_image_url = None
-    self._host_name = ""
-    self._date_created = None
-    self._freeze()
+    def __init__(self):
+        self._id = 0
+        self._ref = ""
+        self._title = None
+        self._url = None
+        self._description = None
+        self._organization_name = None
+        self._organization_ref = None
+        self._category = None
+        self._reward = None
+        self._tags = []
+        self._deadline = None
+        self._kernel_count = 0
+        self._team_count = 0
+        self._user_has_entered = False
+        self._user_rank = None
+        self._merger_deadline = None
+        self._new_entrant_deadline = None
+        self._enabled_date = None
+        self._max_daily_submissions = 0
+        self._max_team_size = None
+        self._evaluation_metric = None
+        self._awards_points = False
+        self._is_kernels_submissions_only = False
+        self._submissions_disabled = False
+        self._thumbnail_image_url = None
+        self._host_name = ""
+        self._date_created = None
+        self._freeze()
 
-  @property
-  def id(self) -> int:
-    return self._id
+    @property
+    def id(self) -> int:
+        return self._id
 
-  @id.setter
-  def id(self, id: int):
-    if id is None:
-      del self.id
-      return
-    if not isinstance(id, int):
-      raise TypeError('id must be of type int')
-    self._id = id
+    @id.setter
+    def id(self, id: int):
+        if id is None:
+            del self.id
+            return
+        if not isinstance(id, int):
+            raise TypeError("id must be of type int")
+        self._id = id
 
-  @property
-  def ref(self) -> str:
-    return self._ref
+    @property
+    def ref(self) -> str:
+        return self._ref
 
-  @ref.setter
-  def ref(self, ref: str):
-    if ref is None:
-      del self.ref
-      return
-    if not isinstance(ref, str):
-      raise TypeError('ref must be of type str')
-    self._ref = ref
+    @ref.setter
+    def ref(self, ref: str):
+        if ref is None:
+            del self.ref
+            return
+        if not isinstance(ref, str):
+            raise TypeError("ref must be of type str")
+        self._ref = ref
 
-  @property
-  def title(self) -> str:
-    return self._title or ""
+    @property
+    def title(self) -> str:
+        return self._title or ""
 
-  @title.setter
-  def title(self, title: Optional[str]):
-    if title is None:
-      del self.title
-      return
-    if not isinstance(title, str):
-      raise TypeError('title must be of type str')
-    self._title = title
+    @title.setter
+    def title(self, title: Optional[str]):
+        if title is None:
+            del self.title
+            return
+        if not isinstance(title, str):
+            raise TypeError("title must be of type str")
+        self._title = title
 
-  @property
-  def url(self) -> str:
-    return self._url or ""
+    @property
+    def url(self) -> str:
+        return self._url or ""
 
-  @url.setter
-  def url(self, url: Optional[str]):
-    if url is None:
-      del self.url
-      return
-    if not isinstance(url, str):
-      raise TypeError('url must be of type str')
-    self._url = url
+    @url.setter
+    def url(self, url: Optional[str]):
+        if url is None:
+            del self.url
+            return
+        if not isinstance(url, str):
+            raise TypeError("url must be of type str")
+        self._url = url
 
-  @property
-  def description(self) -> str:
-    return self._description or ""
+    @property
+    def description(self) -> str:
+        return self._description or ""
 
-  @description.setter
-  def description(self, description: Optional[str]):
-    if description is None:
-      del self.description
-      return
-    if not isinstance(description, str):
-      raise TypeError('description must be of type str')
-    self._description = description
+    @description.setter
+    def description(self, description: Optional[str]):
+        if description is None:
+            del self.description
+            return
+        if not isinstance(description, str):
+            raise TypeError("description must be of type str")
+        self._description = description
 
-  @property
-  def organization_name(self) -> str:
-    return self._organization_name or ""
+    @property
+    def organization_name(self) -> str:
+        return self._organization_name or ""
 
-  @organization_name.setter
-  def organization_name(self, organization_name: Optional[str]):
-    if organization_name is None:
-      del self.organization_name
-      return
-    if not isinstance(organization_name, str):
-      raise TypeError('organization_name must be of type str')
-    self._organization_name = organization_name
+    @organization_name.setter
+    def organization_name(self, organization_name: Optional[str]):
+        if organization_name is None:
+            del self.organization_name
+            return
+        if not isinstance(organization_name, str):
+            raise TypeError("organization_name must be of type str")
+        self._organization_name = organization_name
 
-  @property
-  def organization_ref(self) -> str:
-    return self._organization_ref or ""
+    @property
+    def organization_ref(self) -> str:
+        return self._organization_ref or ""
 
-  @organization_ref.setter
-  def organization_ref(self, organization_ref: Optional[str]):
-    if organization_ref is None:
-      del self.organization_ref
-      return
-    if not isinstance(organization_ref, str):
-      raise TypeError('organization_ref must be of type str')
-    self._organization_ref = organization_ref
+    @organization_ref.setter
+    def organization_ref(self, organization_ref: Optional[str]):
+        if organization_ref is None:
+            del self.organization_ref
+            return
+        if not isinstance(organization_ref, str):
+            raise TypeError("organization_ref must be of type str")
+        self._organization_ref = organization_ref
 
-  @property
-  def category(self) -> str:
-    return self._category or ""
+    @property
+    def category(self) -> str:
+        return self._category or ""
 
-  @category.setter
-  def category(self, category: Optional[str]):
-    if category is None:
-      del self.category
-      return
-    if not isinstance(category, str):
-      raise TypeError('category must be of type str')
-    self._category = category
+    @category.setter
+    def category(self, category: Optional[str]):
+        if category is None:
+            del self.category
+            return
+        if not isinstance(category, str):
+            raise TypeError("category must be of type str")
+        self._category = category
 
-  @property
-  def reward(self) -> str:
-    return self._reward or ""
+    @property
+    def reward(self) -> str:
+        return self._reward or ""
 
-  @reward.setter
-  def reward(self, reward: Optional[str]):
-    if reward is None:
-      del self.reward
-      return
-    if not isinstance(reward, str):
-      raise TypeError('reward must be of type str')
-    self._reward = reward
+    @reward.setter
+    def reward(self, reward: Optional[str]):
+        if reward is None:
+            del self.reward
+            return
+        if not isinstance(reward, str):
+            raise TypeError("reward must be of type str")
+        self._reward = reward
 
-  @property
-  def tags(self) -> Optional[List[Optional['ApiCategory']]]:
-    return self._tags
+    @property
+    def tags(self) -> Optional[List[Optional["ApiCategory"]]]:
+        return self._tags
 
-  @tags.setter
-  def tags(self, tags: Optional[List[Optional['ApiCategory']]]):
-    if tags is None:
-      del self.tags
-      return
-    if not isinstance(tags, list):
-      raise TypeError('tags must be of type list')
-    if not all([isinstance(t, ApiCategory) for t in tags]):
-      raise TypeError('tags must contain only items of type ApiCategory')
-    self._tags = tags
+    @tags.setter
+    def tags(self, tags: Optional[List[Optional["ApiCategory"]]]):
+        if tags is None:
+            del self.tags
+            return
+        if not isinstance(tags, list):
+            raise TypeError("tags must be of type list")
+        if not all([isinstance(t, ApiCategory) for t in tags]):
+            raise TypeError("tags must contain only items of type ApiCategory")
+        self._tags = tags
 
-  @property
-  def deadline(self) -> datetime:
-    return self._deadline
+    @property
+    def deadline(self) -> datetime:
+        return self._deadline
 
-  @deadline.setter
-  def deadline(self, deadline: datetime):
-    if deadline is None:
-      del self.deadline
-      return
-    if not isinstance(deadline, datetime):
-      raise TypeError('deadline must be of type datetime')
-    self._deadline = deadline
+    @deadline.setter
+    def deadline(self, deadline: datetime):
+        if deadline is None:
+            del self.deadline
+            return
+        if not isinstance(deadline, datetime):
+            raise TypeError("deadline must be of type datetime")
+        self._deadline = deadline
 
-  @property
-  def kernel_count(self) -> int:
-    return self._kernel_count
+    @property
+    def kernel_count(self) -> int:
+        return self._kernel_count
 
-  @kernel_count.setter
-  def kernel_count(self, kernel_count: int):
-    if kernel_count is None:
-      del self.kernel_count
-      return
-    if not isinstance(kernel_count, int):
-      raise TypeError('kernel_count must be of type int')
-    self._kernel_count = kernel_count
+    @kernel_count.setter
+    def kernel_count(self, kernel_count: int):
+        if kernel_count is None:
+            del self.kernel_count
+            return
+        if not isinstance(kernel_count, int):
+            raise TypeError("kernel_count must be of type int")
+        self._kernel_count = kernel_count
 
-  @property
-  def team_count(self) -> int:
-    return self._team_count
+    @property
+    def team_count(self) -> int:
+        return self._team_count
 
-  @team_count.setter
-  def team_count(self, team_count: int):
-    if team_count is None:
-      del self.team_count
-      return
-    if not isinstance(team_count, int):
-      raise TypeError('team_count must be of type int')
-    self._team_count = team_count
+    @team_count.setter
+    def team_count(self, team_count: int):
+        if team_count is None:
+            del self.team_count
+            return
+        if not isinstance(team_count, int):
+            raise TypeError("team_count must be of type int")
+        self._team_count = team_count
 
-  @property
-  def user_has_entered(self) -> bool:
-    return self._user_has_entered
+    @property
+    def user_has_entered(self) -> bool:
+        return self._user_has_entered
 
-  @user_has_entered.setter
-  def user_has_entered(self, user_has_entered: bool):
-    if user_has_entered is None:
-      del self.user_has_entered
-      return
-    if not isinstance(user_has_entered, bool):
-      raise TypeError('user_has_entered must be of type bool')
-    self._user_has_entered = user_has_entered
+    @user_has_entered.setter
+    def user_has_entered(self, user_has_entered: bool):
+        if user_has_entered is None:
+            del self.user_has_entered
+            return
+        if not isinstance(user_has_entered, bool):
+            raise TypeError("user_has_entered must be of type bool")
+        self._user_has_entered = user_has_entered
 
-  @property
-  def user_rank(self) -> int:
-    return self._user_rank or 0
+    @property
+    def user_rank(self) -> int:
+        return self._user_rank or 0
 
-  @user_rank.setter
-  def user_rank(self, user_rank: Optional[int]):
-    if user_rank is None:
-      del self.user_rank
-      return
-    if not isinstance(user_rank, int):
-      raise TypeError('user_rank must be of type int')
-    self._user_rank = user_rank
+    @user_rank.setter
+    def user_rank(self, user_rank: Optional[int]):
+        if user_rank is None:
+            del self.user_rank
+            return
+        if not isinstance(user_rank, int):
+            raise TypeError("user_rank must be of type int")
+        self._user_rank = user_rank
 
-  @property
-  def merger_deadline(self) -> datetime:
-    return self._merger_deadline
+    @property
+    def merger_deadline(self) -> datetime:
+        return self._merger_deadline
 
-  @merger_deadline.setter
-  def merger_deadline(self, merger_deadline: datetime):
-    if merger_deadline is None:
-      del self.merger_deadline
-      return
-    if not isinstance(merger_deadline, datetime):
-      raise TypeError('merger_deadline must be of type datetime')
-    self._merger_deadline = merger_deadline
+    @merger_deadline.setter
+    def merger_deadline(self, merger_deadline: datetime):
+        if merger_deadline is None:
+            del self.merger_deadline
+            return
+        if not isinstance(merger_deadline, datetime):
+            raise TypeError("merger_deadline must be of type datetime")
+        self._merger_deadline = merger_deadline
 
-  @property
-  def new_entrant_deadline(self) -> datetime:
-    return self._new_entrant_deadline
+    @property
+    def new_entrant_deadline(self) -> datetime:
+        return self._new_entrant_deadline
 
-  @new_entrant_deadline.setter
-  def new_entrant_deadline(self, new_entrant_deadline: datetime):
-    if new_entrant_deadline is None:
-      del self.new_entrant_deadline
-      return
-    if not isinstance(new_entrant_deadline, datetime):
-      raise TypeError('new_entrant_deadline must be of type datetime')
-    self._new_entrant_deadline = new_entrant_deadline
+    @new_entrant_deadline.setter
+    def new_entrant_deadline(self, new_entrant_deadline: datetime):
+        if new_entrant_deadline is None:
+            del self.new_entrant_deadline
+            return
+        if not isinstance(new_entrant_deadline, datetime):
+            raise TypeError("new_entrant_deadline must be of type datetime")
+        self._new_entrant_deadline = new_entrant_deadline
 
-  @property
-  def enabled_date(self) -> datetime:
-    return self._enabled_date
+    @property
+    def enabled_date(self) -> datetime:
+        return self._enabled_date
 
-  @enabled_date.setter
-  def enabled_date(self, enabled_date: datetime):
-    if enabled_date is None:
-      del self.enabled_date
-      return
-    if not isinstance(enabled_date, datetime):
-      raise TypeError('enabled_date must be of type datetime')
-    self._enabled_date = enabled_date
+    @enabled_date.setter
+    def enabled_date(self, enabled_date: datetime):
+        if enabled_date is None:
+            del self.enabled_date
+            return
+        if not isinstance(enabled_date, datetime):
+            raise TypeError("enabled_date must be of type datetime")
+        self._enabled_date = enabled_date
 
-  @property
-  def max_daily_submissions(self) -> int:
-    return self._max_daily_submissions
+    @property
+    def max_daily_submissions(self) -> int:
+        return self._max_daily_submissions
 
-  @max_daily_submissions.setter
-  def max_daily_submissions(self, max_daily_submissions: int):
-    if max_daily_submissions is None:
-      del self.max_daily_submissions
-      return
-    if not isinstance(max_daily_submissions, int):
-      raise TypeError('max_daily_submissions must be of type int')
-    self._max_daily_submissions = max_daily_submissions
+    @max_daily_submissions.setter
+    def max_daily_submissions(self, max_daily_submissions: int):
+        if max_daily_submissions is None:
+            del self.max_daily_submissions
+            return
+        if not isinstance(max_daily_submissions, int):
+            raise TypeError("max_daily_submissions must be of type int")
+        self._max_daily_submissions = max_daily_submissions
 
-  @property
-  def max_team_size(self) -> int:
-    return self._max_team_size or 0
+    @property
+    def max_team_size(self) -> int:
+        return self._max_team_size or 0
 
-  @max_team_size.setter
-  def max_team_size(self, max_team_size: Optional[int]):
-    if max_team_size is None:
-      del self.max_team_size
-      return
-    if not isinstance(max_team_size, int):
-      raise TypeError('max_team_size must be of type int')
-    self._max_team_size = max_team_size
+    @max_team_size.setter
+    def max_team_size(self, max_team_size: Optional[int]):
+        if max_team_size is None:
+            del self.max_team_size
+            return
+        if not isinstance(max_team_size, int):
+            raise TypeError("max_team_size must be of type int")
+        self._max_team_size = max_team_size
 
-  @property
-  def evaluation_metric(self) -> str:
-    return self._evaluation_metric or ""
+    @property
+    def evaluation_metric(self) -> str:
+        return self._evaluation_metric or ""
 
-  @evaluation_metric.setter
-  def evaluation_metric(self, evaluation_metric: Optional[str]):
-    if evaluation_metric is None:
-      del self.evaluation_metric
-      return
-    if not isinstance(evaluation_metric, str):
-      raise TypeError('evaluation_metric must be of type str')
-    self._evaluation_metric = evaluation_metric
+    @evaluation_metric.setter
+    def evaluation_metric(self, evaluation_metric: Optional[str]):
+        if evaluation_metric is None:
+            del self.evaluation_metric
+            return
+        if not isinstance(evaluation_metric, str):
+            raise TypeError("evaluation_metric must be of type str")
+        self._evaluation_metric = evaluation_metric
 
-  @property
-  def awards_points(self) -> bool:
-    return self._awards_points
+    @property
+    def awards_points(self) -> bool:
+        return self._awards_points
 
-  @awards_points.setter
-  def awards_points(self, awards_points: bool):
-    if awards_points is None:
-      del self.awards_points
-      return
-    if not isinstance(awards_points, bool):
-      raise TypeError('awards_points must be of type bool')
-    self._awards_points = awards_points
+    @awards_points.setter
+    def awards_points(self, awards_points: bool):
+        if awards_points is None:
+            del self.awards_points
+            return
+        if not isinstance(awards_points, bool):
+            raise TypeError("awards_points must be of type bool")
+        self._awards_points = awards_points
 
-  @property
-  def is_kernels_submissions_only(self) -> bool:
-    return self._is_kernels_submissions_only
+    @property
+    def is_kernels_submissions_only(self) -> bool:
+        return self._is_kernels_submissions_only
 
-  @is_kernels_submissions_only.setter
-  def is_kernels_submissions_only(self, is_kernels_submissions_only: bool):
-    if is_kernels_submissions_only is None:
-      del self.is_kernels_submissions_only
-      return
-    if not isinstance(is_kernels_submissions_only, bool):
-      raise TypeError('is_kernels_submissions_only must be of type bool')
-    self._is_kernels_submissions_only = is_kernels_submissions_only
+    @is_kernels_submissions_only.setter
+    def is_kernels_submissions_only(self, is_kernels_submissions_only: bool):
+        if is_kernels_submissions_only is None:
+            del self.is_kernels_submissions_only
+            return
+        if not isinstance(is_kernels_submissions_only, bool):
+            raise TypeError("is_kernels_submissions_only must be of type bool")
+        self._is_kernels_submissions_only = is_kernels_submissions_only
 
-  @property
-  def submissions_disabled(self) -> bool:
-    return self._submissions_disabled
+    @property
+    def submissions_disabled(self) -> bool:
+        return self._submissions_disabled
 
-  @submissions_disabled.setter
-  def submissions_disabled(self, submissions_disabled: bool):
-    if submissions_disabled is None:
-      del self.submissions_disabled
-      return
-    if not isinstance(submissions_disabled, bool):
-      raise TypeError('submissions_disabled must be of type bool')
-    self._submissions_disabled = submissions_disabled
+    @submissions_disabled.setter
+    def submissions_disabled(self, submissions_disabled: bool):
+        if submissions_disabled is None:
+            del self.submissions_disabled
+            return
+        if not isinstance(submissions_disabled, bool):
+            raise TypeError("submissions_disabled must be of type bool")
+        self._submissions_disabled = submissions_disabled
 
-  @property
-  def thumbnail_image_url(self) -> str:
-    return self._thumbnail_image_url or ""
+    @property
+    def thumbnail_image_url(self) -> str:
+        return self._thumbnail_image_url or ""
 
-  @thumbnail_image_url.setter
-  def thumbnail_image_url(self, thumbnail_image_url: Optional[str]):
-    if thumbnail_image_url is None:
-      del self.thumbnail_image_url
-      return
-    if not isinstance(thumbnail_image_url, str):
-      raise TypeError('thumbnail_image_url must be of type str')
-    self._thumbnail_image_url = thumbnail_image_url
+    @thumbnail_image_url.setter
+    def thumbnail_image_url(self, thumbnail_image_url: Optional[str]):
+        if thumbnail_image_url is None:
+            del self.thumbnail_image_url
+            return
+        if not isinstance(thumbnail_image_url, str):
+            raise TypeError("thumbnail_image_url must be of type str")
+        self._thumbnail_image_url = thumbnail_image_url
 
-  @property
-  def host_name(self) -> str:
-    return self._host_name
+    @property
+    def host_name(self) -> str:
+        return self._host_name
 
-  @host_name.setter
-  def host_name(self, host_name: str):
-    if host_name is None:
-      del self.host_name
-      return
-    if not isinstance(host_name, str):
-      raise TypeError('host_name must be of type str')
-    self._host_name = host_name
+    @host_name.setter
+    def host_name(self, host_name: str):
+        if host_name is None:
+            del self.host_name
+            return
+        if not isinstance(host_name, str):
+            raise TypeError("host_name must be of type str")
+        self._host_name = host_name
 
-  @property
-  def date_created(self) -> datetime:
-    return self._date_created
+    @property
+    def date_created(self) -> datetime:
+        return self._date_created
 
-  @date_created.setter
-  def date_created(self, date_created: datetime):
-    if date_created is None:
-      del self.date_created
-      return
-    if not isinstance(date_created, datetime):
-      raise TypeError('date_created must be of type datetime')
-    self._date_created = date_created
+    @date_created.setter
+    def date_created(self, date_created: datetime):
+        if date_created is None:
+            del self.date_created
+            return
+        if not isinstance(date_created, datetime):
+            raise TypeError("date_created must be of type datetime")
+        self._date_created = date_created
 
 
 class ApiCompetitionDataFile(KaggleObject):
-  r"""
-  Attributes:
-    name (str)
-      File name. May include `/`-separated path segments to place the file in a
-      subdirectory (e.g. 'train/images/img1.jpg').
-    token (str)
-      Blob token returned by /api/v1/blobs/upload after the matching upload PUT.
-  """
-
-  def __init__(self):
-    self._name = ""
-    self._token = ""
-    self._freeze()
-
-  @property
-  def name(self) -> str:
     r"""
-    File name. May include `/`-separated path segments to place the file in a
-    subdirectory (e.g. 'train/images/img1.jpg').
+    Attributes:
+      name (str)
+        File name. May include `/`-separated path segments to place the file in a
+        subdirectory (e.g. 'train/images/img1.jpg').
+      token (str)
+        Blob token returned by /api/v1/blobs/upload after the matching upload PUT.
     """
-    return self._name
 
-  @name.setter
-  def name(self, name: str):
-    if name is None:
-      del self.name
-      return
-    if not isinstance(name, str):
-      raise TypeError('name must be of type str')
-    self._name = name
+    def __init__(self):
+        self._name = ""
+        self._token = ""
+        self._freeze()
 
-  @property
-  def token(self) -> str:
-    """Blob token returned by /api/v1/blobs/upload after the matching upload PUT."""
-    return self._token
+    @property
+    def name(self) -> str:
+        r"""
+        File name. May include `/`-separated path segments to place the file in a
+        subdirectory (e.g. 'train/images/img1.jpg').
+        """
+        return self._name
 
-  @token.setter
-  def token(self, token: str):
-    if token is None:
-      del self.token
-      return
-    if not isinstance(token, str):
-      raise TypeError('token must be of type str')
-    self._token = token
+    @name.setter
+    def name(self, name: str):
+        if name is None:
+            del self.name
+            return
+        if not isinstance(name, str):
+            raise TypeError("name must be of type str")
+        self._name = name
+
+    @property
+    def token(self) -> str:
+        """Blob token returned by /api/v1/blobs/upload after the matching upload PUT."""
+        return self._token
+
+    @token.setter
+    def token(self, token: str):
+        if token is None:
+            del self.token
+            return
+        if not isinstance(token, str):
+            raise TypeError("token must be of type str")
+        self._token = token
 
 
 class ApiCompetitionHost(KaggleObject):
-  r"""
-  Attributes:
-    id (int)
-      Numeric user ID.
-    user_name (str)
-      Kaggle user name (URL slug, e.g. 'fickleone').
-    display_name (str)
-      Human-readable display name.
-    profile_url (str)
-      Full URL to the user's profile page.
-  """
+    r"""
+    Attributes:
+      id (int)
+        Numeric user ID.
+      user_name (str)
+        Kaggle user name (URL slug, e.g. 'fickleone').
+      display_name (str)
+        Human-readable display name.
+      profile_url (str)
+        Full URL to the user's profile page.
+    """
 
-  def __init__(self):
-    self._id = 0
-    self._user_name = None
-    self._display_name = None
-    self._profile_url = None
-    self._freeze()
+    def __init__(self):
+        self._id = 0
+        self._user_name = None
+        self._display_name = None
+        self._profile_url = None
+        self._freeze()
 
-  @property
-  def id(self) -> int:
-    """Numeric user ID."""
-    return self._id
+    @property
+    def id(self) -> int:
+        """Numeric user ID."""
+        return self._id
 
-  @id.setter
-  def id(self, id: int):
-    if id is None:
-      del self.id
-      return
-    if not isinstance(id, int):
-      raise TypeError('id must be of type int')
-    self._id = id
+    @id.setter
+    def id(self, id: int):
+        if id is None:
+            del self.id
+            return
+        if not isinstance(id, int):
+            raise TypeError("id must be of type int")
+        self._id = id
 
-  @property
-  def user_name(self) -> str:
-    """Kaggle user name (URL slug, e.g. 'fickleone')."""
-    return self._user_name or ""
+    @property
+    def user_name(self) -> str:
+        """Kaggle user name (URL slug, e.g. 'fickleone')."""
+        return self._user_name or ""
 
-  @user_name.setter
-  def user_name(self, user_name: Optional[str]):
-    if user_name is None:
-      del self.user_name
-      return
-    if not isinstance(user_name, str):
-      raise TypeError('user_name must be of type str')
-    self._user_name = user_name
+    @user_name.setter
+    def user_name(self, user_name: Optional[str]):
+        if user_name is None:
+            del self.user_name
+            return
+        if not isinstance(user_name, str):
+            raise TypeError("user_name must be of type str")
+        self._user_name = user_name
 
-  @property
-  def display_name(self) -> str:
-    """Human-readable display name."""
-    return self._display_name or ""
+    @property
+    def display_name(self) -> str:
+        """Human-readable display name."""
+        return self._display_name or ""
 
-  @display_name.setter
-  def display_name(self, display_name: Optional[str]):
-    if display_name is None:
-      del self.display_name
-      return
-    if not isinstance(display_name, str):
-      raise TypeError('display_name must be of type str')
-    self._display_name = display_name
+    @display_name.setter
+    def display_name(self, display_name: Optional[str]):
+        if display_name is None:
+            del self.display_name
+            return
+        if not isinstance(display_name, str):
+            raise TypeError("display_name must be of type str")
+        self._display_name = display_name
 
-  @property
-  def profile_url(self) -> str:
-    """Full URL to the user's profile page."""
-    return self._profile_url or ""
+    @property
+    def profile_url(self) -> str:
+        """Full URL to the user's profile page."""
+        return self._profile_url or ""
 
-  @profile_url.setter
-  def profile_url(self, profile_url: Optional[str]):
-    if profile_url is None:
-      del self.profile_url
-      return
-    if not isinstance(profile_url, str):
-      raise TypeError('profile_url must be of type str')
-    self._profile_url = profile_url
+    @profile_url.setter
+    def profile_url(self, profile_url: Optional[str]):
+        if profile_url is None:
+            del self.profile_url
+            return
+        if not isinstance(profile_url, str):
+            raise TypeError("profile_url must be of type str")
+        self._profile_url = profile_url
 
 
 class ApiCompetitionPage(KaggleObject):
-  r"""
-  NOTE: writable field names must stay in sync with `kaggle.competitions.Page`
-  — UpdateCompetitionPage forwards the mask verbatim to UpdatePage.
-
-  Attributes:
-    name (str)
-      Page name (e.g. 'description', 'rules', 'evaluation', 'data-description',
-      'prizes').
-    content (str)
-      The rendered content of the page.
-    is_published (bool)
-      Whether the page is publicly visible. Defaults to false on create so hosts
-      can stage content before publishing.
-    post_title (str)
-      Optional post title shown above the page content. Defaults to the page
-      name on create.
-    mime_type (str)
-      MIME type of `content`. Defaults to 'text/html' on create.
-  """
-
-  def __init__(self):
-    self._name = ""
-    self._content = ""
-    self._is_published = None
-    self._post_title = None
-    self._mime_type = None
-    self._freeze()
-
-  @property
-  def name(self) -> str:
     r"""
-    Page name (e.g. 'description', 'rules', 'evaluation', 'data-description',
-    'prizes').
+    NOTE: writable field names must stay in sync with `kaggle.competitions.Page`
+    — UpdateCompetitionPage forwards the mask verbatim to UpdatePage.
+
+    Attributes:
+      name (str)
+        Page name (e.g. 'description', 'rules', 'evaluation', 'data-description',
+        'prizes').
+      content (str)
+        The rendered content of the page.
+      is_published (bool)
+        Whether the page is publicly visible. Defaults to false on create so hosts
+        can stage content before publishing.
+      post_title (str)
+        Optional post title shown above the page content. Defaults to the page
+        name on create.
+      mime_type (str)
+        MIME type of `content`. Defaults to 'text/html' on create.
     """
-    return self._name
 
-  @name.setter
-  def name(self, name: str):
-    if name is None:
-      del self.name
-      return
-    if not isinstance(name, str):
-      raise TypeError('name must be of type str')
-    self._name = name
+    def __init__(self):
+        self._name = ""
+        self._content = ""
+        self._is_published = None
+        self._post_title = None
+        self._mime_type = None
+        self._freeze()
 
-  @property
-  def content(self) -> str:
-    """The rendered content of the page."""
-    return self._content
+    @property
+    def name(self) -> str:
+        r"""
+        Page name (e.g. 'description', 'rules', 'evaluation', 'data-description',
+        'prizes').
+        """
+        return self._name
 
-  @content.setter
-  def content(self, content: str):
-    if content is None:
-      del self.content
-      return
-    if not isinstance(content, str):
-      raise TypeError('content must be of type str')
-    self._content = content
+    @name.setter
+    def name(self, name: str):
+        if name is None:
+            del self.name
+            return
+        if not isinstance(name, str):
+            raise TypeError("name must be of type str")
+        self._name = name
 
-  @property
-  def is_published(self) -> bool:
-    r"""
-    Whether the page is publicly visible. Defaults to false on create so hosts
-    can stage content before publishing.
-    """
-    return self._is_published or False
+    @property
+    def content(self) -> str:
+        """The rendered content of the page."""
+        return self._content
 
-  @is_published.setter
-  def is_published(self, is_published: Optional[bool]):
-    if is_published is None:
-      del self.is_published
-      return
-    if not isinstance(is_published, bool):
-      raise TypeError('is_published must be of type bool')
-    self._is_published = is_published
+    @content.setter
+    def content(self, content: str):
+        if content is None:
+            del self.content
+            return
+        if not isinstance(content, str):
+            raise TypeError("content must be of type str")
+        self._content = content
 
-  @property
-  def post_title(self) -> str:
-    r"""
-    Optional post title shown above the page content. Defaults to the page
-    name on create.
-    """
-    return self._post_title or ""
+    @property
+    def is_published(self) -> bool:
+        r"""
+        Whether the page is publicly visible. Defaults to false on create so hosts
+        can stage content before publishing.
+        """
+        return self._is_published or False
 
-  @post_title.setter
-  def post_title(self, post_title: Optional[str]):
-    if post_title is None:
-      del self.post_title
-      return
-    if not isinstance(post_title, str):
-      raise TypeError('post_title must be of type str')
-    self._post_title = post_title
+    @is_published.setter
+    def is_published(self, is_published: Optional[bool]):
+        if is_published is None:
+            del self.is_published
+            return
+        if not isinstance(is_published, bool):
+            raise TypeError("is_published must be of type bool")
+        self._is_published = is_published
 
-  @property
-  def mime_type(self) -> str:
-    """MIME type of `content`. Defaults to 'text/html' on create."""
-    return self._mime_type or ""
+    @property
+    def post_title(self) -> str:
+        r"""
+        Optional post title shown above the page content. Defaults to the page
+        name on create.
+        """
+        return self._post_title or ""
 
-  @mime_type.setter
-  def mime_type(self, mime_type: Optional[str]):
-    if mime_type is None:
-      del self.mime_type
-      return
-    if not isinstance(mime_type, str):
-      raise TypeError('mime_type must be of type str')
-    self._mime_type = mime_type
+    @post_title.setter
+    def post_title(self, post_title: Optional[str]):
+        if post_title is None:
+            del self.post_title
+            return
+        if not isinstance(post_title, str):
+            raise TypeError("post_title must be of type str")
+        self._post_title = post_title
+
+    @property
+    def mime_type(self) -> str:
+        """MIME type of `content`. Defaults to 'text/html' on create."""
+        return self._mime_type or ""
+
+    @mime_type.setter
+    def mime_type(self, mime_type: Optional[str]):
+        if mime_type is None:
+            del self.mime_type
+            return
+        if not isinstance(mime_type, str):
+            raise TypeError("mime_type must be of type str")
+        self._mime_type = mime_type
 
 
 class ApiCompetitionSolutionStatus(KaggleObject):
-  r"""
-  Attributes:
-    ready (bool)
-      True once all required setup steps for the solution file are complete and
-      the competition can score submissions. Poll this after
-      CreateCompetitionData / CreateCompetitionSolution until it flips true (or
-      `setup_error` is set).
-    setup_error (str)
-      Populated if preprocessing or sampling failed. The CLI should surface
-      this message and stop polling.
-    kernels_metric (bool)
-      True if the competition's scoring metric is Kernels-based. Kernels metrics
-      auto-detect their column mapping and `column_mapping` /
-      `required_metric_columns` are not used -- the host only needs to wait
-      for `ready` to flip true.
-    row_id_column_name (str)
-      For Kernels metrics only -- the row-id column auto-detected from the CSV.
-    column_mapping (str)
-      For legacy C# metrics: the current mapping from metric column name to
-      CSV column name. Populated with the auto-inferred mapping after
-      preprocessing completes; empty before that. The host commits the final
-      mapping by passing the same shape to UpdateCompetitionSolutionMapping.
-    required_metric_columns (ApiMetricColumn)
-      For legacy C# metrics: the metric column slots the host needs to fill.
-      Each entry's `name` is a key for `column_mapping`; `data_type` is the
-      expected parsed type (e.g. 'Double', 'Int32').
-    solution_info (ApiSolutionFileInfo)
-      Solution file metadata. Null until a solution has been uploaded.
-  """
-
-  def __init__(self):
-    self._ready = False
-    self._setup_error = None
-    self._kernels_metric = False
-    self._row_id_column_name = None
-    self._column_mapping = {}
-    self._required_metric_columns = []
-    self._solution_info = None
-    self._freeze()
-
-  @property
-  def ready(self) -> bool:
     r"""
-    True once all required setup steps for the solution file are complete and
-    the competition can score submissions. Poll this after
-    CreateCompetitionData / CreateCompetitionSolution until it flips true (or
-    `setup_error` is set).
+    Attributes:
+      ready (bool)
+        True once all required setup steps for the solution file are complete and
+        the competition can score submissions. Poll this after
+        CreateCompetitionData / CreateCompetitionSolution until it flips true (or
+        `setup_error` is set).
+      setup_error (str)
+        Populated if preprocessing or sampling failed. The CLI should surface
+        this message and stop polling.
+      kernels_metric (bool)
+        True if the competition's scoring metric is Kernels-based. Kernels metrics
+        auto-detect their column mapping and `column_mapping` /
+        `required_metric_columns` are not used -- the host only needs to wait
+        for `ready` to flip true.
+      row_id_column_name (str)
+        For Kernels metrics only -- the row-id column auto-detected from the CSV.
+      column_mapping (str)
+        For legacy C# metrics: the current mapping from metric column name to
+        CSV column name. Populated with the auto-inferred mapping after
+        preprocessing completes; empty before that. The host commits the final
+        mapping by passing the same shape to UpdateCompetitionSolutionMapping.
+      required_metric_columns (ApiMetricColumn)
+        For legacy C# metrics: the metric column slots the host needs to fill.
+        Each entry's `name` is a key for `column_mapping`; `data_type` is the
+        expected parsed type (e.g. 'Double', 'Int32').
+      solution_info (ApiSolutionFileInfo)
+        Solution file metadata. Null until a solution has been uploaded.
     """
-    return self._ready
 
-  @ready.setter
-  def ready(self, ready: bool):
-    if ready is None:
-      del self.ready
-      return
-    if not isinstance(ready, bool):
-      raise TypeError('ready must be of type bool')
-    self._ready = ready
+    def __init__(self):
+        self._ready = False
+        self._setup_error = None
+        self._kernels_metric = False
+        self._row_id_column_name = None
+        self._column_mapping = {}
+        self._required_metric_columns = []
+        self._solution_info = None
+        self._freeze()
 
-  @property
-  def setup_error(self) -> str:
-    r"""
-    Populated if preprocessing or sampling failed. The CLI should surface
-    this message and stop polling.
-    """
-    return self._setup_error or ""
+    @property
+    def ready(self) -> bool:
+        r"""
+        True once all required setup steps for the solution file are complete and
+        the competition can score submissions. Poll this after
+        CreateCompetitionData / CreateCompetitionSolution until it flips true (or
+        `setup_error` is set).
+        """
+        return self._ready
 
-  @setup_error.setter
-  def setup_error(self, setup_error: Optional[str]):
-    if setup_error is None:
-      del self.setup_error
-      return
-    if not isinstance(setup_error, str):
-      raise TypeError('setup_error must be of type str')
-    self._setup_error = setup_error
+    @ready.setter
+    def ready(self, ready: bool):
+        if ready is None:
+            del self.ready
+            return
+        if not isinstance(ready, bool):
+            raise TypeError("ready must be of type bool")
+        self._ready = ready
 
-  @property
-  def kernels_metric(self) -> bool:
-    r"""
-    True if the competition's scoring metric is Kernels-based. Kernels metrics
-    auto-detect their column mapping and `column_mapping` /
-    `required_metric_columns` are not used -- the host only needs to wait
-    for `ready` to flip true.
-    """
-    return self._kernels_metric
+    @property
+    def setup_error(self) -> str:
+        r"""
+        Populated if preprocessing or sampling failed. The CLI should surface
+        this message and stop polling.
+        """
+        return self._setup_error or ""
 
-  @kernels_metric.setter
-  def kernels_metric(self, kernels_metric: bool):
-    if kernels_metric is None:
-      del self.kernels_metric
-      return
-    if not isinstance(kernels_metric, bool):
-      raise TypeError('kernels_metric must be of type bool')
-    self._kernels_metric = kernels_metric
+    @setup_error.setter
+    def setup_error(self, setup_error: Optional[str]):
+        if setup_error is None:
+            del self.setup_error
+            return
+        if not isinstance(setup_error, str):
+            raise TypeError("setup_error must be of type str")
+        self._setup_error = setup_error
 
-  @property
-  def row_id_column_name(self) -> str:
-    """For Kernels metrics only -- the row-id column auto-detected from the CSV."""
-    return self._row_id_column_name or ""
+    @property
+    def kernels_metric(self) -> bool:
+        r"""
+        True if the competition's scoring metric is Kernels-based. Kernels metrics
+        auto-detect their column mapping and `column_mapping` /
+        `required_metric_columns` are not used -- the host only needs to wait
+        for `ready` to flip true.
+        """
+        return self._kernels_metric
 
-  @row_id_column_name.setter
-  def row_id_column_name(self, row_id_column_name: Optional[str]):
-    if row_id_column_name is None:
-      del self.row_id_column_name
-      return
-    if not isinstance(row_id_column_name, str):
-      raise TypeError('row_id_column_name must be of type str')
-    self._row_id_column_name = row_id_column_name
+    @kernels_metric.setter
+    def kernels_metric(self, kernels_metric: bool):
+        if kernels_metric is None:
+            del self.kernels_metric
+            return
+        if not isinstance(kernels_metric, bool):
+            raise TypeError("kernels_metric must be of type bool")
+        self._kernels_metric = kernels_metric
 
-  @property
-  def column_mapping(self) -> Optional[Dict[str, str]]:
-    r"""
-    For legacy C# metrics: the current mapping from metric column name to
-    CSV column name. Populated with the auto-inferred mapping after
-    preprocessing completes; empty before that. The host commits the final
-    mapping by passing the same shape to UpdateCompetitionSolutionMapping.
-    """
-    return self._column_mapping
+    @property
+    def row_id_column_name(self) -> str:
+        """For Kernels metrics only -- the row-id column auto-detected from the CSV."""
+        return self._row_id_column_name or ""
 
-  @column_mapping.setter
-  def column_mapping(self, column_mapping: Optional[Dict[str, str]]):
-    if column_mapping is None:
-      del self.column_mapping
-      return
-    if not isinstance(column_mapping, dict):
-      raise TypeError('column_mapping must be of type dict')
-    if not all([isinstance(v, str) for k, v in column_mapping]):
-      raise TypeError('column_mapping must contain only items of type str')
-    self._column_mapping = column_mapping
+    @row_id_column_name.setter
+    def row_id_column_name(self, row_id_column_name: Optional[str]):
+        if row_id_column_name is None:
+            del self.row_id_column_name
+            return
+        if not isinstance(row_id_column_name, str):
+            raise TypeError("row_id_column_name must be of type str")
+        self._row_id_column_name = row_id_column_name
 
-  @property
-  def required_metric_columns(self) -> Optional[List[Optional['ApiMetricColumn']]]:
-    r"""
-    For legacy C# metrics: the metric column slots the host needs to fill.
-    Each entry's `name` is a key for `column_mapping`; `data_type` is the
-    expected parsed type (e.g. 'Double', 'Int32').
-    """
-    return self._required_metric_columns
+    @property
+    def column_mapping(self) -> Optional[Dict[str, str]]:
+        r"""
+        For legacy C# metrics: the current mapping from metric column name to
+        CSV column name. Populated with the auto-inferred mapping after
+        preprocessing completes; empty before that. The host commits the final
+        mapping by passing the same shape to UpdateCompetitionSolutionMapping.
+        """
+        return self._column_mapping
 
-  @required_metric_columns.setter
-  def required_metric_columns(self, required_metric_columns: Optional[List[Optional['ApiMetricColumn']]]):
-    if required_metric_columns is None:
-      del self.required_metric_columns
-      return
-    if not isinstance(required_metric_columns, list):
-      raise TypeError('required_metric_columns must be of type list')
-    if not all([isinstance(t, ApiMetricColumn) for t in required_metric_columns]):
-      raise TypeError('required_metric_columns must contain only items of type ApiMetricColumn')
-    self._required_metric_columns = required_metric_columns
+    @column_mapping.setter
+    def column_mapping(self, column_mapping: Optional[Dict[str, str]]):
+        if column_mapping is None:
+            del self.column_mapping
+            return
+        if not isinstance(column_mapping, dict):
+            raise TypeError("column_mapping must be of type dict")
+        if not all([isinstance(v, str) for k, v in column_mapping]):
+            raise TypeError("column_mapping must contain only items of type str")
+        self._column_mapping = column_mapping
 
-  @property
-  def solution_info(self) -> Optional['ApiSolutionFileInfo']:
-    """Solution file metadata. Null until a solution has been uploaded."""
-    return self._solution_info
+    @property
+    def required_metric_columns(self) -> Optional[List[Optional["ApiMetricColumn"]]]:
+        r"""
+        For legacy C# metrics: the metric column slots the host needs to fill.
+        Each entry's `name` is a key for `column_mapping`; `data_type` is the
+        expected parsed type (e.g. 'Double', 'Int32').
+        """
+        return self._required_metric_columns
 
-  @solution_info.setter
-  def solution_info(self, solution_info: Optional['ApiSolutionFileInfo']):
-    if solution_info is None:
-      del self.solution_info
-      return
-    if not isinstance(solution_info, ApiSolutionFileInfo):
-      raise TypeError('solution_info must be of type ApiSolutionFileInfo')
-    self._solution_info = solution_info
+    @required_metric_columns.setter
+    def required_metric_columns(
+        self, required_metric_columns: Optional[List[Optional["ApiMetricColumn"]]]
+    ):
+        if required_metric_columns is None:
+            del self.required_metric_columns
+            return
+        if not isinstance(required_metric_columns, list):
+            raise TypeError("required_metric_columns must be of type list")
+        if not all([isinstance(t, ApiMetricColumn) for t in required_metric_columns]):
+            raise TypeError(
+                "required_metric_columns must contain only items of type ApiMetricColumn"
+            )
+        self._required_metric_columns = required_metric_columns
+
+    @property
+    def solution_info(self) -> Optional["ApiSolutionFileInfo"]:
+        """Solution file metadata. Null until a solution has been uploaded."""
+        return self._solution_info
+
+    @solution_info.setter
+    def solution_info(self, solution_info: Optional["ApiSolutionFileInfo"]):
+        if solution_info is None:
+            del self.solution_info
+            return
+        if not isinstance(solution_info, ApiSolutionFileInfo):
+            raise TypeError("solution_info must be of type ApiSolutionFileInfo")
+        self._solution_info = solution_info
 
 
 class ApiCompetitionTopic(KaggleObject):
-  r"""
-  Attributes:
-    id (int)
-    title (str)
-    topic_url (str)
-    author_name (str)
-    comment_count (int)
-    votes (int)
-    post_date (datetime)
-    last_comment_post_date (datetime)
-    is_sticky (bool)
-  """
+    r"""
+    Attributes:
+      id (int)
+      title (str)
+      topic_url (str)
+      author_name (str)
+      comment_count (int)
+      votes (int)
+      post_date (datetime)
+      last_comment_post_date (datetime)
+      is_sticky (bool)
+    """
 
-  def __init__(self):
-    self._id = 0
-    self._title = ""
-    self._topic_url = ""
-    self._author_name = None
-    self._comment_count = 0
-    self._votes = 0
-    self._post_date = None
-    self._last_comment_post_date = None
-    self._is_sticky = False
-    self._freeze()
+    def __init__(self):
+        self._id = 0
+        self._title = ""
+        self._topic_url = ""
+        self._author_name = None
+        self._comment_count = 0
+        self._votes = 0
+        self._post_date = None
+        self._last_comment_post_date = None
+        self._is_sticky = False
+        self._freeze()
 
-  @property
-  def id(self) -> int:
-    return self._id
+    @property
+    def id(self) -> int:
+        return self._id
 
-  @id.setter
-  def id(self, id: int):
-    if id is None:
-      del self.id
-      return
-    if not isinstance(id, int):
-      raise TypeError('id must be of type int')
-    self._id = id
+    @id.setter
+    def id(self, id: int):
+        if id is None:
+            del self.id
+            return
+        if not isinstance(id, int):
+            raise TypeError("id must be of type int")
+        self._id = id
 
-  @property
-  def title(self) -> str:
-    return self._title
+    @property
+    def title(self) -> str:
+        return self._title
 
-  @title.setter
-  def title(self, title: str):
-    if title is None:
-      del self.title
-      return
-    if not isinstance(title, str):
-      raise TypeError('title must be of type str')
-    self._title = title
+    @title.setter
+    def title(self, title: str):
+        if title is None:
+            del self.title
+            return
+        if not isinstance(title, str):
+            raise TypeError("title must be of type str")
+        self._title = title
 
-  @property
-  def topic_url(self) -> str:
-    return self._topic_url
+    @property
+    def topic_url(self) -> str:
+        return self._topic_url
 
-  @topic_url.setter
-  def topic_url(self, topic_url: str):
-    if topic_url is None:
-      del self.topic_url
-      return
-    if not isinstance(topic_url, str):
-      raise TypeError('topic_url must be of type str')
-    self._topic_url = topic_url
+    @topic_url.setter
+    def topic_url(self, topic_url: str):
+        if topic_url is None:
+            del self.topic_url
+            return
+        if not isinstance(topic_url, str):
+            raise TypeError("topic_url must be of type str")
+        self._topic_url = topic_url
 
-  @property
-  def author_name(self) -> str:
-    return self._author_name or ""
+    @property
+    def author_name(self) -> str:
+        return self._author_name or ""
 
-  @author_name.setter
-  def author_name(self, author_name: Optional[str]):
-    if author_name is None:
-      del self.author_name
-      return
-    if not isinstance(author_name, str):
-      raise TypeError('author_name must be of type str')
-    self._author_name = author_name
+    @author_name.setter
+    def author_name(self, author_name: Optional[str]):
+        if author_name is None:
+            del self.author_name
+            return
+        if not isinstance(author_name, str):
+            raise TypeError("author_name must be of type str")
+        self._author_name = author_name
 
-  @property
-  def comment_count(self) -> int:
-    return self._comment_count
+    @property
+    def comment_count(self) -> int:
+        return self._comment_count
 
-  @comment_count.setter
-  def comment_count(self, comment_count: int):
-    if comment_count is None:
-      del self.comment_count
-      return
-    if not isinstance(comment_count, int):
-      raise TypeError('comment_count must be of type int')
-    self._comment_count = comment_count
+    @comment_count.setter
+    def comment_count(self, comment_count: int):
+        if comment_count is None:
+            del self.comment_count
+            return
+        if not isinstance(comment_count, int):
+            raise TypeError("comment_count must be of type int")
+        self._comment_count = comment_count
 
-  @property
-  def votes(self) -> int:
-    return self._votes
+    @property
+    def votes(self) -> int:
+        return self._votes
 
-  @votes.setter
-  def votes(self, votes: int):
-    if votes is None:
-      del self.votes
-      return
-    if not isinstance(votes, int):
-      raise TypeError('votes must be of type int')
-    self._votes = votes
+    @votes.setter
+    def votes(self, votes: int):
+        if votes is None:
+            del self.votes
+            return
+        if not isinstance(votes, int):
+            raise TypeError("votes must be of type int")
+        self._votes = votes
 
-  @property
-  def post_date(self) -> datetime:
-    return self._post_date
+    @property
+    def post_date(self) -> datetime:
+        return self._post_date
 
-  @post_date.setter
-  def post_date(self, post_date: datetime):
-    if post_date is None:
-      del self.post_date
-      return
-    if not isinstance(post_date, datetime):
-      raise TypeError('post_date must be of type datetime')
-    self._post_date = post_date
+    @post_date.setter
+    def post_date(self, post_date: datetime):
+        if post_date is None:
+            del self.post_date
+            return
+        if not isinstance(post_date, datetime):
+            raise TypeError("post_date must be of type datetime")
+        self._post_date = post_date
 
-  @property
-  def last_comment_post_date(self) -> datetime:
-    return self._last_comment_post_date
+    @property
+    def last_comment_post_date(self) -> datetime:
+        return self._last_comment_post_date
 
-  @last_comment_post_date.setter
-  def last_comment_post_date(self, last_comment_post_date: datetime):
-    if last_comment_post_date is None:
-      del self.last_comment_post_date
-      return
-    if not isinstance(last_comment_post_date, datetime):
-      raise TypeError('last_comment_post_date must be of type datetime')
-    self._last_comment_post_date = last_comment_post_date
+    @last_comment_post_date.setter
+    def last_comment_post_date(self, last_comment_post_date: datetime):
+        if last_comment_post_date is None:
+            del self.last_comment_post_date
+            return
+        if not isinstance(last_comment_post_date, datetime):
+            raise TypeError("last_comment_post_date must be of type datetime")
+        self._last_comment_post_date = last_comment_post_date
 
-  @property
-  def is_sticky(self) -> bool:
-    return self._is_sticky
+    @property
+    def is_sticky(self) -> bool:
+        return self._is_sticky
 
-  @is_sticky.setter
-  def is_sticky(self, is_sticky: bool):
-    if is_sticky is None:
-      del self.is_sticky
-      return
-    if not isinstance(is_sticky, bool):
-      raise TypeError('is_sticky must be of type bool')
-    self._is_sticky = is_sticky
+    @is_sticky.setter
+    def is_sticky(self, is_sticky: bool):
+        if is_sticky is None:
+            del self.is_sticky
+            return
+        if not isinstance(is_sticky, bool):
+            raise TypeError("is_sticky must be of type bool")
+        self._is_sticky = is_sticky
 
 
 class ApiCreateCodeSubmissionRequest(KaggleObject):
-  r"""
-  Attributes:
-    competition_name (str)
-    kernel_owner (str)
-    kernel_slug (str)
-    kernel_version (int)
-    file_name (str)
-    submission_description (str)
-  """
+    r"""
+    Attributes:
+      competition_name (str)
+      kernel_owner (str)
+      kernel_slug (str)
+      kernel_version (int)
+      file_name (str)
+      submission_description (str)
+    """
 
-  def __init__(self):
-    self._competition_name = ""
-    self._kernel_owner = ""
-    self._kernel_slug = ""
-    self._kernel_version = None
-    self._file_name = None
-    self._submission_description = None
-    self._freeze()
+    def __init__(self):
+        self._competition_name = ""
+        self._kernel_owner = ""
+        self._kernel_slug = ""
+        self._kernel_version = None
+        self._file_name = None
+        self._submission_description = None
+        self._freeze()
 
-  @property
-  def competition_name(self) -> str:
-    return self._competition_name
+    @property
+    def competition_name(self) -> str:
+        return self._competition_name
 
-  @competition_name.setter
-  def competition_name(self, competition_name: str):
-    if competition_name is None:
-      del self.competition_name
-      return
-    if not isinstance(competition_name, str):
-      raise TypeError('competition_name must be of type str')
-    self._competition_name = competition_name
+    @competition_name.setter
+    def competition_name(self, competition_name: str):
+        if competition_name is None:
+            del self.competition_name
+            return
+        if not isinstance(competition_name, str):
+            raise TypeError("competition_name must be of type str")
+        self._competition_name = competition_name
 
-  @property
-  def kernel_owner(self) -> str:
-    return self._kernel_owner
+    @property
+    def kernel_owner(self) -> str:
+        return self._kernel_owner
 
-  @kernel_owner.setter
-  def kernel_owner(self, kernel_owner: str):
-    if kernel_owner is None:
-      del self.kernel_owner
-      return
-    if not isinstance(kernel_owner, str):
-      raise TypeError('kernel_owner must be of type str')
-    self._kernel_owner = kernel_owner
+    @kernel_owner.setter
+    def kernel_owner(self, kernel_owner: str):
+        if kernel_owner is None:
+            del self.kernel_owner
+            return
+        if not isinstance(kernel_owner, str):
+            raise TypeError("kernel_owner must be of type str")
+        self._kernel_owner = kernel_owner
 
-  @property
-  def kernel_slug(self) -> str:
-    return self._kernel_slug
+    @property
+    def kernel_slug(self) -> str:
+        return self._kernel_slug
 
-  @kernel_slug.setter
-  def kernel_slug(self, kernel_slug: str):
-    if kernel_slug is None:
-      del self.kernel_slug
-      return
-    if not isinstance(kernel_slug, str):
-      raise TypeError('kernel_slug must be of type str')
-    self._kernel_slug = kernel_slug
+    @kernel_slug.setter
+    def kernel_slug(self, kernel_slug: str):
+        if kernel_slug is None:
+            del self.kernel_slug
+            return
+        if not isinstance(kernel_slug, str):
+            raise TypeError("kernel_slug must be of type str")
+        self._kernel_slug = kernel_slug
 
-  @property
-  def kernel_version(self) -> int:
-    return self._kernel_version or 0
+    @property
+    def kernel_version(self) -> int:
+        return self._kernel_version or 0
 
-  @kernel_version.setter
-  def kernel_version(self, kernel_version: Optional[int]):
-    if kernel_version is None:
-      del self.kernel_version
-      return
-    if not isinstance(kernel_version, int):
-      raise TypeError('kernel_version must be of type int')
-    self._kernel_version = kernel_version
+    @kernel_version.setter
+    def kernel_version(self, kernel_version: Optional[int]):
+        if kernel_version is None:
+            del self.kernel_version
+            return
+        if not isinstance(kernel_version, int):
+            raise TypeError("kernel_version must be of type int")
+        self._kernel_version = kernel_version
 
-  @property
-  def file_name(self) -> str:
-    return self._file_name or ""
+    @property
+    def file_name(self) -> str:
+        return self._file_name or ""
 
-  @file_name.setter
-  def file_name(self, file_name: Optional[str]):
-    if file_name is None:
-      del self.file_name
-      return
-    if not isinstance(file_name, str):
-      raise TypeError('file_name must be of type str')
-    self._file_name = file_name
+    @file_name.setter
+    def file_name(self, file_name: Optional[str]):
+        if file_name is None:
+            del self.file_name
+            return
+        if not isinstance(file_name, str):
+            raise TypeError("file_name must be of type str")
+        self._file_name = file_name
 
-  @property
-  def submission_description(self) -> str:
-    return self._submission_description or ""
+    @property
+    def submission_description(self) -> str:
+        return self._submission_description or ""
 
-  @submission_description.setter
-  def submission_description(self, submission_description: Optional[str]):
-    if submission_description is None:
-      del self.submission_description
-      return
-    if not isinstance(submission_description, str):
-      raise TypeError('submission_description must be of type str')
-    self._submission_description = submission_description
+    @submission_description.setter
+    def submission_description(self, submission_description: Optional[str]):
+        if submission_description is None:
+            del self.submission_description
+            return
+        if not isinstance(submission_description, str):
+            raise TypeError("submission_description must be of type str")
+        self._submission_description = submission_description
 
-  def endpoint(self):
-    path = '/api/v1/competitions/submissions/submit-notebook/{competition_name}'
-    return path.format_map(self.to_field_map(self))
+    def endpoint(self):
+        path = "/api/v1/competitions/submissions/submit-notebook/{competition_name}"
+        return path.format_map(self.to_field_map(self))
 
-
-  @staticmethod
-  def method():
-    return 'POST'
+    @staticmethod
+    def method():
+        return "POST"
 
 
 class ApiCreateCodeSubmissionResponse(KaggleObject):
-  r"""
-  Attributes:
-    message (str)
-    ref (int)
-  """
+    r"""
+    Attributes:
+      message (str)
+      ref (int)
+    """
 
-  def __init__(self):
-    self._message = ""
-    self._ref = 0
-    self._freeze()
+    def __init__(self):
+        self._message = ""
+        self._ref = 0
+        self._freeze()
 
-  @property
-  def message(self) -> str:
-    return self._message
+    @property
+    def message(self) -> str:
+        return self._message
 
-  @message.setter
-  def message(self, message: str):
-    if message is None:
-      del self.message
-      return
-    if not isinstance(message, str):
-      raise TypeError('message must be of type str')
-    self._message = message
+    @message.setter
+    def message(self, message: str):
+        if message is None:
+            del self.message
+            return
+        if not isinstance(message, str):
+            raise TypeError("message must be of type str")
+        self._message = message
 
-  @property
-  def ref(self) -> int:
-    return self._ref
+    @property
+    def ref(self) -> int:
+        return self._ref
 
-  @ref.setter
-  def ref(self, ref: int):
-    if ref is None:
-      del self.ref
-      return
-    if not isinstance(ref, int):
-      raise TypeError('ref must be of type int')
-    self._ref = ref
+    @ref.setter
+    def ref(self, ref: int):
+        if ref is None:
+            del self.ref
+            return
+        if not isinstance(ref, int):
+            raise TypeError("ref must be of type int")
+        self._ref = ref
 
 
 class ApiCreateCompetitionDataRequest(KaggleObject):
-  r"""
-  Attributes:
-    competition_name (str)
-    version_notes (str)
-      Required. Notes describing this version (e.g. 'Added test set').
-    files (ApiCompetitionDataFile)
-      All files that should appear in this version of the competition data.
-      Each push replaces the prior version's file set in full.
-    competition_databundle_type (CompetitionDatabundleType)
-      Optional. PUBLIC (default) is the data participants download; RERUN is the
-      private host-only data swapped in during rerun scoring. RERUN requires the
-      CompetitionPrivateDatabundle feature flag.
-  """
-
-  def __init__(self):
-    self._competition_name = ""
-    self._version_notes = ""
-    self._files = []
-    self._competition_databundle_type = CompetitionDatabundleType.COMPETITION_DATABUNDLE_TYPE_UNSPECIFIED
-    self._freeze()
-
-  @property
-  def competition_name(self) -> str:
-    return self._competition_name
-
-  @competition_name.setter
-  def competition_name(self, competition_name: str):
-    if competition_name is None:
-      del self.competition_name
-      return
-    if not isinstance(competition_name, str):
-      raise TypeError('competition_name must be of type str')
-    self._competition_name = competition_name
-
-  @property
-  def version_notes(self) -> str:
-    """Required. Notes describing this version (e.g. 'Added test set')."""
-    return self._version_notes
-
-  @version_notes.setter
-  def version_notes(self, version_notes: str):
-    if version_notes is None:
-      del self.version_notes
-      return
-    if not isinstance(version_notes, str):
-      raise TypeError('version_notes must be of type str')
-    self._version_notes = version_notes
-
-  @property
-  def files(self) -> Optional[List[Optional['ApiCompetitionDataFile']]]:
     r"""
-    All files that should appear in this version of the competition data.
-    Each push replaces the prior version's file set in full.
+    Attributes:
+      competition_name (str)
+      version_notes (str)
+        Required. Notes describing this version (e.g. 'Added test set').
+      files (ApiCompetitionDataFile)
+        All files that should appear in this version of the competition data.
+        Each push replaces the prior version's file set in full.
+      competition_databundle_type (CompetitionDatabundleType)
+        Optional. PUBLIC (default) is the data participants download; RERUN is the
+        private host-only data swapped in during rerun scoring. RERUN requires the
+        CompetitionPrivateDatabundle feature flag.
     """
-    return self._files
 
-  @files.setter
-  def files(self, files: Optional[List[Optional['ApiCompetitionDataFile']]]):
-    if files is None:
-      del self.files
-      return
-    if not isinstance(files, list):
-      raise TypeError('files must be of type list')
-    if not all([isinstance(t, ApiCompetitionDataFile) for t in files]):
-      raise TypeError('files must contain only items of type ApiCompetitionDataFile')
-    self._files = files
+    def __init__(self):
+        self._competition_name = ""
+        self._version_notes = ""
+        self._files = []
+        self._competition_databundle_type = (
+            CompetitionDatabundleType.COMPETITION_DATABUNDLE_TYPE_UNSPECIFIED
+        )
+        self._freeze()
 
-  @property
-  def competition_databundle_type(self) -> 'CompetitionDatabundleType':
-    r"""
-    Optional. PUBLIC (default) is the data participants download; RERUN is the
-    private host-only data swapped in during rerun scoring. RERUN requires the
-    CompetitionPrivateDatabundle feature flag.
-    """
-    return self._competition_databundle_type
+    @property
+    def competition_name(self) -> str:
+        return self._competition_name
 
-  @competition_databundle_type.setter
-  def competition_databundle_type(self, competition_databundle_type: 'CompetitionDatabundleType'):
-    if competition_databundle_type is None:
-      del self.competition_databundle_type
-      return
-    if not isinstance(competition_databundle_type, CompetitionDatabundleType):
-      raise TypeError('competition_databundle_type must be of type CompetitionDatabundleType')
-    self._competition_databundle_type = competition_databundle_type
+    @competition_name.setter
+    def competition_name(self, competition_name: str):
+        if competition_name is None:
+            del self.competition_name
+            return
+        if not isinstance(competition_name, str):
+            raise TypeError("competition_name must be of type str")
+        self._competition_name = competition_name
 
-  def endpoint(self):
-    path = '/api/v1/competitions/{competition_name}/data'
-    return path.format_map(self.to_field_map(self))
+    @property
+    def version_notes(self) -> str:
+        """Required. Notes describing this version (e.g. 'Added test set')."""
+        return self._version_notes
 
+    @version_notes.setter
+    def version_notes(self, version_notes: str):
+        if version_notes is None:
+            del self.version_notes
+            return
+        if not isinstance(version_notes, str):
+            raise TypeError("version_notes must be of type str")
+        self._version_notes = version_notes
 
-  @staticmethod
-  def method():
-    return 'POST'
+    @property
+    def files(self) -> Optional[List[Optional["ApiCompetitionDataFile"]]]:
+        r"""
+        All files that should appear in this version of the competition data.
+        Each push replaces the prior version's file set in full.
+        """
+        return self._files
 
-  @staticmethod
-  def body_fields():
-    return '*'
+    @files.setter
+    def files(self, files: Optional[List[Optional["ApiCompetitionDataFile"]]]):
+        if files is None:
+            del self.files
+            return
+        if not isinstance(files, list):
+            raise TypeError("files must be of type list")
+        if not all([isinstance(t, ApiCompetitionDataFile) for t in files]):
+            raise TypeError(
+                "files must contain only items of type ApiCompetitionDataFile"
+            )
+        self._files = files
+
+    @property
+    def competition_databundle_type(self) -> "CompetitionDatabundleType":
+        r"""
+        Optional. PUBLIC (default) is the data participants download; RERUN is the
+        private host-only data swapped in during rerun scoring. RERUN requires the
+        CompetitionPrivateDatabundle feature flag.
+        """
+        return self._competition_databundle_type
+
+    @competition_databundle_type.setter
+    def competition_databundle_type(
+        self, competition_databundle_type: "CompetitionDatabundleType"
+    ):
+        if competition_databundle_type is None:
+            del self.competition_databundle_type
+            return
+        if not isinstance(competition_databundle_type, CompetitionDatabundleType):
+            raise TypeError(
+                "competition_databundle_type must be of type CompetitionDatabundleType"
+            )
+        self._competition_databundle_type = competition_databundle_type
+
+    def endpoint(self):
+        path = "/api/v1/competitions/{competition_name}/data"
+        return path.format_map(self.to_field_map(self))
+
+    @staticmethod
+    def method():
+        return "POST"
+
+    @staticmethod
+    def body_fields():
+        return "*"
 
 
 class ApiCreateCompetitionDataResponse(KaggleObject):
-  r"""
-  Attributes:
-    url (str)
-      Public URL of the competition (e.g. https://kaggle.com/c/<slug>).
-    databundle_id (int)
-    databundle_version_id (int)
-  """
+    r"""
+    Attributes:
+      url (str)
+        Public URL of the competition (e.g. https://kaggle.com/c/<slug>).
+      databundle_id (int)
+      databundle_version_id (int)
+    """
 
-  def __init__(self):
-    self._url = ""
-    self._databundle_id = 0
-    self._databundle_version_id = 0
-    self._freeze()
+    def __init__(self):
+        self._url = ""
+        self._databundle_id = 0
+        self._databundle_version_id = 0
+        self._freeze()
 
-  @property
-  def url(self) -> str:
-    """Public URL of the competition (e.g. https://kaggle.com/c/<slug>)."""
-    return self._url
+    @property
+    def url(self) -> str:
+        """Public URL of the competition (e.g. https://kaggle.com/c/<slug>)."""
+        return self._url
 
-  @url.setter
-  def url(self, url: str):
-    if url is None:
-      del self.url
-      return
-    if not isinstance(url, str):
-      raise TypeError('url must be of type str')
-    self._url = url
+    @url.setter
+    def url(self, url: str):
+        if url is None:
+            del self.url
+            return
+        if not isinstance(url, str):
+            raise TypeError("url must be of type str")
+        self._url = url
 
-  @property
-  def databundle_id(self) -> int:
-    return self._databundle_id
+    @property
+    def databundle_id(self) -> int:
+        return self._databundle_id
 
-  @databundle_id.setter
-  def databundle_id(self, databundle_id: int):
-    if databundle_id is None:
-      del self.databundle_id
-      return
-    if not isinstance(databundle_id, int):
-      raise TypeError('databundle_id must be of type int')
-    self._databundle_id = databundle_id
+    @databundle_id.setter
+    def databundle_id(self, databundle_id: int):
+        if databundle_id is None:
+            del self.databundle_id
+            return
+        if not isinstance(databundle_id, int):
+            raise TypeError("databundle_id must be of type int")
+        self._databundle_id = databundle_id
 
-  @property
-  def databundle_version_id(self) -> int:
-    return self._databundle_version_id
+    @property
+    def databundle_version_id(self) -> int:
+        return self._databundle_version_id
 
-  @databundle_version_id.setter
-  def databundle_version_id(self, databundle_version_id: int):
-    if databundle_version_id is None:
-      del self.databundle_version_id
-      return
-    if not isinstance(databundle_version_id, int):
-      raise TypeError('databundle_version_id must be of type int')
-    self._databundle_version_id = databundle_version_id
+    @databundle_version_id.setter
+    def databundle_version_id(self, databundle_version_id: int):
+        if databundle_version_id is None:
+            del self.databundle_version_id
+            return
+        if not isinstance(databundle_version_id, int):
+            raise TypeError("databundle_version_id must be of type int")
+        self._databundle_version_id = databundle_version_id
 
-  @property
-  def databundleId(self):
-    return self.databundle_id
+    @property
+    def databundleId(self):
+        return self.databundle_id
 
-  @property
-  def databundleVersionId(self):
-    return self.databundle_version_id
+    @property
+    def databundleVersionId(self):
+        return self.databundle_version_id
 
 
 class ApiCreateCompetitionPageRequest(KaggleObject):
-  r"""
-  Attributes:
-    competition_name (str)
-    page (ApiCompetitionPage)
-  """
+    r"""
+    Attributes:
+      competition_name (str)
+      page (ApiCompetitionPage)
+    """
 
-  def __init__(self):
-    self._competition_name = ""
-    self._page = None
-    self._freeze()
+    def __init__(self):
+        self._competition_name = ""
+        self._page = None
+        self._freeze()
 
-  @property
-  def competition_name(self) -> str:
-    return self._competition_name
+    @property
+    def competition_name(self) -> str:
+        return self._competition_name
 
-  @competition_name.setter
-  def competition_name(self, competition_name: str):
-    if competition_name is None:
-      del self.competition_name
-      return
-    if not isinstance(competition_name, str):
-      raise TypeError('competition_name must be of type str')
-    self._competition_name = competition_name
+    @competition_name.setter
+    def competition_name(self, competition_name: str):
+        if competition_name is None:
+            del self.competition_name
+            return
+        if not isinstance(competition_name, str):
+            raise TypeError("competition_name must be of type str")
+        self._competition_name = competition_name
 
-  @property
-  def page(self) -> Optional['ApiCompetitionPage']:
-    return self._page
+    @property
+    def page(self) -> Optional["ApiCompetitionPage"]:
+        return self._page
 
-  @page.setter
-  def page(self, page: Optional['ApiCompetitionPage']):
-    if page is None:
-      del self.page
-      return
-    if not isinstance(page, ApiCompetitionPage):
-      raise TypeError('page must be of type ApiCompetitionPage')
-    self._page = page
+    @page.setter
+    def page(self, page: Optional["ApiCompetitionPage"]):
+        if page is None:
+            del self.page
+            return
+        if not isinstance(page, ApiCompetitionPage):
+            raise TypeError("page must be of type ApiCompetitionPage")
+        self._page = page
 
-  def endpoint(self):
-    path = '/api/v1/competitions/{competition_name}/pages'
-    return path.format_map(self.to_field_map(self))
+    def endpoint(self):
+        path = "/api/v1/competitions/{competition_name}/pages"
+        return path.format_map(self.to_field_map(self))
 
+    @staticmethod
+    def method():
+        return "POST"
 
-  @staticmethod
-  def method():
-    return 'POST'
-
-  @staticmethod
-  def body_fields():
-    return '*'
+    @staticmethod
+    def body_fields():
+        return "*"
 
 
 class ApiCreateCompetitionRequest(KaggleObject):
-  r"""
-  Attributes:
-    title (str)
-      Required. The competition's display title.
-    slug (str)
-      Required. URL slug; must be unique site-wide. Lowercase, hyphens, must not
-      be all digits or all hyphens.
-    brief_description (str)
-      Required. One-line subtitle shown under the title.
-    privacy (CompetitionPrivacy)
-      Required. Visibility — PUBLIC, LIMITED, or PRIVATE.
-    clone_competition_id (int)
-      Optional. If set, clone configuration / pages / data / evaluation setup
-      from this competition.
-    disable_kernels (bool)
-      Optional. If true, notebook submissions are disabled.
-    restrict_link_to_email_list (bool)
-      Optional. Restrict invite-link joiners to a host-maintained allowlist of
-      emails/domains.
-    license_id (int)
-      Optional. License ID for the competition data. See ListCompetitionLicenses.
-    organization_id (int)
-      Optional. Tie this competition to an organization (grants read-only access
-      to all org members).
-    clone_exclude_competition_data (bool)
-      Optional. If cloning, skip copying the data (solution, sandbox
-      submissions, images, databundles).
-    clone_page_names (str)
-      Optional. If cloning, only copy these page names. Empty = copy all.
-    reward (Reward)
-      Optional. Prize / reward summary.
-    hackathon (bool)
-      Optional. Create as a hackathon competition.
-    num_prizes (int)
-      Optional. Number of leaderboard prize positions.
-  """
-
-  def __init__(self):
-    self._title = ""
-    self._slug = ""
-    self._brief_description = ""
-    self._privacy = CompetitionPrivacy.COMPETITION_PRIVACY_UNSPECIFIED
-    self._clone_competition_id = None
-    self._disable_kernels = None
-    self._restrict_link_to_email_list = None
-    self._license_id = None
-    self._organization_id = None
-    self._clone_exclude_competition_data = None
-    self._clone_page_names = []
-    self._reward = None
-    self._hackathon = None
-    self._num_prizes = None
-    self._freeze()
-
-  @property
-  def title(self) -> str:
-    """Required. The competition's display title."""
-    return self._title
-
-  @title.setter
-  def title(self, title: str):
-    if title is None:
-      del self.title
-      return
-    if not isinstance(title, str):
-      raise TypeError('title must be of type str')
-    self._title = title
-
-  @property
-  def slug(self) -> str:
     r"""
-    Required. URL slug; must be unique site-wide. Lowercase, hyphens, must not
-    be all digits or all hyphens.
+    Attributes:
+      title (str)
+        Required. The competition's display title.
+      slug (str)
+        Required. URL slug; must be unique site-wide. Lowercase, hyphens, must not
+        be all digits or all hyphens.
+      brief_description (str)
+        Required. One-line subtitle shown under the title.
+      privacy (CompetitionPrivacy)
+        Required. Visibility — PUBLIC, LIMITED, or PRIVATE.
+      clone_competition_id (int)
+        Optional. If set, clone configuration / pages / data / evaluation setup
+        from this competition.
+      disable_kernels (bool)
+        Optional. If true, notebook submissions are disabled.
+      restrict_link_to_email_list (bool)
+        Optional. Restrict invite-link joiners to a host-maintained allowlist of
+        emails/domains.
+      license_id (int)
+        Optional. License ID for the competition data. See ListCompetitionLicenses.
+      organization_id (int)
+        Optional. Tie this competition to an organization (grants read-only access
+        to all org members).
+      clone_exclude_competition_data (bool)
+        Optional. If cloning, skip copying the data (solution, sandbox
+        submissions, images, databundles).
+      clone_page_names (str)
+        Optional. If cloning, only copy these page names. Empty = copy all.
+      reward (Reward)
+        Optional. Prize / reward summary.
+      hackathon (bool)
+        Optional. Create as a hackathon competition.
+      num_prizes (int)
+        Optional. Number of leaderboard prize positions.
     """
-    return self._slug
 
-  @slug.setter
-  def slug(self, slug: str):
-    if slug is None:
-      del self.slug
-      return
-    if not isinstance(slug, str):
-      raise TypeError('slug must be of type str')
-    self._slug = slug
+    def __init__(self):
+        self._title = ""
+        self._slug = ""
+        self._brief_description = ""
+        self._privacy = CompetitionPrivacy.COMPETITION_PRIVACY_UNSPECIFIED
+        self._clone_competition_id = None
+        self._disable_kernels = None
+        self._restrict_link_to_email_list = None
+        self._license_id = None
+        self._organization_id = None
+        self._clone_exclude_competition_data = None
+        self._clone_page_names = []
+        self._reward = None
+        self._hackathon = None
+        self._num_prizes = None
+        self._freeze()
 
-  @property
-  def brief_description(self) -> str:
-    """Required. One-line subtitle shown under the title."""
-    return self._brief_description
+    @property
+    def title(self) -> str:
+        """Required. The competition's display title."""
+        return self._title
 
-  @brief_description.setter
-  def brief_description(self, brief_description: str):
-    if brief_description is None:
-      del self.brief_description
-      return
-    if not isinstance(brief_description, str):
-      raise TypeError('brief_description must be of type str')
-    self._brief_description = brief_description
+    @title.setter
+    def title(self, title: str):
+        if title is None:
+            del self.title
+            return
+        if not isinstance(title, str):
+            raise TypeError("title must be of type str")
+        self._title = title
 
-  @property
-  def privacy(self) -> 'CompetitionPrivacy':
-    """Required. Visibility — PUBLIC, LIMITED, or PRIVATE."""
-    return self._privacy
+    @property
+    def slug(self) -> str:
+        r"""
+        Required. URL slug; must be unique site-wide. Lowercase, hyphens, must not
+        be all digits or all hyphens.
+        """
+        return self._slug
 
-  @privacy.setter
-  def privacy(self, privacy: 'CompetitionPrivacy'):
-    if privacy is None:
-      del self.privacy
-      return
-    if not isinstance(privacy, CompetitionPrivacy):
-      raise TypeError('privacy must be of type CompetitionPrivacy')
-    self._privacy = privacy
+    @slug.setter
+    def slug(self, slug: str):
+        if slug is None:
+            del self.slug
+            return
+        if not isinstance(slug, str):
+            raise TypeError("slug must be of type str")
+        self._slug = slug
 
-  @property
-  def clone_competition_id(self) -> int:
-    r"""
-    Optional. If set, clone configuration / pages / data / evaluation setup
-    from this competition.
-    """
-    return self._clone_competition_id or 0
+    @property
+    def brief_description(self) -> str:
+        """Required. One-line subtitle shown under the title."""
+        return self._brief_description
 
-  @clone_competition_id.setter
-  def clone_competition_id(self, clone_competition_id: Optional[int]):
-    if clone_competition_id is None:
-      del self.clone_competition_id
-      return
-    if not isinstance(clone_competition_id, int):
-      raise TypeError('clone_competition_id must be of type int')
-    self._clone_competition_id = clone_competition_id
+    @brief_description.setter
+    def brief_description(self, brief_description: str):
+        if brief_description is None:
+            del self.brief_description
+            return
+        if not isinstance(brief_description, str):
+            raise TypeError("brief_description must be of type str")
+        self._brief_description = brief_description
 
-  @property
-  def disable_kernels(self) -> bool:
-    """Optional. If true, notebook submissions are disabled."""
-    return self._disable_kernels or False
+    @property
+    def privacy(self) -> "CompetitionPrivacy":
+        """Required. Visibility — PUBLIC, LIMITED, or PRIVATE."""
+        return self._privacy
 
-  @disable_kernels.setter
-  def disable_kernels(self, disable_kernels: Optional[bool]):
-    if disable_kernels is None:
-      del self.disable_kernels
-      return
-    if not isinstance(disable_kernels, bool):
-      raise TypeError('disable_kernels must be of type bool')
-    self._disable_kernels = disable_kernels
+    @privacy.setter
+    def privacy(self, privacy: "CompetitionPrivacy"):
+        if privacy is None:
+            del self.privacy
+            return
+        if not isinstance(privacy, CompetitionPrivacy):
+            raise TypeError("privacy must be of type CompetitionPrivacy")
+        self._privacy = privacy
 
-  @property
-  def restrict_link_to_email_list(self) -> bool:
-    r"""
-    Optional. Restrict invite-link joiners to a host-maintained allowlist of
-    emails/domains.
-    """
-    return self._restrict_link_to_email_list or False
+    @property
+    def clone_competition_id(self) -> int:
+        r"""
+        Optional. If set, clone configuration / pages / data / evaluation setup
+        from this competition.
+        """
+        return self._clone_competition_id or 0
 
-  @restrict_link_to_email_list.setter
-  def restrict_link_to_email_list(self, restrict_link_to_email_list: Optional[bool]):
-    if restrict_link_to_email_list is None:
-      del self.restrict_link_to_email_list
-      return
-    if not isinstance(restrict_link_to_email_list, bool):
-      raise TypeError('restrict_link_to_email_list must be of type bool')
-    self._restrict_link_to_email_list = restrict_link_to_email_list
+    @clone_competition_id.setter
+    def clone_competition_id(self, clone_competition_id: Optional[int]):
+        if clone_competition_id is None:
+            del self.clone_competition_id
+            return
+        if not isinstance(clone_competition_id, int):
+            raise TypeError("clone_competition_id must be of type int")
+        self._clone_competition_id = clone_competition_id
 
-  @property
-  def license_id(self) -> int:
-    """Optional. License ID for the competition data. See ListCompetitionLicenses."""
-    return self._license_id or 0
+    @property
+    def disable_kernels(self) -> bool:
+        """Optional. If true, notebook submissions are disabled."""
+        return self._disable_kernels or False
 
-  @license_id.setter
-  def license_id(self, license_id: Optional[int]):
-    if license_id is None:
-      del self.license_id
-      return
-    if not isinstance(license_id, int):
-      raise TypeError('license_id must be of type int')
-    self._license_id = license_id
+    @disable_kernels.setter
+    def disable_kernels(self, disable_kernels: Optional[bool]):
+        if disable_kernels is None:
+            del self.disable_kernels
+            return
+        if not isinstance(disable_kernels, bool):
+            raise TypeError("disable_kernels must be of type bool")
+        self._disable_kernels = disable_kernels
 
-  @property
-  def organization_id(self) -> int:
-    r"""
-    Optional. Tie this competition to an organization (grants read-only access
-    to all org members).
-    """
-    return self._organization_id or 0
+    @property
+    def restrict_link_to_email_list(self) -> bool:
+        r"""
+        Optional. Restrict invite-link joiners to a host-maintained allowlist of
+        emails/domains.
+        """
+        return self._restrict_link_to_email_list or False
 
-  @organization_id.setter
-  def organization_id(self, organization_id: Optional[int]):
-    if organization_id is None:
-      del self.organization_id
-      return
-    if not isinstance(organization_id, int):
-      raise TypeError('organization_id must be of type int')
-    self._organization_id = organization_id
+    @restrict_link_to_email_list.setter
+    def restrict_link_to_email_list(self, restrict_link_to_email_list: Optional[bool]):
+        if restrict_link_to_email_list is None:
+            del self.restrict_link_to_email_list
+            return
+        if not isinstance(restrict_link_to_email_list, bool):
+            raise TypeError("restrict_link_to_email_list must be of type bool")
+        self._restrict_link_to_email_list = restrict_link_to_email_list
 
-  @property
-  def clone_exclude_competition_data(self) -> bool:
-    r"""
-    Optional. If cloning, skip copying the data (solution, sandbox
-    submissions, images, databundles).
-    """
-    return self._clone_exclude_competition_data or False
+    @property
+    def license_id(self) -> int:
+        """Optional. License ID for the competition data. See ListCompetitionLicenses."""
+        return self._license_id or 0
 
-  @clone_exclude_competition_data.setter
-  def clone_exclude_competition_data(self, clone_exclude_competition_data: Optional[bool]):
-    if clone_exclude_competition_data is None:
-      del self.clone_exclude_competition_data
-      return
-    if not isinstance(clone_exclude_competition_data, bool):
-      raise TypeError('clone_exclude_competition_data must be of type bool')
-    self._clone_exclude_competition_data = clone_exclude_competition_data
+    @license_id.setter
+    def license_id(self, license_id: Optional[int]):
+        if license_id is None:
+            del self.license_id
+            return
+        if not isinstance(license_id, int):
+            raise TypeError("license_id must be of type int")
+        self._license_id = license_id
 
-  @property
-  def clone_page_names(self) -> Optional[List[str]]:
-    """Optional. If cloning, only copy these page names. Empty = copy all."""
-    return self._clone_page_names
+    @property
+    def organization_id(self) -> int:
+        r"""
+        Optional. Tie this competition to an organization (grants read-only access
+        to all org members).
+        """
+        return self._organization_id or 0
 
-  @clone_page_names.setter
-  def clone_page_names(self, clone_page_names: Optional[List[str]]):
-    if clone_page_names is None:
-      del self.clone_page_names
-      return
-    if not isinstance(clone_page_names, list):
-      raise TypeError('clone_page_names must be of type list')
-    if not all([isinstance(t, str) for t in clone_page_names]):
-      raise TypeError('clone_page_names must contain only items of type str')
-    self._clone_page_names = clone_page_names
+    @organization_id.setter
+    def organization_id(self, organization_id: Optional[int]):
+        if organization_id is None:
+            del self.organization_id
+            return
+        if not isinstance(organization_id, int):
+            raise TypeError("organization_id must be of type int")
+        self._organization_id = organization_id
 
-  @property
-  def reward(self) -> Optional['Reward']:
-    """Optional. Prize / reward summary."""
-    return self._reward or None
+    @property
+    def clone_exclude_competition_data(self) -> bool:
+        r"""
+        Optional. If cloning, skip copying the data (solution, sandbox
+        submissions, images, databundles).
+        """
+        return self._clone_exclude_competition_data or False
 
-  @reward.setter
-  def reward(self, reward: Optional[Optional['Reward']]):
-    if reward is None:
-      del self.reward
-      return
-    if not isinstance(reward, Reward):
-      raise TypeError('reward must be of type Reward')
-    self._reward = reward
+    @clone_exclude_competition_data.setter
+    def clone_exclude_competition_data(
+        self, clone_exclude_competition_data: Optional[bool]
+    ):
+        if clone_exclude_competition_data is None:
+            del self.clone_exclude_competition_data
+            return
+        if not isinstance(clone_exclude_competition_data, bool):
+            raise TypeError("clone_exclude_competition_data must be of type bool")
+        self._clone_exclude_competition_data = clone_exclude_competition_data
 
-  @property
-  def hackathon(self) -> bool:
-    """Optional. Create as a hackathon competition."""
-    return self._hackathon or False
+    @property
+    def clone_page_names(self) -> Optional[List[str]]:
+        """Optional. If cloning, only copy these page names. Empty = copy all."""
+        return self._clone_page_names
 
-  @hackathon.setter
-  def hackathon(self, hackathon: Optional[bool]):
-    if hackathon is None:
-      del self.hackathon
-      return
-    if not isinstance(hackathon, bool):
-      raise TypeError('hackathon must be of type bool')
-    self._hackathon = hackathon
+    @clone_page_names.setter
+    def clone_page_names(self, clone_page_names: Optional[List[str]]):
+        if clone_page_names is None:
+            del self.clone_page_names
+            return
+        if not isinstance(clone_page_names, list):
+            raise TypeError("clone_page_names must be of type list")
+        if not all([isinstance(t, str) for t in clone_page_names]):
+            raise TypeError("clone_page_names must contain only items of type str")
+        self._clone_page_names = clone_page_names
 
-  @property
-  def num_prizes(self) -> int:
-    """Optional. Number of leaderboard prize positions."""
-    return self._num_prizes or 0
+    @property
+    def reward(self) -> Optional["Reward"]:
+        """Optional. Prize / reward summary."""
+        return self._reward or None
 
-  @num_prizes.setter
-  def num_prizes(self, num_prizes: Optional[int]):
-    if num_prizes is None:
-      del self.num_prizes
-      return
-    if not isinstance(num_prizes, int):
-      raise TypeError('num_prizes must be of type int')
-    self._num_prizes = num_prizes
+    @reward.setter
+    def reward(self, reward: Optional[Optional["Reward"]]):
+        if reward is None:
+            del self.reward
+            return
+        if not isinstance(reward, Reward):
+            raise TypeError("reward must be of type Reward")
+        self._reward = reward
 
-  def endpoint(self):
-    path = '/api/v1/competitions'
-    return path.format_map(self.to_field_map(self))
+    @property
+    def hackathon(self) -> bool:
+        """Optional. Create as a hackathon competition."""
+        return self._hackathon or False
 
+    @hackathon.setter
+    def hackathon(self, hackathon: Optional[bool]):
+        if hackathon is None:
+            del self.hackathon
+            return
+        if not isinstance(hackathon, bool):
+            raise TypeError("hackathon must be of type bool")
+        self._hackathon = hackathon
 
-  @staticmethod
-  def method():
-    return 'POST'
+    @property
+    def num_prizes(self) -> int:
+        """Optional. Number of leaderboard prize positions."""
+        return self._num_prizes or 0
 
-  @staticmethod
-  def body_fields():
-    return '*'
+    @num_prizes.setter
+    def num_prizes(self, num_prizes: Optional[int]):
+        if num_prizes is None:
+            del self.num_prizes
+            return
+        if not isinstance(num_prizes, int):
+            raise TypeError("num_prizes must be of type int")
+        self._num_prizes = num_prizes
+
+    def endpoint(self):
+        path = "/api/v1/competitions"
+        return path.format_map(self.to_field_map(self))
+
+    @staticmethod
+    def method():
+        return "POST"
+
+    @staticmethod
+    def body_fields():
+        return "*"
 
 
 class ApiCreateCompetitionResponse(KaggleObject):
-  r"""
-  Attributes:
-    id (int)
-      The created competition's numeric ID.
-    ref (str)
-      Normalized URL slug of the created competition (lowercased; may differ
-      from the input `slug`, which is normalized server-side).
-    url (str)
-      Full URL to the new competition (https://<host>/competitions/<ref>).
-  """
-
-  def __init__(self):
-    self._id = 0
-    self._ref = ""
-    self._url = ""
-    self._freeze()
-
-  @property
-  def id(self) -> int:
-    """The created competition's numeric ID."""
-    return self._id
-
-  @id.setter
-  def id(self, id: int):
-    if id is None:
-      del self.id
-      return
-    if not isinstance(id, int):
-      raise TypeError('id must be of type int')
-    self._id = id
-
-  @property
-  def ref(self) -> str:
     r"""
-    Normalized URL slug of the created competition (lowercased; may differ
-    from the input `slug`, which is normalized server-side).
+    Attributes:
+      id (int)
+        The created competition's numeric ID.
+      ref (str)
+        Normalized URL slug of the created competition (lowercased; may differ
+        from the input `slug`, which is normalized server-side).
+      url (str)
+        Full URL to the new competition (https://<host>/competitions/<ref>).
     """
-    return self._ref
 
-  @ref.setter
-  def ref(self, ref: str):
-    if ref is None:
-      del self.ref
-      return
-    if not isinstance(ref, str):
-      raise TypeError('ref must be of type str')
-    self._ref = ref
+    def __init__(self):
+        self._id = 0
+        self._ref = ""
+        self._url = ""
+        self._freeze()
 
-  @property
-  def url(self) -> str:
-    """Full URL to the new competition (https://<host>/competitions/<ref>)."""
-    return self._url
+    @property
+    def id(self) -> int:
+        """The created competition's numeric ID."""
+        return self._id
 
-  @url.setter
-  def url(self, url: str):
-    if url is None:
-      del self.url
-      return
-    if not isinstance(url, str):
-      raise TypeError('url must be of type str')
-    self._url = url
+    @id.setter
+    def id(self, id: int):
+        if id is None:
+            del self.id
+            return
+        if not isinstance(id, int):
+            raise TypeError("id must be of type int")
+        self._id = id
+
+    @property
+    def ref(self) -> str:
+        r"""
+        Normalized URL slug of the created competition (lowercased; may differ
+        from the input `slug`, which is normalized server-side).
+        """
+        return self._ref
+
+    @ref.setter
+    def ref(self, ref: str):
+        if ref is None:
+            del self.ref
+            return
+        if not isinstance(ref, str):
+            raise TypeError("ref must be of type str")
+        self._ref = ref
+
+    @property
+    def url(self) -> str:
+        """Full URL to the new competition (https://<host>/competitions/<ref>)."""
+        return self._url
+
+    @url.setter
+    def url(self, url: str):
+        if url is None:
+            del self.url
+            return
+        if not isinstance(url, str):
+            raise TypeError("url must be of type str")
+        self._url = url
 
 
 class ApiCreateCompetitionSampleSubmissionRequest(KaggleObject):
-  r"""
-  Attributes:
-    competition_name (str)
-    blob_token (str)
-      Blob token returned by /api/v1/blobs/upload after the matching upload PUT.
-      The blob must be a CSV in the same shape as a regular submission. The
-      submission lands on the sandbox team and is scored asynchronously.
-  """
-
-  def __init__(self):
-    self._competition_name = ""
-    self._blob_token = ""
-    self._freeze()
-
-  @property
-  def competition_name(self) -> str:
-    return self._competition_name
-
-  @competition_name.setter
-  def competition_name(self, competition_name: str):
-    if competition_name is None:
-      del self.competition_name
-      return
-    if not isinstance(competition_name, str):
-      raise TypeError('competition_name must be of type str')
-    self._competition_name = competition_name
-
-  @property
-  def blob_token(self) -> str:
     r"""
-    Blob token returned by /api/v1/blobs/upload after the matching upload PUT.
-    The blob must be a CSV in the same shape as a regular submission. The
-    submission lands on the sandbox team and is scored asynchronously.
+    Attributes:
+      competition_name (str)
+      blob_token (str)
+        Blob token returned by /api/v1/blobs/upload after the matching upload PUT.
+        The blob must be a CSV in the same shape as a regular submission. The
+        submission lands on the sandbox team and is scored asynchronously.
     """
-    return self._blob_token
 
-  @blob_token.setter
-  def blob_token(self, blob_token: str):
-    if blob_token is None:
-      del self.blob_token
-      return
-    if not isinstance(blob_token, str):
-      raise TypeError('blob_token must be of type str')
-    self._blob_token = blob_token
+    def __init__(self):
+        self._competition_name = ""
+        self._blob_token = ""
+        self._freeze()
 
-  def endpoint(self):
-    path = '/api/v1/competitions/{competition_name}/sample-submission'
-    return path.format_map(self.to_field_map(self))
+    @property
+    def competition_name(self) -> str:
+        return self._competition_name
 
+    @competition_name.setter
+    def competition_name(self, competition_name: str):
+        if competition_name is None:
+            del self.competition_name
+            return
+        if not isinstance(competition_name, str):
+            raise TypeError("competition_name must be of type str")
+        self._competition_name = competition_name
 
-  @staticmethod
-  def method():
-    return 'POST'
+    @property
+    def blob_token(self) -> str:
+        r"""
+        Blob token returned by /api/v1/blobs/upload after the matching upload PUT.
+        The blob must be a CSV in the same shape as a regular submission. The
+        submission lands on the sandbox team and is scored asynchronously.
+        """
+        return self._blob_token
 
-  @staticmethod
-  def body_fields():
-    return '*'
+    @blob_token.setter
+    def blob_token(self, blob_token: str):
+        if blob_token is None:
+            del self.blob_token
+            return
+        if not isinstance(blob_token, str):
+            raise TypeError("blob_token must be of type str")
+        self._blob_token = blob_token
+
+    def endpoint(self):
+        path = "/api/v1/competitions/{competition_name}/sample-submission"
+        return path.format_map(self.to_field_map(self))
+
+    @staticmethod
+    def method():
+        return "POST"
+
+    @staticmethod
+    def body_fields():
+        return "*"
 
 
 class ApiCreateCompetitionSolutionRequest(KaggleObject):
-  r"""
-  Attributes:
-    competition_name (str)
-    blob_token (str)
-      Blob token returned by /api/v1/blobs/upload after the matching upload PUT.
-      The blob must be a single CSV in the same shape as a submission file.
-  """
-
-  def __init__(self):
-    self._competition_name = ""
-    self._blob_token = ""
-    self._freeze()
-
-  @property
-  def competition_name(self) -> str:
-    return self._competition_name
-
-  @competition_name.setter
-  def competition_name(self, competition_name: str):
-    if competition_name is None:
-      del self.competition_name
-      return
-    if not isinstance(competition_name, str):
-      raise TypeError('competition_name must be of type str')
-    self._competition_name = competition_name
-
-  @property
-  def blob_token(self) -> str:
     r"""
-    Blob token returned by /api/v1/blobs/upload after the matching upload PUT.
-    The blob must be a single CSV in the same shape as a submission file.
+    Attributes:
+      competition_name (str)
+      blob_token (str)
+        Blob token returned by /api/v1/blobs/upload after the matching upload PUT.
+        The blob must be a single CSV in the same shape as a submission file.
     """
-    return self._blob_token
 
-  @blob_token.setter
-  def blob_token(self, blob_token: str):
-    if blob_token is None:
-      del self.blob_token
-      return
-    if not isinstance(blob_token, str):
-      raise TypeError('blob_token must be of type str')
-    self._blob_token = blob_token
+    def __init__(self):
+        self._competition_name = ""
+        self._blob_token = ""
+        self._freeze()
 
-  def endpoint(self):
-    path = '/api/v1/competitions/{competition_name}/solution'
-    return path.format_map(self.to_field_map(self))
+    @property
+    def competition_name(self) -> str:
+        return self._competition_name
 
+    @competition_name.setter
+    def competition_name(self, competition_name: str):
+        if competition_name is None:
+            del self.competition_name
+            return
+        if not isinstance(competition_name, str):
+            raise TypeError("competition_name must be of type str")
+        self._competition_name = competition_name
 
-  @staticmethod
-  def method():
-    return 'POST'
+    @property
+    def blob_token(self) -> str:
+        r"""
+        Blob token returned by /api/v1/blobs/upload after the matching upload PUT.
+        The blob must be a single CSV in the same shape as a submission file.
+        """
+        return self._blob_token
 
-  @staticmethod
-  def body_fields():
-    return '*'
+    @blob_token.setter
+    def blob_token(self, blob_token: str):
+        if blob_token is None:
+            del self.blob_token
+            return
+        if not isinstance(blob_token, str):
+            raise TypeError("blob_token must be of type str")
+        self._blob_token = blob_token
+
+    def endpoint(self):
+        path = "/api/v1/competitions/{competition_name}/solution"
+        return path.format_map(self.to_field_map(self))
+
+    @staticmethod
+    def method():
+        return "POST"
+
+    @staticmethod
+    def body_fields():
+        return "*"
 
 
 class ApiCreateSubmissionRequest(KaggleObject):
-  r"""
-  Attributes:
-    competition_name (str)
-      Competition name. Example: 'titanic'.
-    blob_file_tokens (str)
-      Token identifying location of uploaded submission file.
-    submission_description (str)
-      Description of competition submission.
-    benchmark_model_version_id (int)
-      Admin-only (see checker at
-      https://github.com/Kaggle/kaggleazure/blob/9c4bea5548c50844a257f26a10c6c9ae9aaf486b/Kaggle.Services.Competitions/Iam/Competitions/CompetitionsSubmitChecker.cs#L78).
-      If specified, submit on behalf of this model team instead of
-      the current user.
-    sandbox (bool)
-      Only competition hosts or admins can set true (see checker at
-      https://github.com/Kaggle/kaggleazure/blob/9c4bea5548c50844a257f26a10c6c9ae9aaf486b/Kaggle.Services.Competitions/Iam/Competitions/CompetitionsSubmitChecker.cs#L69).
-      If set, this will be a sample submission used for verifying the competition
-      setup.
-  """
-
-  def __init__(self):
-    self._competition_name = ""
-    self._blob_file_tokens = ""
-    self._submission_description = None
-    self._benchmark_model_version_id = None
-    self._sandbox = None
-    self._freeze()
-
-  @property
-  def competition_name(self) -> str:
-    """Competition name. Example: 'titanic'."""
-    return self._competition_name
-
-  @competition_name.setter
-  def competition_name(self, competition_name: str):
-    if competition_name is None:
-      del self.competition_name
-      return
-    if not isinstance(competition_name, str):
-      raise TypeError('competition_name must be of type str')
-    self._competition_name = competition_name
-
-  @property
-  def blob_file_tokens(self) -> str:
-    """Token identifying location of uploaded submission file."""
-    return self._blob_file_tokens
-
-  @blob_file_tokens.setter
-  def blob_file_tokens(self, blob_file_tokens: str):
-    if blob_file_tokens is None:
-      del self.blob_file_tokens
-      return
-    if not isinstance(blob_file_tokens, str):
-      raise TypeError('blob_file_tokens must be of type str')
-    self._blob_file_tokens = blob_file_tokens
-
-  @property
-  def submission_description(self) -> str:
-    """Description of competition submission."""
-    return self._submission_description or ""
-
-  @submission_description.setter
-  def submission_description(self, submission_description: Optional[str]):
-    if submission_description is None:
-      del self.submission_description
-      return
-    if not isinstance(submission_description, str):
-      raise TypeError('submission_description must be of type str')
-    self._submission_description = submission_description
-
-  @property
-  def benchmark_model_version_id(self) -> int:
     r"""
-    Admin-only (see checker at
-    https://github.com/Kaggle/kaggleazure/blob/9c4bea5548c50844a257f26a10c6c9ae9aaf486b/Kaggle.Services.Competitions/Iam/Competitions/CompetitionsSubmitChecker.cs#L78).
-    If specified, submit on behalf of this model team instead of
-    the current user.
+    Attributes:
+      competition_name (str)
+        Competition name. Example: 'titanic'.
+      blob_file_tokens (str)
+        Token identifying location of uploaded submission file.
+      submission_description (str)
+        Description of competition submission.
+      benchmark_model_version_id (int)
+        Admin-only (see checker at
+        https://github.com/Kaggle/kaggleazure/blob/9c4bea5548c50844a257f26a10c6c9ae9aaf486b/Kaggle.Services.Competitions/Iam/Competitions/CompetitionsSubmitChecker.cs#L78).
+        If specified, submit on behalf of this model team instead of
+        the current user.
+      sandbox (bool)
+        Only competition hosts or admins can set true (see checker at
+        https://github.com/Kaggle/kaggleazure/blob/9c4bea5548c50844a257f26a10c6c9ae9aaf486b/Kaggle.Services.Competitions/Iam/Competitions/CompetitionsSubmitChecker.cs#L69).
+        If set, this will be a sample submission used for verifying the competition
+        setup.
     """
-    return self._benchmark_model_version_id or 0
 
-  @benchmark_model_version_id.setter
-  def benchmark_model_version_id(self, benchmark_model_version_id: Optional[int]):
-    if benchmark_model_version_id is None:
-      del self.benchmark_model_version_id
-      return
-    if not isinstance(benchmark_model_version_id, int):
-      raise TypeError('benchmark_model_version_id must be of type int')
-    self._benchmark_model_version_id = benchmark_model_version_id
+    def __init__(self):
+        self._competition_name = ""
+        self._blob_file_tokens = ""
+        self._submission_description = None
+        self._benchmark_model_version_id = None
+        self._sandbox = None
+        self._freeze()
 
-  @property
-  def sandbox(self) -> bool:
-    r"""
-    Only competition hosts or admins can set true (see checker at
-    https://github.com/Kaggle/kaggleazure/blob/9c4bea5548c50844a257f26a10c6c9ae9aaf486b/Kaggle.Services.Competitions/Iam/Competitions/CompetitionsSubmitChecker.cs#L69).
-    If set, this will be a sample submission used for verifying the competition
-    setup.
-    """
-    return self._sandbox or False
+    @property
+    def competition_name(self) -> str:
+        """Competition name. Example: 'titanic'."""
+        return self._competition_name
 
-  @sandbox.setter
-  def sandbox(self, sandbox: Optional[bool]):
-    if sandbox is None:
-      del self.sandbox
-      return
-    if not isinstance(sandbox, bool):
-      raise TypeError('sandbox must be of type bool')
-    self._sandbox = sandbox
+    @competition_name.setter
+    def competition_name(self, competition_name: str):
+        if competition_name is None:
+            del self.competition_name
+            return
+        if not isinstance(competition_name, str):
+            raise TypeError("competition_name must be of type str")
+        self._competition_name = competition_name
 
-  def endpoint(self):
-    path = '/api/v1/competitions/submissions/submit/{competition_name}'
-    return path.format_map(self.to_field_map(self))
+    @property
+    def blob_file_tokens(self) -> str:
+        """Token identifying location of uploaded submission file."""
+        return self._blob_file_tokens
 
+    @blob_file_tokens.setter
+    def blob_file_tokens(self, blob_file_tokens: str):
+        if blob_file_tokens is None:
+            del self.blob_file_tokens
+            return
+        if not isinstance(blob_file_tokens, str):
+            raise TypeError("blob_file_tokens must be of type str")
+        self._blob_file_tokens = blob_file_tokens
 
-  @staticmethod
-  def method():
-    return 'POST'
+    @property
+    def submission_description(self) -> str:
+        """Description of competition submission."""
+        return self._submission_description or ""
+
+    @submission_description.setter
+    def submission_description(self, submission_description: Optional[str]):
+        if submission_description is None:
+            del self.submission_description
+            return
+        if not isinstance(submission_description, str):
+            raise TypeError("submission_description must be of type str")
+        self._submission_description = submission_description
+
+    @property
+    def benchmark_model_version_id(self) -> int:
+        r"""
+        Admin-only (see checker at
+        https://github.com/Kaggle/kaggleazure/blob/9c4bea5548c50844a257f26a10c6c9ae9aaf486b/Kaggle.Services.Competitions/Iam/Competitions/CompetitionsSubmitChecker.cs#L78).
+        If specified, submit on behalf of this model team instead of
+        the current user.
+        """
+        return self._benchmark_model_version_id or 0
+
+    @benchmark_model_version_id.setter
+    def benchmark_model_version_id(self, benchmark_model_version_id: Optional[int]):
+        if benchmark_model_version_id is None:
+            del self.benchmark_model_version_id
+            return
+        if not isinstance(benchmark_model_version_id, int):
+            raise TypeError("benchmark_model_version_id must be of type int")
+        self._benchmark_model_version_id = benchmark_model_version_id
+
+    @property
+    def sandbox(self) -> bool:
+        r"""
+        Only competition hosts or admins can set true (see checker at
+        https://github.com/Kaggle/kaggleazure/blob/9c4bea5548c50844a257f26a10c6c9ae9aaf486b/Kaggle.Services.Competitions/Iam/Competitions/CompetitionsSubmitChecker.cs#L69).
+        If set, this will be a sample submission used for verifying the competition
+        setup.
+        """
+        return self._sandbox or False
+
+    @sandbox.setter
+    def sandbox(self, sandbox: Optional[bool]):
+        if sandbox is None:
+            del self.sandbox
+            return
+        if not isinstance(sandbox, bool):
+            raise TypeError("sandbox must be of type bool")
+        self._sandbox = sandbox
+
+    def endpoint(self):
+        path = "/api/v1/competitions/submissions/submit/{competition_name}"
+        return path.format_map(self.to_field_map(self))
+
+    @staticmethod
+    def method():
+        return "POST"
 
 
 class ApiCreateSubmissionResponse(KaggleObject):
-  r"""
-  Attributes:
-    message (str)
-    ref (int)
-  """
+    r"""
+    Attributes:
+      message (str)
+      ref (int)
+    """
 
-  def __init__(self):
-    self._message = ""
-    self._ref = 0
-    self._freeze()
+    def __init__(self):
+        self._message = ""
+        self._ref = 0
+        self._freeze()
 
-  @property
-  def message(self) -> str:
-    return self._message
+    @property
+    def message(self) -> str:
+        return self._message
 
-  @message.setter
-  def message(self, message: str):
-    if message is None:
-      del self.message
-      return
-    if not isinstance(message, str):
-      raise TypeError('message must be of type str')
-    self._message = message
+    @message.setter
+    def message(self, message: str):
+        if message is None:
+            del self.message
+            return
+        if not isinstance(message, str):
+            raise TypeError("message must be of type str")
+        self._message = message
 
-  @property
-  def ref(self) -> int:
-    return self._ref
+    @property
+    def ref(self) -> int:
+        return self._ref
 
-  @ref.setter
-  def ref(self, ref: int):
-    if ref is None:
-      del self.ref
-      return
-    if not isinstance(ref, int):
-      raise TypeError('ref must be of type int')
-    self._ref = ref
+    @ref.setter
+    def ref(self, ref: int):
+        if ref is None:
+            del self.ref
+            return
+        if not isinstance(ref, int):
+            raise TypeError("ref must be of type int")
+        self._ref = ref
 
 
 class ApiDataFile(KaggleObject):
-  r"""
-  Attributes:
-    ref (str)
-    name (str)
-    description (str)
-    total_bytes (int)
-    url (str)
-    creation_date (datetime)
-  """
+    r"""
+    Attributes:
+      ref (str)
+      name (str)
+      description (str)
+      total_bytes (int)
+      url (str)
+      creation_date (datetime)
+    """
 
-  def __init__(self):
-    self._ref = ""
-    self._name = None
-    self._description = None
-    self._total_bytes = 0
-    self._url = None
-    self._creation_date = None
-    self._freeze()
+    def __init__(self):
+        self._ref = ""
+        self._name = None
+        self._description = None
+        self._total_bytes = 0
+        self._url = None
+        self._creation_date = None
+        self._freeze()
 
-  @property
-  def ref(self) -> str:
-    return self._ref
+    @property
+    def ref(self) -> str:
+        return self._ref
 
-  @ref.setter
-  def ref(self, ref: str):
-    if ref is None:
-      del self.ref
-      return
-    if not isinstance(ref, str):
-      raise TypeError('ref must be of type str')
-    self._ref = ref
+    @ref.setter
+    def ref(self, ref: str):
+        if ref is None:
+            del self.ref
+            return
+        if not isinstance(ref, str):
+            raise TypeError("ref must be of type str")
+        self._ref = ref
 
-  @property
-  def name(self) -> str:
-    return self._name or ""
+    @property
+    def name(self) -> str:
+        return self._name or ""
 
-  @name.setter
-  def name(self, name: Optional[str]):
-    if name is None:
-      del self.name
-      return
-    if not isinstance(name, str):
-      raise TypeError('name must be of type str')
-    self._name = name
+    @name.setter
+    def name(self, name: Optional[str]):
+        if name is None:
+            del self.name
+            return
+        if not isinstance(name, str):
+            raise TypeError("name must be of type str")
+        self._name = name
 
-  @property
-  def description(self) -> str:
-    return self._description or ""
+    @property
+    def description(self) -> str:
+        return self._description or ""
 
-  @description.setter
-  def description(self, description: Optional[str]):
-    if description is None:
-      del self.description
-      return
-    if not isinstance(description, str):
-      raise TypeError('description must be of type str')
-    self._description = description
+    @description.setter
+    def description(self, description: Optional[str]):
+        if description is None:
+            del self.description
+            return
+        if not isinstance(description, str):
+            raise TypeError("description must be of type str")
+        self._description = description
 
-  @property
-  def total_bytes(self) -> int:
-    return self._total_bytes
+    @property
+    def total_bytes(self) -> int:
+        return self._total_bytes
 
-  @total_bytes.setter
-  def total_bytes(self, total_bytes: int):
-    if total_bytes is None:
-      del self.total_bytes
-      return
-    if not isinstance(total_bytes, int):
-      raise TypeError('total_bytes must be of type int')
-    self._total_bytes = total_bytes
+    @total_bytes.setter
+    def total_bytes(self, total_bytes: int):
+        if total_bytes is None:
+            del self.total_bytes
+            return
+        if not isinstance(total_bytes, int):
+            raise TypeError("total_bytes must be of type int")
+        self._total_bytes = total_bytes
 
-  @property
-  def url(self) -> str:
-    return self._url or ""
+    @property
+    def url(self) -> str:
+        return self._url or ""
 
-  @url.setter
-  def url(self, url: Optional[str]):
-    if url is None:
-      del self.url
-      return
-    if not isinstance(url, str):
-      raise TypeError('url must be of type str')
-    self._url = url
+    @url.setter
+    def url(self, url: Optional[str]):
+        if url is None:
+            del self.url
+            return
+        if not isinstance(url, str):
+            raise TypeError("url must be of type str")
+        self._url = url
 
-  @property
-  def creation_date(self) -> datetime:
-    return self._creation_date
+    @property
+    def creation_date(self) -> datetime:
+        return self._creation_date
 
-  @creation_date.setter
-  def creation_date(self, creation_date: datetime):
-    if creation_date is None:
-      del self.creation_date
-      return
-    if not isinstance(creation_date, datetime):
-      raise TypeError('creation_date must be of type datetime')
-    self._creation_date = creation_date
+    @creation_date.setter
+    def creation_date(self, creation_date: datetime):
+        if creation_date is None:
+            del self.creation_date
+            return
+        if not isinstance(creation_date, datetime):
+            raise TypeError("creation_date must be of type datetime")
+        self._creation_date = creation_date
 
 
 class ApiDeleteCompetitionPageRequest(KaggleObject):
-  r"""
-  Attributes:
-    competition_name (str)
-    page_name (str)
-  """
+    r"""
+    Attributes:
+      competition_name (str)
+      page_name (str)
+    """
 
-  def __init__(self):
-    self._competition_name = ""
-    self._page_name = ""
-    self._freeze()
+    def __init__(self):
+        self._competition_name = ""
+        self._page_name = ""
+        self._freeze()
 
-  @property
-  def competition_name(self) -> str:
-    return self._competition_name
+    @property
+    def competition_name(self) -> str:
+        return self._competition_name
 
-  @competition_name.setter
-  def competition_name(self, competition_name: str):
-    if competition_name is None:
-      del self.competition_name
-      return
-    if not isinstance(competition_name, str):
-      raise TypeError('competition_name must be of type str')
-    self._competition_name = competition_name
+    @competition_name.setter
+    def competition_name(self, competition_name: str):
+        if competition_name is None:
+            del self.competition_name
+            return
+        if not isinstance(competition_name, str):
+            raise TypeError("competition_name must be of type str")
+        self._competition_name = competition_name
 
-  @property
-  def page_name(self) -> str:
-    return self._page_name
+    @property
+    def page_name(self) -> str:
+        return self._page_name
 
-  @page_name.setter
-  def page_name(self, page_name: str):
-    if page_name is None:
-      del self.page_name
-      return
-    if not isinstance(page_name, str):
-      raise TypeError('page_name must be of type str')
-    self._page_name = page_name
+    @page_name.setter
+    def page_name(self, page_name: str):
+        if page_name is None:
+            del self.page_name
+            return
+        if not isinstance(page_name, str):
+            raise TypeError("page_name must be of type str")
+        self._page_name = page_name
 
-  def endpoint(self):
-    path = '/api/v1/competitions/{competition_name}/pages/{page_name}/delete'
-    return path.format_map(self.to_field_map(self))
+    def endpoint(self):
+        path = "/api/v1/competitions/{competition_name}/pages/{page_name}/delete"
+        return path.format_map(self.to_field_map(self))
 
-
-  @staticmethod
-  def method():
-    return 'POST'
+    @staticmethod
+    def method():
+        return "POST"
 
 
 class ApiDownloadDataFileRequest(KaggleObject):
-  r"""
-  Attributes:
-    competition_name (str)
-      Competition name. Example: 'titanic'.
-    file_name (str)
-      Name of the file to download. Example: 'train/foo/bar.png'.
-  """
+    r"""
+    Attributes:
+      competition_name (str)
+        Competition name. Example: 'titanic'.
+      file_name (str)
+        Name of the file to download. Example: 'train/foo/bar.png'.
+    """
 
-  def __init__(self):
-    self._competition_name = ""
-    self._file_name = ""
-    self._freeze()
+    def __init__(self):
+        self._competition_name = ""
+        self._file_name = ""
+        self._freeze()
 
-  @property
-  def competition_name(self) -> str:
-    """Competition name. Example: 'titanic'."""
-    return self._competition_name
+    @property
+    def competition_name(self) -> str:
+        """Competition name. Example: 'titanic'."""
+        return self._competition_name
 
-  @competition_name.setter
-  def competition_name(self, competition_name: str):
-    if competition_name is None:
-      del self.competition_name
-      return
-    if not isinstance(competition_name, str):
-      raise TypeError('competition_name must be of type str')
-    self._competition_name = competition_name
+    @competition_name.setter
+    def competition_name(self, competition_name: str):
+        if competition_name is None:
+            del self.competition_name
+            return
+        if not isinstance(competition_name, str):
+            raise TypeError("competition_name must be of type str")
+        self._competition_name = competition_name
 
-  @property
-  def file_name(self) -> str:
-    """Name of the file to download. Example: 'train/foo/bar.png'."""
-    return self._file_name
+    @property
+    def file_name(self) -> str:
+        """Name of the file to download. Example: 'train/foo/bar.png'."""
+        return self._file_name
 
-  @file_name.setter
-  def file_name(self, file_name: str):
-    if file_name is None:
-      del self.file_name
-      return
-    if not isinstance(file_name, str):
-      raise TypeError('file_name must be of type str')
-    self._file_name = file_name
+    @file_name.setter
+    def file_name(self, file_name: str):
+        if file_name is None:
+            del self.file_name
+            return
+        if not isinstance(file_name, str):
+            raise TypeError("file_name must be of type str")
+        self._file_name = file_name
 
-  def endpoint(self):
-    path = '/api/v1/competitions/data/download/{competition_name}/{file_name}'
-    return path.format_map(self.to_field_map(self))
+    def endpoint(self):
+        path = "/api/v1/competitions/data/download/{competition_name}/{file_name}"
+        return path.format_map(self.to_field_map(self))
 
-  @staticmethod
-  def endpoint_path():
-    return '/api/v1/competitions/data/download/{competition_name}/{file_name}'
+    @staticmethod
+    def endpoint_path():
+        return "/api/v1/competitions/data/download/{competition_name}/{file_name}"
 
 
 class ApiDownloadDataFilesRequest(KaggleObject):
-  r"""
-  Attributes:
-    competition_name (str)
-      Competition name. Example: 'titanic'.
-  """
+    r"""
+    Attributes:
+      competition_name (str)
+        Competition name. Example: 'titanic'.
+    """
 
-  def __init__(self):
-    self._competition_name = ""
-    self._freeze()
+    def __init__(self):
+        self._competition_name = ""
+        self._freeze()
 
-  @property
-  def competition_name(self) -> str:
-    """Competition name. Example: 'titanic'."""
-    return self._competition_name
+    @property
+    def competition_name(self) -> str:
+        """Competition name. Example: 'titanic'."""
+        return self._competition_name
 
-  @competition_name.setter
-  def competition_name(self, competition_name: str):
-    if competition_name is None:
-      del self.competition_name
-      return
-    if not isinstance(competition_name, str):
-      raise TypeError('competition_name must be of type str')
-    self._competition_name = competition_name
+    @competition_name.setter
+    def competition_name(self, competition_name: str):
+        if competition_name is None:
+            del self.competition_name
+            return
+        if not isinstance(competition_name, str):
+            raise TypeError("competition_name must be of type str")
+        self._competition_name = competition_name
 
-  def endpoint(self):
-    path = '/api/v1/competitions/data/download-all/{competition_name}'
-    return path.format_map(self.to_field_map(self))
+    def endpoint(self):
+        path = "/api/v1/competitions/data/download-all/{competition_name}"
+        return path.format_map(self.to_field_map(self))
 
-  @staticmethod
-  def endpoint_path():
-    return '/api/v1/competitions/data/download-all/{competition_name}'
+    @staticmethod
+    def endpoint_path():
+        return "/api/v1/competitions/data/download-all/{competition_name}"
 
 
 class ApiDownloadLeaderboardRequest(KaggleObject):
-  r"""
-  Attributes:
-    competition_name (str)
-  """
+    r"""
+    Attributes:
+      competition_name (str)
+    """
 
-  def __init__(self):
-    self._competition_name = ""
-    self._freeze()
+    def __init__(self):
+        self._competition_name = ""
+        self._freeze()
 
-  @property
-  def competition_name(self) -> str:
-    return self._competition_name
+    @property
+    def competition_name(self) -> str:
+        return self._competition_name
 
-  @competition_name.setter
-  def competition_name(self, competition_name: str):
-    if competition_name is None:
-      del self.competition_name
-      return
-    if not isinstance(competition_name, str):
-      raise TypeError('competition_name must be of type str')
-    self._competition_name = competition_name
+    @competition_name.setter
+    def competition_name(self, competition_name: str):
+        if competition_name is None:
+            del self.competition_name
+            return
+        if not isinstance(competition_name, str):
+            raise TypeError("competition_name must be of type str")
+        self._competition_name = competition_name
 
-  def endpoint(self):
-    path = '/api/v1/competitions/{competition_name}/leaderboard/download'
-    return path.format_map(self.to_field_map(self))
+    def endpoint(self):
+        path = "/api/v1/competitions/{competition_name}/leaderboard/download"
+        return path.format_map(self.to_field_map(self))
 
-  @staticmethod
-  def endpoint_path():
-    return '/api/v1/competitions/{competition_name}/leaderboard/download'
+    @staticmethod
+    def endpoint_path():
+        return "/api/v1/competitions/{competition_name}/leaderboard/download"
 
 
 class ApiEpisode(KaggleObject):
-  r"""
-  Attributes:
-    id (int)
-    create_time (datetime)
-    end_time (datetime)
-    state (EpisodeState)
-    type (EpisodeType)
-    agents (ApiEpisodeAgent)
-  """
+    r"""
+    Attributes:
+      id (int)
+      create_time (datetime)
+      end_time (datetime)
+      state (EpisodeState)
+      type (EpisodeType)
+      agents (ApiEpisodeAgent)
+    """
 
-  def __init__(self):
-    self._id = 0
-    self._create_time = None
-    self._end_time = None
-    self._state = EpisodeState.EPISODE_STATE_UNSPECIFIED
-    self._type = EpisodeType.EPISODE_TYPE_UNSPECIFIED
-    self._agents = []
-    self._freeze()
+    def __init__(self):
+        self._id = 0
+        self._create_time = None
+        self._end_time = None
+        self._state = EpisodeState.EPISODE_STATE_UNSPECIFIED
+        self._type = EpisodeType.EPISODE_TYPE_UNSPECIFIED
+        self._agents = []
+        self._freeze()
 
-  @property
-  def id(self) -> int:
-    return self._id
+    @property
+    def id(self) -> int:
+        return self._id
 
-  @id.setter
-  def id(self, id: int):
-    if id is None:
-      del self.id
-      return
-    if not isinstance(id, int):
-      raise TypeError('id must be of type int')
-    self._id = id
+    @id.setter
+    def id(self, id: int):
+        if id is None:
+            del self.id
+            return
+        if not isinstance(id, int):
+            raise TypeError("id must be of type int")
+        self._id = id
 
-  @property
-  def create_time(self) -> datetime:
-    return self._create_time
+    @property
+    def create_time(self) -> datetime:
+        return self._create_time
 
-  @create_time.setter
-  def create_time(self, create_time: datetime):
-    if create_time is None:
-      del self.create_time
-      return
-    if not isinstance(create_time, datetime):
-      raise TypeError('create_time must be of type datetime')
-    self._create_time = create_time
+    @create_time.setter
+    def create_time(self, create_time: datetime):
+        if create_time is None:
+            del self.create_time
+            return
+        if not isinstance(create_time, datetime):
+            raise TypeError("create_time must be of type datetime")
+        self._create_time = create_time
 
-  @property
-  def end_time(self) -> datetime:
-    return self._end_time
+    @property
+    def end_time(self) -> datetime:
+        return self._end_time
 
-  @end_time.setter
-  def end_time(self, end_time: datetime):
-    if end_time is None:
-      del self.end_time
-      return
-    if not isinstance(end_time, datetime):
-      raise TypeError('end_time must be of type datetime')
-    self._end_time = end_time
+    @end_time.setter
+    def end_time(self, end_time: datetime):
+        if end_time is None:
+            del self.end_time
+            return
+        if not isinstance(end_time, datetime):
+            raise TypeError("end_time must be of type datetime")
+        self._end_time = end_time
 
-  @property
-  def state(self) -> 'EpisodeState':
-    return self._state
+    @property
+    def state(self) -> "EpisodeState":
+        return self._state
 
-  @state.setter
-  def state(self, state: 'EpisodeState'):
-    if state is None:
-      del self.state
-      return
-    if not isinstance(state, EpisodeState):
-      raise TypeError('state must be of type EpisodeState')
-    self._state = state
+    @state.setter
+    def state(self, state: "EpisodeState"):
+        if state is None:
+            del self.state
+            return
+        if not isinstance(state, EpisodeState):
+            raise TypeError("state must be of type EpisodeState")
+        self._state = state
 
-  @property
-  def type(self) -> 'EpisodeType':
-    return self._type
+    @property
+    def type(self) -> "EpisodeType":
+        return self._type
 
-  @type.setter
-  def type(self, type: 'EpisodeType'):
-    if type is None:
-      del self.type
-      return
-    if not isinstance(type, EpisodeType):
-      raise TypeError('type must be of type EpisodeType')
-    self._type = type
+    @type.setter
+    def type(self, type: "EpisodeType"):
+        if type is None:
+            del self.type
+            return
+        if not isinstance(type, EpisodeType):
+            raise TypeError("type must be of type EpisodeType")
+        self._type = type
 
-  @property
-  def agents(self) -> Optional[List[Optional['ApiEpisodeAgent']]]:
-    return self._agents
+    @property
+    def agents(self) -> Optional[List[Optional["ApiEpisodeAgent"]]]:
+        return self._agents
 
-  @agents.setter
-  def agents(self, agents: Optional[List[Optional['ApiEpisodeAgent']]]):
-    if agents is None:
-      del self.agents
-      return
-    if not isinstance(agents, list):
-      raise TypeError('agents must be of type list')
-    if not all([isinstance(t, ApiEpisodeAgent) for t in agents]):
-      raise TypeError('agents must contain only items of type ApiEpisodeAgent')
-    self._agents = agents
+    @agents.setter
+    def agents(self, agents: Optional[List[Optional["ApiEpisodeAgent"]]]):
+        if agents is None:
+            del self.agents
+            return
+        if not isinstance(agents, list):
+            raise TypeError("agents must be of type list")
+        if not all([isinstance(t, ApiEpisodeAgent) for t in agents]):
+            raise TypeError("agents must contain only items of type ApiEpisodeAgent")
+        self._agents = agents
 
 
 class ApiEpisodeAgent(KaggleObject):
-  r"""
-  Attributes:
-    submission_id (int)
-    index (int)
-    reward (float)
-    state (EpisodeAgentState)
-    team_name (str)
-    team_id (int)
-  """
+    r"""
+    Attributes:
+      submission_id (int)
+      index (int)
+      reward (float)
+      state (EpisodeAgentState)
+      team_name (str)
+      team_id (int)
+    """
 
-  def __init__(self):
-    self._submission_id = 0
-    self._index = 0
-    self._reward = None
-    self._state = EpisodeAgentState.EPISODE_AGENT_STATE_UNSPECIFIED
-    self._team_name = None
-    self._team_id = 0
-    self._freeze()
+    def __init__(self):
+        self._submission_id = 0
+        self._index = 0
+        self._reward = None
+        self._state = EpisodeAgentState.EPISODE_AGENT_STATE_UNSPECIFIED
+        self._team_name = None
+        self._team_id = 0
+        self._freeze()
 
-  @property
-  def submission_id(self) -> int:
-    return self._submission_id
+    @property
+    def submission_id(self) -> int:
+        return self._submission_id
 
-  @submission_id.setter
-  def submission_id(self, submission_id: int):
-    if submission_id is None:
-      del self.submission_id
-      return
-    if not isinstance(submission_id, int):
-      raise TypeError('submission_id must be of type int')
-    self._submission_id = submission_id
+    @submission_id.setter
+    def submission_id(self, submission_id: int):
+        if submission_id is None:
+            del self.submission_id
+            return
+        if not isinstance(submission_id, int):
+            raise TypeError("submission_id must be of type int")
+        self._submission_id = submission_id
 
-  @property
-  def index(self) -> int:
-    return self._index
+    @property
+    def index(self) -> int:
+        return self._index
 
-  @index.setter
-  def index(self, index: int):
-    if index is None:
-      del self.index
-      return
-    if not isinstance(index, int):
-      raise TypeError('index must be of type int')
-    self._index = index
+    @index.setter
+    def index(self, index: int):
+        if index is None:
+            del self.index
+            return
+        if not isinstance(index, int):
+            raise TypeError("index must be of type int")
+        self._index = index
 
-  @property
-  def reward(self) -> float:
-    return self._reward or 0.0
+    @property
+    def reward(self) -> float:
+        return self._reward or 0.0
 
-  @reward.setter
-  def reward(self, reward: Optional[float]):
-    if reward is None:
-      del self.reward
-      return
-    if not isinstance(reward, float):
-      raise TypeError('reward must be of type float')
-    self._reward = reward
+    @reward.setter
+    def reward(self, reward: Optional[float]):
+        if reward is None:
+            del self.reward
+            return
+        if not isinstance(reward, float):
+            raise TypeError("reward must be of type float")
+        self._reward = reward
 
-  @property
-  def state(self) -> 'EpisodeAgentState':
-    return self._state
+    @property
+    def state(self) -> "EpisodeAgentState":
+        return self._state
 
-  @state.setter
-  def state(self, state: 'EpisodeAgentState'):
-    if state is None:
-      del self.state
-      return
-    if not isinstance(state, EpisodeAgentState):
-      raise TypeError('state must be of type EpisodeAgentState')
-    self._state = state
+    @state.setter
+    def state(self, state: "EpisodeAgentState"):
+        if state is None:
+            del self.state
+            return
+        if not isinstance(state, EpisodeAgentState):
+            raise TypeError("state must be of type EpisodeAgentState")
+        self._state = state
 
-  @property
-  def team_name(self) -> str:
-    return self._team_name or ""
+    @property
+    def team_name(self) -> str:
+        return self._team_name or ""
 
-  @team_name.setter
-  def team_name(self, team_name: Optional[str]):
-    if team_name is None:
-      del self.team_name
-      return
-    if not isinstance(team_name, str):
-      raise TypeError('team_name must be of type str')
-    self._team_name = team_name
+    @team_name.setter
+    def team_name(self, team_name: Optional[str]):
+        if team_name is None:
+            del self.team_name
+            return
+        if not isinstance(team_name, str):
+            raise TypeError("team_name must be of type str")
+        self._team_name = team_name
 
-  @property
-  def team_id(self) -> int:
-    return self._team_id
+    @property
+    def team_id(self) -> int:
+        return self._team_id
 
-  @team_id.setter
-  def team_id(self, team_id: int):
-    if team_id is None:
-      del self.team_id
-      return
-    if not isinstance(team_id, int):
-      raise TypeError('team_id must be of type int')
-    self._team_id = team_id
+    @team_id.setter
+    def team_id(self, team_id: int):
+        if team_id is None:
+            del self.team_id
+            return
+        if not isinstance(team_id, int):
+            raise TypeError("team_id must be of type int")
+        self._team_id = team_id
 
 
 class ApiGetCompetitionDataFilesSummaryRequest(KaggleObject):
-  r"""
-  Attributes:
-    competition_name (str)
-  """
+    r"""
+    Attributes:
+      competition_name (str)
+    """
 
-  def __init__(self):
-    self._competition_name = ""
-    self._freeze()
+    def __init__(self):
+        self._competition_name = ""
+        self._freeze()
 
-  @property
-  def competition_name(self) -> str:
-    return self._competition_name
+    @property
+    def competition_name(self) -> str:
+        return self._competition_name
 
-  @competition_name.setter
-  def competition_name(self, competition_name: str):
-    if competition_name is None:
-      del self.competition_name
-      return
-    if not isinstance(competition_name, str):
-      raise TypeError('competition_name must be of type str')
-    self._competition_name = competition_name
+    @competition_name.setter
+    def competition_name(self, competition_name: str):
+        if competition_name is None:
+            del self.competition_name
+            return
+        if not isinstance(competition_name, str):
+            raise TypeError("competition_name must be of type str")
+        self._competition_name = competition_name
 
-  def endpoint(self):
-    path = '/api/v1/competitions/data/summary/{competition_name}'
-    return path.format_map(self.to_field_map(self))
+    def endpoint(self):
+        path = "/api/v1/competitions/data/summary/{competition_name}"
+        return path.format_map(self.to_field_map(self))
 
-  @staticmethod
-  def endpoint_path():
-    return '/api/v1/competitions/data/summary/{competition_name}'
+    @staticmethod
+    def endpoint_path():
+        return "/api/v1/competitions/data/summary/{competition_name}"
 
 
 class ApiGetCompetitionRequest(KaggleObject):
-  r"""
-  Attributes:
-    competition_name (str)
-  """
+    r"""
+    Attributes:
+      competition_name (str)
+    """
 
-  def __init__(self):
-    self._competition_name = ""
-    self._freeze()
+    def __init__(self):
+        self._competition_name = ""
+        self._freeze()
 
-  @property
-  def competition_name(self) -> str:
-    return self._competition_name
+    @property
+    def competition_name(self) -> str:
+        return self._competition_name
 
-  @competition_name.setter
-  def competition_name(self, competition_name: str):
-    if competition_name is None:
-      del self.competition_name
-      return
-    if not isinstance(competition_name, str):
-      raise TypeError('competition_name must be of type str')
-    self._competition_name = competition_name
+    @competition_name.setter
+    def competition_name(self, competition_name: str):
+        if competition_name is None:
+            del self.competition_name
+            return
+        if not isinstance(competition_name, str):
+            raise TypeError("competition_name must be of type str")
+        self._competition_name = competition_name
 
-  def endpoint(self):
-    path = '/api/v1/competitions/get/{competition_name}'
-    return path.format_map(self.to_field_map(self))
+    def endpoint(self):
+        path = "/api/v1/competitions/get/{competition_name}"
+        return path.format_map(self.to_field_map(self))
 
-  @staticmethod
-  def endpoint_path():
-    return '/api/v1/competitions/get/{competition_name}'
+    @staticmethod
+    def endpoint_path():
+        return "/api/v1/competitions/get/{competition_name}"
 
 
 class ApiGetCompetitionSettingsRequest(KaggleObject):
-  r"""
-  Attributes:
-    competition_name (str)
-  """
+    r"""
+    Attributes:
+      competition_name (str)
+    """
 
-  def __init__(self):
-    self._competition_name = ""
-    self._freeze()
+    def __init__(self):
+        self._competition_name = ""
+        self._freeze()
 
-  @property
-  def competition_name(self) -> str:
-    return self._competition_name
+    @property
+    def competition_name(self) -> str:
+        return self._competition_name
 
-  @competition_name.setter
-  def competition_name(self, competition_name: str):
-    if competition_name is None:
-      del self.competition_name
-      return
-    if not isinstance(competition_name, str):
-      raise TypeError('competition_name must be of type str')
-    self._competition_name = competition_name
+    @competition_name.setter
+    def competition_name(self, competition_name: str):
+        if competition_name is None:
+            del self.competition_name
+            return
+        if not isinstance(competition_name, str):
+            raise TypeError("competition_name must be of type str")
+        self._competition_name = competition_name
 
-  def endpoint(self):
-    path = '/api/v1/competitions/{competition_name}/settings'
-    return path.format_map(self.to_field_map(self))
+    def endpoint(self):
+        path = "/api/v1/competitions/{competition_name}/settings"
+        return path.format_map(self.to_field_map(self))
 
-  @staticmethod
-  def endpoint_path():
-    return '/api/v1/competitions/{competition_name}/settings'
+    @staticmethod
+    def endpoint_path():
+        return "/api/v1/competitions/{competition_name}/settings"
 
 
 class ApiGetCompetitionSolutionStatusRequest(KaggleObject):
-  r"""
-  Attributes:
-    competition_name (str)
-  """
+    r"""
+    Attributes:
+      competition_name (str)
+    """
 
-  def __init__(self):
-    self._competition_name = ""
-    self._freeze()
+    def __init__(self):
+        self._competition_name = ""
+        self._freeze()
 
-  @property
-  def competition_name(self) -> str:
-    return self._competition_name
+    @property
+    def competition_name(self) -> str:
+        return self._competition_name
 
-  @competition_name.setter
-  def competition_name(self, competition_name: str):
-    if competition_name is None:
-      del self.competition_name
-      return
-    if not isinstance(competition_name, str):
-      raise TypeError('competition_name must be of type str')
-    self._competition_name = competition_name
+    @competition_name.setter
+    def competition_name(self, competition_name: str):
+        if competition_name is None:
+            del self.competition_name
+            return
+        if not isinstance(competition_name, str):
+            raise TypeError("competition_name must be of type str")
+        self._competition_name = competition_name
 
-  def endpoint(self):
-    path = '/api/v1/competitions/{competition_name}/solution'
-    return path.format_map(self.to_field_map(self))
+    def endpoint(self):
+        path = "/api/v1/competitions/{competition_name}/solution"
+        return path.format_map(self.to_field_map(self))
 
-  @staticmethod
-  def endpoint_path():
-    return '/api/v1/competitions/{competition_name}/solution'
+    @staticmethod
+    def endpoint_path():
+        return "/api/v1/competitions/{competition_name}/solution"
 
 
 class ApiGetEpisodeAgentLogsRequest(KaggleObject):
-  r"""
-  Attributes:
-    episode_id (int)
-    agent_index (int)
-  """
+    r"""
+    Attributes:
+      episode_id (int)
+      agent_index (int)
+    """
 
-  def __init__(self):
-    self._episode_id = 0
-    self._agent_index = 0
-    self._freeze()
+    def __init__(self):
+        self._episode_id = 0
+        self._agent_index = 0
+        self._freeze()
 
-  @property
-  def episode_id(self) -> int:
-    return self._episode_id
+    @property
+    def episode_id(self) -> int:
+        return self._episode_id
 
-  @episode_id.setter
-  def episode_id(self, episode_id: int):
-    if episode_id is None:
-      del self.episode_id
-      return
-    if not isinstance(episode_id, int):
-      raise TypeError('episode_id must be of type int')
-    self._episode_id = episode_id
+    @episode_id.setter
+    def episode_id(self, episode_id: int):
+        if episode_id is None:
+            del self.episode_id
+            return
+        if not isinstance(episode_id, int):
+            raise TypeError("episode_id must be of type int")
+        self._episode_id = episode_id
 
-  @property
-  def agent_index(self) -> int:
-    return self._agent_index
+    @property
+    def agent_index(self) -> int:
+        return self._agent_index
 
-  @agent_index.setter
-  def agent_index(self, agent_index: int):
-    if agent_index is None:
-      del self.agent_index
-      return
-    if not isinstance(agent_index, int):
-      raise TypeError('agent_index must be of type int')
-    self._agent_index = agent_index
+    @agent_index.setter
+    def agent_index(self, agent_index: int):
+        if agent_index is None:
+            del self.agent_index
+            return
+        if not isinstance(agent_index, int):
+            raise TypeError("agent_index must be of type int")
+        self._agent_index = agent_index
 
-  def endpoint(self):
-    path = '/api/v1/competitions/episodes/{episode_id}/agents/{agent_index}/logs'
-    return path.format_map(self.to_field_map(self))
+    def endpoint(self):
+        path = "/api/v1/competitions/episodes/{episode_id}/agents/{agent_index}/logs"
+        return path.format_map(self.to_field_map(self))
 
-  @staticmethod
-  def endpoint_path():
-    return '/api/v1/competitions/episodes/{episode_id}/agents/{agent_index}/logs'
+    @staticmethod
+    def endpoint_path():
+        return "/api/v1/competitions/episodes/{episode_id}/agents/{agent_index}/logs"
 
 
 class ApiGetEpisodeReplayRequest(KaggleObject):
-  r"""
-  Attributes:
-    episode_id (int)
-  """
+    r"""
+    Attributes:
+      episode_id (int)
+    """
 
-  def __init__(self):
-    self._episode_id = 0
-    self._freeze()
+    def __init__(self):
+        self._episode_id = 0
+        self._freeze()
 
-  @property
-  def episode_id(self) -> int:
-    return self._episode_id
+    @property
+    def episode_id(self) -> int:
+        return self._episode_id
 
-  @episode_id.setter
-  def episode_id(self, episode_id: int):
-    if episode_id is None:
-      del self.episode_id
-      return
-    if not isinstance(episode_id, int):
-      raise TypeError('episode_id must be of type int')
-    self._episode_id = episode_id
+    @episode_id.setter
+    def episode_id(self, episode_id: int):
+        if episode_id is None:
+            del self.episode_id
+            return
+        if not isinstance(episode_id, int):
+            raise TypeError("episode_id must be of type int")
+        self._episode_id = episode_id
 
-  def endpoint(self):
-    path = '/api/v1/competitions/episodes/{episode_id}/replay'
-    return path.format_map(self.to_field_map(self))
+    def endpoint(self):
+        path = "/api/v1/competitions/episodes/{episode_id}/replay"
+        return path.format_map(self.to_field_map(self))
 
-  @staticmethod
-  def endpoint_path():
-    return '/api/v1/competitions/episodes/{episode_id}/replay'
+    @staticmethod
+    def endpoint_path():
+        return "/api/v1/competitions/episodes/{episode_id}/replay"
 
 
 class ApiGetLeaderboardRequest(KaggleObject):
-  r"""
-  Attributes:
-    competition_name (str)
-      Competition name. Example: 'titanic'.
-    override_public (bool)
-      By default we return the private leaderboard if it's available, otherwise
-      the public LB. This flag lets you override to get public even if private
-      is available.
-    page_size (int)
-    page_token (str)
-  """
-
-  def __init__(self):
-    self._competition_name = ""
-    self._override_public = None
-    self._page_size = None
-    self._page_token = None
-    self._freeze()
-
-  @property
-  def competition_name(self) -> str:
-    """Competition name. Example: 'titanic'."""
-    return self._competition_name
-
-  @competition_name.setter
-  def competition_name(self, competition_name: str):
-    if competition_name is None:
-      del self.competition_name
-      return
-    if not isinstance(competition_name, str):
-      raise TypeError('competition_name must be of type str')
-    self._competition_name = competition_name
-
-  @property
-  def override_public(self) -> bool:
     r"""
-    By default we return the private leaderboard if it's available, otherwise
-    the public LB. This flag lets you override to get public even if private
-    is available.
+    Attributes:
+      competition_name (str)
+        Competition name. Example: 'titanic'.
+      override_public (bool)
+        By default we return the private leaderboard if it's available, otherwise
+        the public LB. This flag lets you override to get public even if private
+        is available.
+      page_size (int)
+      page_token (str)
     """
-    return self._override_public or False
 
-  @override_public.setter
-  def override_public(self, override_public: Optional[bool]):
-    if override_public is None:
-      del self.override_public
-      return
-    if not isinstance(override_public, bool):
-      raise TypeError('override_public must be of type bool')
-    self._override_public = override_public
+    def __init__(self):
+        self._competition_name = ""
+        self._override_public = None
+        self._page_size = None
+        self._page_token = None
+        self._freeze()
 
-  @property
-  def page_size(self) -> int:
-    return self._page_size or 0
+    @property
+    def competition_name(self) -> str:
+        """Competition name. Example: 'titanic'."""
+        return self._competition_name
 
-  @page_size.setter
-  def page_size(self, page_size: Optional[int]):
-    if page_size is None:
-      del self.page_size
-      return
-    if not isinstance(page_size, int):
-      raise TypeError('page_size must be of type int')
-    self._page_size = page_size
+    @competition_name.setter
+    def competition_name(self, competition_name: str):
+        if competition_name is None:
+            del self.competition_name
+            return
+        if not isinstance(competition_name, str):
+            raise TypeError("competition_name must be of type str")
+        self._competition_name = competition_name
 
-  @property
-  def page_token(self) -> str:
-    return self._page_token or ""
+    @property
+    def override_public(self) -> bool:
+        r"""
+        By default we return the private leaderboard if it's available, otherwise
+        the public LB. This flag lets you override to get public even if private
+        is available.
+        """
+        return self._override_public or False
 
-  @page_token.setter
-  def page_token(self, page_token: Optional[str]):
-    if page_token is None:
-      del self.page_token
-      return
-    if not isinstance(page_token, str):
-      raise TypeError('page_token must be of type str')
-    self._page_token = page_token
+    @override_public.setter
+    def override_public(self, override_public: Optional[bool]):
+        if override_public is None:
+            del self.override_public
+            return
+        if not isinstance(override_public, bool):
+            raise TypeError("override_public must be of type bool")
+        self._override_public = override_public
 
-  def endpoint(self):
-    path = '/api/v1/competitions/{competition_name}/leaderboard/view'
-    return path.format_map(self.to_field_map(self))
+    @property
+    def page_size(self) -> int:
+        return self._page_size or 0
 
-  @staticmethod
-  def endpoint_path():
-    return '/api/v1/competitions/{competition_name}/leaderboard/view'
+    @page_size.setter
+    def page_size(self, page_size: Optional[int]):
+        if page_size is None:
+            del self.page_size
+            return
+        if not isinstance(page_size, int):
+            raise TypeError("page_size must be of type int")
+        self._page_size = page_size
+
+    @property
+    def page_token(self) -> str:
+        return self._page_token or ""
+
+    @page_token.setter
+    def page_token(self, page_token: Optional[str]):
+        if page_token is None:
+            del self.page_token
+            return
+        if not isinstance(page_token, str):
+            raise TypeError("page_token must be of type str")
+        self._page_token = page_token
+
+    def endpoint(self):
+        path = "/api/v1/competitions/{competition_name}/leaderboard/view"
+        return path.format_map(self.to_field_map(self))
+
+    @staticmethod
+    def endpoint_path():
+        return "/api/v1/competitions/{competition_name}/leaderboard/view"
 
 
 class ApiGetLeaderboardResponse(KaggleObject):
-  r"""
-  Attributes:
-    submissions (ApiLeaderboardSubmission)
-    next_page_token (str)
-  """
+    r"""
+    Attributes:
+      submissions (ApiLeaderboardSubmission)
+      next_page_token (str)
+    """
 
-  def __init__(self):
-    self._submissions = []
-    self._next_page_token = ""
-    self._freeze()
+    def __init__(self):
+        self._submissions = []
+        self._next_page_token = ""
+        self._freeze()
 
-  @property
-  def submissions(self) -> Optional[List[Optional['ApiLeaderboardSubmission']]]:
-    return self._submissions
+    @property
+    def submissions(self) -> Optional[List[Optional["ApiLeaderboardSubmission"]]]:
+        return self._submissions
 
-  @submissions.setter
-  def submissions(self, submissions: Optional[List[Optional['ApiLeaderboardSubmission']]]):
-    if submissions is None:
-      del self.submissions
-      return
-    if not isinstance(submissions, list):
-      raise TypeError('submissions must be of type list')
-    if not all([isinstance(t, ApiLeaderboardSubmission) for t in submissions]):
-      raise TypeError('submissions must contain only items of type ApiLeaderboardSubmission')
-    self._submissions = submissions
+    @submissions.setter
+    def submissions(
+        self, submissions: Optional[List[Optional["ApiLeaderboardSubmission"]]]
+    ):
+        if submissions is None:
+            del self.submissions
+            return
+        if not isinstance(submissions, list):
+            raise TypeError("submissions must be of type list")
+        if not all([isinstance(t, ApiLeaderboardSubmission) for t in submissions]):
+            raise TypeError(
+                "submissions must contain only items of type ApiLeaderboardSubmission"
+            )
+        self._submissions = submissions
 
-  @property
-  def next_page_token(self) -> str:
-    return self._next_page_token
+    @property
+    def next_page_token(self) -> str:
+        return self._next_page_token
 
-  @next_page_token.setter
-  def next_page_token(self, next_page_token: str):
-    if next_page_token is None:
-      del self.next_page_token
-      return
-    if not isinstance(next_page_token, str):
-      raise TypeError('next_page_token must be of type str')
-    self._next_page_token = next_page_token
+    @next_page_token.setter
+    def next_page_token(self, next_page_token: str):
+        if next_page_token is None:
+            del self.next_page_token
+            return
+        if not isinstance(next_page_token, str):
+            raise TypeError("next_page_token must be of type str")
+        self._next_page_token = next_page_token
 
-  @property
-  def nextPageToken(self):
-    return self.next_page_token
+    @property
+    def nextPageToken(self):
+        return self.next_page_token
 
 
 class ApiGetSubmissionRequest(KaggleObject):
-  r"""
-  Attributes:
-    ref (int)
-      SubmissionId.
-  """
+    r"""
+    Attributes:
+      ref (int)
+        SubmissionId.
+    """
 
-  def __init__(self):
-    self._ref = 0
-    self._freeze()
+    def __init__(self):
+        self._ref = 0
+        self._freeze()
 
-  @property
-  def ref(self) -> int:
-    """SubmissionId."""
-    return self._ref
+    @property
+    def ref(self) -> int:
+        """SubmissionId."""
+        return self._ref
 
-  @ref.setter
-  def ref(self, ref: int):
-    if ref is None:
-      del self.ref
-      return
-    if not isinstance(ref, int):
-      raise TypeError('ref must be of type int')
-    self._ref = ref
+    @ref.setter
+    def ref(self, ref: int):
+        if ref is None:
+            del self.ref
+            return
+        if not isinstance(ref, int):
+            raise TypeError("ref must be of type int")
+        self._ref = ref
 
-  def endpoint(self):
-    path = '/api/v1/competitions/submissions/get/{ref}'
-    return path.format_map(self.to_field_map(self))
+    def endpoint(self):
+        path = "/api/v1/competitions/submissions/get/{ref}"
+        return path.format_map(self.to_field_map(self))
 
-
-  @staticmethod
-  def method():
-    return 'POST'
+    @staticmethod
+    def method():
+        return "POST"
 
 
 class ApiLaunchCompetitionRequest(KaggleObject):
-  r"""
-  Attributes:
-    competition_name (str)
-    future_time (datetime)
-      Optional. UTC time in the future at which to launch the competition. If
-      omitted, the competition launches immediately.
-  """
-
-  def __init__(self):
-    self._competition_name = ""
-    self._future_time = None
-    self._freeze()
-
-  @property
-  def competition_name(self) -> str:
-    return self._competition_name
-
-  @competition_name.setter
-  def competition_name(self, competition_name: str):
-    if competition_name is None:
-      del self.competition_name
-      return
-    if not isinstance(competition_name, str):
-      raise TypeError('competition_name must be of type str')
-    self._competition_name = competition_name
-
-  @property
-  def future_time(self) -> datetime:
     r"""
-    Optional. UTC time in the future at which to launch the competition. If
-    omitted, the competition launches immediately.
+    Attributes:
+      competition_name (str)
+      future_time (datetime)
+        Optional. UTC time in the future at which to launch the competition. If
+        omitted, the competition launches immediately.
     """
-    return self._future_time
 
-  @future_time.setter
-  def future_time(self, future_time: datetime):
-    if future_time is None:
-      del self.future_time
-      return
-    if not isinstance(future_time, datetime):
-      raise TypeError('future_time must be of type datetime')
-    self._future_time = future_time
+    def __init__(self):
+        self._competition_name = ""
+        self._future_time = None
+        self._freeze()
 
-  def endpoint(self):
-    path = '/api/v1/competitions/{competition_name}/launch'
-    return path.format_map(self.to_field_map(self))
+    @property
+    def competition_name(self) -> str:
+        return self._competition_name
 
+    @competition_name.setter
+    def competition_name(self, competition_name: str):
+        if competition_name is None:
+            del self.competition_name
+            return
+        if not isinstance(competition_name, str):
+            raise TypeError("competition_name must be of type str")
+        self._competition_name = competition_name
 
-  @staticmethod
-  def method():
-    return 'POST'
+    @property
+    def future_time(self) -> datetime:
+        r"""
+        Optional. UTC time in the future at which to launch the competition. If
+        omitted, the competition launches immediately.
+        """
+        return self._future_time
 
-  @staticmethod
-  def body_fields():
-    return '*'
+    @future_time.setter
+    def future_time(self, future_time: datetime):
+        if future_time is None:
+            del self.future_time
+            return
+        if not isinstance(future_time, datetime):
+            raise TypeError("future_time must be of type datetime")
+        self._future_time = future_time
+
+    def endpoint(self):
+        path = "/api/v1/competitions/{competition_name}/launch"
+        return path.format_map(self.to_field_map(self))
+
+    @staticmethod
+    def method():
+        return "POST"
+
+    @staticmethod
+    def body_fields():
+        return "*"
 
 
 class ApiLeaderboardSubmission(KaggleObject):
-  r"""
-  Attributes:
-    team_id (int)
-    team_name (str)
-    submission_date (datetime)
-    score (str)
-  """
+    r"""
+    Attributes:
+      team_id (int)
+      team_name (str)
+      submission_date (datetime)
+      score (str)
+    """
 
-  def __init__(self):
-    self._team_id = 0
-    self._team_name = None
-    self._submission_date = None
-    self._score = None
-    self._freeze()
+    def __init__(self):
+        self._team_id = 0
+        self._team_name = None
+        self._submission_date = None
+        self._score = None
+        self._freeze()
 
-  @property
-  def team_id(self) -> int:
-    return self._team_id
+    @property
+    def team_id(self) -> int:
+        return self._team_id
 
-  @team_id.setter
-  def team_id(self, team_id: int):
-    if team_id is None:
-      del self.team_id
-      return
-    if not isinstance(team_id, int):
-      raise TypeError('team_id must be of type int')
-    self._team_id = team_id
+    @team_id.setter
+    def team_id(self, team_id: int):
+        if team_id is None:
+            del self.team_id
+            return
+        if not isinstance(team_id, int):
+            raise TypeError("team_id must be of type int")
+        self._team_id = team_id
 
-  @property
-  def team_name(self) -> str:
-    return self._team_name or ""
+    @property
+    def team_name(self) -> str:
+        return self._team_name or ""
 
-  @team_name.setter
-  def team_name(self, team_name: Optional[str]):
-    if team_name is None:
-      del self.team_name
-      return
-    if not isinstance(team_name, str):
-      raise TypeError('team_name must be of type str')
-    self._team_name = team_name
+    @team_name.setter
+    def team_name(self, team_name: Optional[str]):
+        if team_name is None:
+            del self.team_name
+            return
+        if not isinstance(team_name, str):
+            raise TypeError("team_name must be of type str")
+        self._team_name = team_name
 
-  @property
-  def submission_date(self) -> datetime:
-    return self._submission_date
+    @property
+    def submission_date(self) -> datetime:
+        return self._submission_date
 
-  @submission_date.setter
-  def submission_date(self, submission_date: datetime):
-    if submission_date is None:
-      del self.submission_date
-      return
-    if not isinstance(submission_date, datetime):
-      raise TypeError('submission_date must be of type datetime')
-    self._submission_date = submission_date
+    @submission_date.setter
+    def submission_date(self, submission_date: datetime):
+        if submission_date is None:
+            del self.submission_date
+            return
+        if not isinstance(submission_date, datetime):
+            raise TypeError("submission_date must be of type datetime")
+        self._submission_date = submission_date
 
-  @property
-  def score(self) -> str:
-    return self._score or ""
+    @property
+    def score(self) -> str:
+        return self._score or ""
 
-  @score.setter
-  def score(self, score: Optional[str]):
-    if score is None:
-      del self.score
-      return
-    if not isinstance(score, str):
-      raise TypeError('score must be of type str')
-    self._score = score
+    @score.setter
+    def score(self, score: Optional[str]):
+        if score is None:
+            del self.score
+            return
+        if not isinstance(score, str):
+            raise TypeError("score must be of type str")
+        self._score = score
 
 
 class ApiListCompetitionHostsRequest(KaggleObject):
-  r"""
-  Attributes:
-    competition_name (str)
-  """
+    r"""
+    Attributes:
+      competition_name (str)
+    """
 
-  def __init__(self):
-    self._competition_name = ""
-    self._freeze()
+    def __init__(self):
+        self._competition_name = ""
+        self._freeze()
 
-  @property
-  def competition_name(self) -> str:
-    return self._competition_name
+    @property
+    def competition_name(self) -> str:
+        return self._competition_name
 
-  @competition_name.setter
-  def competition_name(self, competition_name: str):
-    if competition_name is None:
-      del self.competition_name
-      return
-    if not isinstance(competition_name, str):
-      raise TypeError('competition_name must be of type str')
-    self._competition_name = competition_name
+    @competition_name.setter
+    def competition_name(self, competition_name: str):
+        if competition_name is None:
+            del self.competition_name
+            return
+        if not isinstance(competition_name, str):
+            raise TypeError("competition_name must be of type str")
+        self._competition_name = competition_name
 
-  def endpoint(self):
-    path = '/api/v1/competitions/{competition_name}/hosts'
-    return path.format_map(self.to_field_map(self))
+    def endpoint(self):
+        path = "/api/v1/competitions/{competition_name}/hosts"
+        return path.format_map(self.to_field_map(self))
 
-  @staticmethod
-  def endpoint_path():
-    return '/api/v1/competitions/{competition_name}/hosts'
+    @staticmethod
+    def endpoint_path():
+        return "/api/v1/competitions/{competition_name}/hosts"
 
 
 class ApiListCompetitionHostsResponse(KaggleObject):
-  r"""
-  Attributes:
-    hosts (ApiCompetitionHost)
-  """
+    r"""
+    Attributes:
+      hosts (ApiCompetitionHost)
+    """
 
-  def __init__(self):
-    self._hosts = []
-    self._freeze()
+    def __init__(self):
+        self._hosts = []
+        self._freeze()
 
-  @property
-  def hosts(self) -> Optional[List[Optional['ApiCompetitionHost']]]:
-    return self._hosts
+    @property
+    def hosts(self) -> Optional[List[Optional["ApiCompetitionHost"]]]:
+        return self._hosts
 
-  @hosts.setter
-  def hosts(self, hosts: Optional[List[Optional['ApiCompetitionHost']]]):
-    if hosts is None:
-      del self.hosts
-      return
-    if not isinstance(hosts, list):
-      raise TypeError('hosts must be of type list')
-    if not all([isinstance(t, ApiCompetitionHost) for t in hosts]):
-      raise TypeError('hosts must contain only items of type ApiCompetitionHost')
-    self._hosts = hosts
+    @hosts.setter
+    def hosts(self, hosts: Optional[List[Optional["ApiCompetitionHost"]]]):
+        if hosts is None:
+            del self.hosts
+            return
+        if not isinstance(hosts, list):
+            raise TypeError("hosts must be of type list")
+        if not all([isinstance(t, ApiCompetitionHost) for t in hosts]):
+            raise TypeError("hosts must contain only items of type ApiCompetitionHost")
+        self._hosts = hosts
 
 
 class ApiListCompetitionPagesRequest(KaggleObject):
-  r"""
-  Attributes:
-    competition_name (str)
-    page_name (str)
-      Optional filter to return only the page with this name (e.g. 'description',
-      'rules', 'evaluation'). If empty, all published pages are returned.
-  """
-
-  def __init__(self):
-    self._competition_name = ""
-    self._page_name = None
-    self._freeze()
-
-  @property
-  def competition_name(self) -> str:
-    return self._competition_name
-
-  @competition_name.setter
-  def competition_name(self, competition_name: str):
-    if competition_name is None:
-      del self.competition_name
-      return
-    if not isinstance(competition_name, str):
-      raise TypeError('competition_name must be of type str')
-    self._competition_name = competition_name
-
-  @property
-  def page_name(self) -> str:
     r"""
-    Optional filter to return only the page with this name (e.g. 'description',
-    'rules', 'evaluation'). If empty, all published pages are returned.
+    Attributes:
+      competition_name (str)
+      page_name (str)
+        Optional filter to return only the page with this name (e.g. 'description',
+        'rules', 'evaluation'). If empty, all published pages are returned.
     """
-    return self._page_name or ""
 
-  @page_name.setter
-  def page_name(self, page_name: Optional[str]):
-    if page_name is None:
-      del self.page_name
-      return
-    if not isinstance(page_name, str):
-      raise TypeError('page_name must be of type str')
-    self._page_name = page_name
+    def __init__(self):
+        self._competition_name = ""
+        self._page_name = None
+        self._freeze()
 
-  def endpoint(self):
-    path = '/api/v1/competitions/{competition_name}/pages'
-    return path.format_map(self.to_field_map(self))
+    @property
+    def competition_name(self) -> str:
+        return self._competition_name
 
-  @staticmethod
-  def endpoint_path():
-    return '/api/v1/competitions/{competition_name}/pages'
+    @competition_name.setter
+    def competition_name(self, competition_name: str):
+        if competition_name is None:
+            del self.competition_name
+            return
+        if not isinstance(competition_name, str):
+            raise TypeError("competition_name must be of type str")
+        self._competition_name = competition_name
+
+    @property
+    def page_name(self) -> str:
+        r"""
+        Optional filter to return only the page with this name (e.g. 'description',
+        'rules', 'evaluation'). If empty, all published pages are returned.
+        """
+        return self._page_name or ""
+
+    @page_name.setter
+    def page_name(self, page_name: Optional[str]):
+        if page_name is None:
+            del self.page_name
+            return
+        if not isinstance(page_name, str):
+            raise TypeError("page_name must be of type str")
+        self._page_name = page_name
+
+    def endpoint(self):
+        path = "/api/v1/competitions/{competition_name}/pages"
+        return path.format_map(self.to_field_map(self))
+
+    @staticmethod
+    def endpoint_path():
+        return "/api/v1/competitions/{competition_name}/pages"
 
 
 class ApiListCompetitionPagesResponse(KaggleObject):
-  r"""
-  Attributes:
-    pages (ApiCompetitionPage)
-  """
+    r"""
+    Attributes:
+      pages (ApiCompetitionPage)
+    """
 
-  def __init__(self):
-    self._pages = []
-    self._freeze()
+    def __init__(self):
+        self._pages = []
+        self._freeze()
 
-  @property
-  def pages(self) -> Optional[List[Optional['ApiCompetitionPage']]]:
-    return self._pages
+    @property
+    def pages(self) -> Optional[List[Optional["ApiCompetitionPage"]]]:
+        return self._pages
 
-  @pages.setter
-  def pages(self, pages: Optional[List[Optional['ApiCompetitionPage']]]):
-    if pages is None:
-      del self.pages
-      return
-    if not isinstance(pages, list):
-      raise TypeError('pages must be of type list')
-    if not all([isinstance(t, ApiCompetitionPage) for t in pages]):
-      raise TypeError('pages must contain only items of type ApiCompetitionPage')
-    self._pages = pages
+    @pages.setter
+    def pages(self, pages: Optional[List[Optional["ApiCompetitionPage"]]]):
+        if pages is None:
+            del self.pages
+            return
+        if not isinstance(pages, list):
+            raise TypeError("pages must be of type list")
+        if not all([isinstance(t, ApiCompetitionPage) for t in pages]):
+            raise TypeError("pages must contain only items of type ApiCompetitionPage")
+        self._pages = pages
 
 
 class ApiListCompetitionsRequest(KaggleObject):
-  r"""
-  Attributes:
-    group (CompetitionListTab)
-      Filter competitions by a particular group (default is 'general').
-      One of 'general', 'entered' and 'inClass'.
-    category (HostSegment)
-      Filter competitions by a particular category (default is 'all').
-      One of 'all', 'featured', 'research', 'recruitment', 'gettingStarted',
-      'masters', 'playground'.
-    sort_by (CompetitionSortBy)
-      Sort the results (default is 'latestDeadline').
-      One of 'grouped', 'prize', 'earliestDeadline', 'latestDeadline',
-      'numberOfTeams', 'recentlyCreated'.
-    search (str)
-      Filter competitions by search terms.
-    page (int)
-      Page number (default is 1).
-    page_token (str)
-    page_size (int)
-  """
-
-  def __init__(self):
-    self._group = None
-    self._category = None
-    self._sort_by = None
-    self._search = None
-    self._page = None
-    self._page_token = None
-    self._page_size = None
-    self._freeze()
-
-  @property
-  def group(self) -> 'CompetitionListTab':
     r"""
-    Filter competitions by a particular group (default is 'general').
-    One of 'general', 'entered' and 'inClass'.
+    Attributes:
+      group (CompetitionListTab)
+        Filter competitions by a particular group (default is 'general').
+        One of 'general', 'entered' and 'inClass'.
+      category (HostSegment)
+        Filter competitions by a particular category (default is 'all').
+        One of 'all', 'featured', 'research', 'recruitment', 'gettingStarted',
+        'masters', 'playground'.
+      sort_by (CompetitionSortBy)
+        Sort the results (default is 'latestDeadline').
+        One of 'grouped', 'prize', 'earliestDeadline', 'latestDeadline',
+        'numberOfTeams', 'recentlyCreated'.
+      search (str)
+        Filter competitions by search terms.
+      page (int)
+        Page number (default is 1).
+      page_token (str)
+      page_size (int)
     """
-    return self._group or CompetitionListTab.COMPETITION_LIST_TAB_GENERAL
 
-  @group.setter
-  def group(self, group: Optional['CompetitionListTab']):
-    if group is None:
-      del self.group
-      return
-    if not isinstance(group, CompetitionListTab):
-      raise TypeError('group must be of type CompetitionListTab')
-    self._group = group
+    def __init__(self):
+        self._group = None
+        self._category = None
+        self._sort_by = None
+        self._search = None
+        self._page = None
+        self._page_token = None
+        self._page_size = None
+        self._freeze()
 
-  @property
-  def category(self) -> 'HostSegment':
-    r"""
-    Filter competitions by a particular category (default is 'all').
-    One of 'all', 'featured', 'research', 'recruitment', 'gettingStarted',
-    'masters', 'playground'.
-    """
-    return self._category or HostSegment.HOST_SEGMENT_UNSPECIFIED
+    @property
+    def group(self) -> "CompetitionListTab":
+        r"""
+        Filter competitions by a particular group (default is 'general').
+        One of 'general', 'entered' and 'inClass'.
+        """
+        return self._group or CompetitionListTab.COMPETITION_LIST_TAB_GENERAL
 
-  @category.setter
-  def category(self, category: Optional['HostSegment']):
-    if category is None:
-      del self.category
-      return
-    if not isinstance(category, HostSegment):
-      raise TypeError('category must be of type HostSegment')
-    self._category = category
+    @group.setter
+    def group(self, group: Optional["CompetitionListTab"]):
+        if group is None:
+            del self.group
+            return
+        if not isinstance(group, CompetitionListTab):
+            raise TypeError("group must be of type CompetitionListTab")
+        self._group = group
 
-  @property
-  def sort_by(self) -> 'CompetitionSortBy':
-    r"""
-    Sort the results (default is 'latestDeadline').
-    One of 'grouped', 'prize', 'earliestDeadline', 'latestDeadline',
-    'numberOfTeams', 'recentlyCreated'.
-    """
-    return self._sort_by or CompetitionSortBy.COMPETITION_SORT_BY_GROUPED
+    @property
+    def category(self) -> "HostSegment":
+        r"""
+        Filter competitions by a particular category (default is 'all').
+        One of 'all', 'featured', 'research', 'recruitment', 'gettingStarted',
+        'masters', 'playground'.
+        """
+        return self._category or HostSegment.HOST_SEGMENT_UNSPECIFIED
 
-  @sort_by.setter
-  def sort_by(self, sort_by: Optional['CompetitionSortBy']):
-    if sort_by is None:
-      del self.sort_by
-      return
-    if not isinstance(sort_by, CompetitionSortBy):
-      raise TypeError('sort_by must be of type CompetitionSortBy')
-    self._sort_by = sort_by
+    @category.setter
+    def category(self, category: Optional["HostSegment"]):
+        if category is None:
+            del self.category
+            return
+        if not isinstance(category, HostSegment):
+            raise TypeError("category must be of type HostSegment")
+        self._category = category
 
-  @property
-  def search(self) -> str:
-    """Filter competitions by search terms."""
-    return self._search or ""
+    @property
+    def sort_by(self) -> "CompetitionSortBy":
+        r"""
+        Sort the results (default is 'latestDeadline').
+        One of 'grouped', 'prize', 'earliestDeadline', 'latestDeadline',
+        'numberOfTeams', 'recentlyCreated'.
+        """
+        return self._sort_by or CompetitionSortBy.COMPETITION_SORT_BY_GROUPED
 
-  @search.setter
-  def search(self, search: Optional[str]):
-    if search is None:
-      del self.search
-      return
-    if not isinstance(search, str):
-      raise TypeError('search must be of type str')
-    self._search = search
+    @sort_by.setter
+    def sort_by(self, sort_by: Optional["CompetitionSortBy"]):
+        if sort_by is None:
+            del self.sort_by
+            return
+        if not isinstance(sort_by, CompetitionSortBy):
+            raise TypeError("sort_by must be of type CompetitionSortBy")
+        self._sort_by = sort_by
 
-  @property
-  def page(self) -> int:
-    """Page number (default is 1)."""
-    return self._page or 0
+    @property
+    def search(self) -> str:
+        """Filter competitions by search terms."""
+        return self._search or ""
 
-  @page.setter
-  def page(self, page: Optional[int]):
-    if page is None:
-      del self.page
-      return
-    if not isinstance(page, int):
-      raise TypeError('page must be of type int')
-    self._page = page
+    @search.setter
+    def search(self, search: Optional[str]):
+        if search is None:
+            del self.search
+            return
+        if not isinstance(search, str):
+            raise TypeError("search must be of type str")
+        self._search = search
 
-  @property
-  def page_token(self) -> str:
-    return self._page_token or ""
+    @property
+    def page(self) -> int:
+        """Page number (default is 1)."""
+        return self._page or 0
 
-  @page_token.setter
-  def page_token(self, page_token: Optional[str]):
-    if page_token is None:
-      del self.page_token
-      return
-    if not isinstance(page_token, str):
-      raise TypeError('page_token must be of type str')
-    self._page_token = page_token
+    @page.setter
+    def page(self, page: Optional[int]):
+        if page is None:
+            del self.page
+            return
+        if not isinstance(page, int):
+            raise TypeError("page must be of type int")
+        self._page = page
 
-  @property
-  def page_size(self) -> int:
-    return self._page_size or 0
+    @property
+    def page_token(self) -> str:
+        return self._page_token or ""
 
-  @page_size.setter
-  def page_size(self, page_size: Optional[int]):
-    if page_size is None:
-      del self.page_size
-      return
-    if not isinstance(page_size, int):
-      raise TypeError('page_size must be of type int')
-    self._page_size = page_size
+    @page_token.setter
+    def page_token(self, page_token: Optional[str]):
+        if page_token is None:
+            del self.page_token
+            return
+        if not isinstance(page_token, str):
+            raise TypeError("page_token must be of type str")
+        self._page_token = page_token
 
-  def endpoint(self):
-    path = '/api/v1/competitions/list'
-    return path.format_map(self.to_field_map(self))
+    @property
+    def page_size(self) -> int:
+        return self._page_size or 0
+
+    @page_size.setter
+    def page_size(self, page_size: Optional[int]):
+        if page_size is None:
+            del self.page_size
+            return
+        if not isinstance(page_size, int):
+            raise TypeError("page_size must be of type int")
+        self._page_size = page_size
+
+    def endpoint(self):
+        path = "/api/v1/competitions/list"
+        return path.format_map(self.to_field_map(self))
 
 
 class ApiListCompetitionsResponse(KaggleObject):
-  r"""
-  Attributes:
-    competitions (ApiCompetition)
-    next_page_token (str)
-  """
+    r"""
+    Attributes:
+      competitions (ApiCompetition)
+      next_page_token (str)
+    """
 
-  def __init__(self):
-    self._competitions = []
-    self._next_page_token = ""
-    self._freeze()
+    def __init__(self):
+        self._competitions = []
+        self._next_page_token = ""
+        self._freeze()
 
-  @property
-  def competitions(self) -> Optional[List[Optional['ApiCompetition']]]:
-    return self._competitions
+    @property
+    def competitions(self) -> Optional[List[Optional["ApiCompetition"]]]:
+        return self._competitions
 
-  @competitions.setter
-  def competitions(self, competitions: Optional[List[Optional['ApiCompetition']]]):
-    if competitions is None:
-      del self.competitions
-      return
-    if not isinstance(competitions, list):
-      raise TypeError('competitions must be of type list')
-    if not all([isinstance(t, ApiCompetition) for t in competitions]):
-      raise TypeError('competitions must contain only items of type ApiCompetition')
-    self._competitions = competitions
+    @competitions.setter
+    def competitions(self, competitions: Optional[List[Optional["ApiCompetition"]]]):
+        if competitions is None:
+            del self.competitions
+            return
+        if not isinstance(competitions, list):
+            raise TypeError("competitions must be of type list")
+        if not all([isinstance(t, ApiCompetition) for t in competitions]):
+            raise TypeError(
+                "competitions must contain only items of type ApiCompetition"
+            )
+        self._competitions = competitions
 
-  @property
-  def next_page_token(self) -> str:
-    return self._next_page_token
+    @property
+    def next_page_token(self) -> str:
+        return self._next_page_token
 
-  @next_page_token.setter
-  def next_page_token(self, next_page_token: str):
-    if next_page_token is None:
-      del self.next_page_token
-      return
-    if not isinstance(next_page_token, str):
-      raise TypeError('next_page_token must be of type str')
-    self._next_page_token = next_page_token
+    @next_page_token.setter
+    def next_page_token(self, next_page_token: str):
+        if next_page_token is None:
+            del self.next_page_token
+            return
+        if not isinstance(next_page_token, str):
+            raise TypeError("next_page_token must be of type str")
+        self._next_page_token = next_page_token
 
-  @property
-  def nextPageToken(self):
-    return self.next_page_token
+    @property
+    def nextPageToken(self):
+        return self.next_page_token
 
 
 class ApiListCompetitionTopicsRequest(KaggleObject):
-  r"""
-  Attributes:
-    competition_name (str)
-    sort_by (TopicListSortBy)
-      Sort order for the returned topics. Defaults to the forum's default sort.
-    page (int)
-  """
+    r"""
+    Attributes:
+      competition_name (str)
+      sort_by (TopicListSortBy)
+        Sort order for the returned topics. Defaults to the forum's default sort.
+      page (int)
+    """
 
-  def __init__(self):
-    self._competition_name = ""
-    self._sort_by = None
-    self._page = None
-    self._freeze()
+    def __init__(self):
+        self._competition_name = ""
+        self._sort_by = None
+        self._page = None
+        self._freeze()
 
-  @property
-  def competition_name(self) -> str:
-    return self._competition_name
+    @property
+    def competition_name(self) -> str:
+        return self._competition_name
 
-  @competition_name.setter
-  def competition_name(self, competition_name: str):
-    if competition_name is None:
-      del self.competition_name
-      return
-    if not isinstance(competition_name, str):
-      raise TypeError('competition_name must be of type str')
-    self._competition_name = competition_name
+    @competition_name.setter
+    def competition_name(self, competition_name: str):
+        if competition_name is None:
+            del self.competition_name
+            return
+        if not isinstance(competition_name, str):
+            raise TypeError("competition_name must be of type str")
+        self._competition_name = competition_name
 
-  @property
-  def sort_by(self) -> 'TopicListSortBy':
-    """Sort order for the returned topics. Defaults to the forum's default sort."""
-    return self._sort_by or TopicListSortBy.TOPIC_LIST_SORT_BY_UNSPECIFIED
+    @property
+    def sort_by(self) -> "TopicListSortBy":
+        """Sort order for the returned topics. Defaults to the forum's default sort."""
+        return self._sort_by or TopicListSortBy.TOPIC_LIST_SORT_BY_UNSPECIFIED
 
-  @sort_by.setter
-  def sort_by(self, sort_by: Optional['TopicListSortBy']):
-    if sort_by is None:
-      del self.sort_by
-      return
-    if not isinstance(sort_by, TopicListSortBy):
-      raise TypeError('sort_by must be of type TopicListSortBy')
-    self._sort_by = sort_by
+    @sort_by.setter
+    def sort_by(self, sort_by: Optional["TopicListSortBy"]):
+        if sort_by is None:
+            del self.sort_by
+            return
+        if not isinstance(sort_by, TopicListSortBy):
+            raise TypeError("sort_by must be of type TopicListSortBy")
+        self._sort_by = sort_by
 
-  @property
-  def page(self) -> int:
-    return self._page or 0
+    @property
+    def page(self) -> int:
+        return self._page or 0
 
-  @page.setter
-  def page(self, page: Optional[int]):
-    if page is None:
-      del self.page
-      return
-    if not isinstance(page, int):
-      raise TypeError('page must be of type int')
-    self._page = page
+    @page.setter
+    def page(self, page: Optional[int]):
+        if page is None:
+            del self.page
+            return
+        if not isinstance(page, int):
+            raise TypeError("page must be of type int")
+        self._page = page
 
-  def endpoint(self):
-    path = '/api/v1/competitions/{competition_name}/topics'
-    return path.format_map(self.to_field_map(self))
+    def endpoint(self):
+        path = "/api/v1/competitions/{competition_name}/topics"
+        return path.format_map(self.to_field_map(self))
 
-  @staticmethod
-  def endpoint_path():
-    return '/api/v1/competitions/{competition_name}/topics'
+    @staticmethod
+    def endpoint_path():
+        return "/api/v1/competitions/{competition_name}/topics"
 
 
 class ApiListCompetitionTopicsResponse(KaggleObject):
-  r"""
-  Attributes:
-    topics (ApiCompetitionTopic)
-    total_count (int)
-      Total number of topics matching the query (across all pages).
-  """
+    r"""
+    Attributes:
+      topics (ApiCompetitionTopic)
+      total_count (int)
+        Total number of topics matching the query (across all pages).
+    """
 
-  def __init__(self):
-    self._topics = []
-    self._total_count = 0
-    self._freeze()
+    def __init__(self):
+        self._topics = []
+        self._total_count = 0
+        self._freeze()
 
-  @property
-  def topics(self) -> Optional[List[Optional['ApiCompetitionTopic']]]:
-    return self._topics
+    @property
+    def topics(self) -> Optional[List[Optional["ApiCompetitionTopic"]]]:
+        return self._topics
 
-  @topics.setter
-  def topics(self, topics: Optional[List[Optional['ApiCompetitionTopic']]]):
-    if topics is None:
-      del self.topics
-      return
-    if not isinstance(topics, list):
-      raise TypeError('topics must be of type list')
-    if not all([isinstance(t, ApiCompetitionTopic) for t in topics]):
-      raise TypeError('topics must contain only items of type ApiCompetitionTopic')
-    self._topics = topics
+    @topics.setter
+    def topics(self, topics: Optional[List[Optional["ApiCompetitionTopic"]]]):
+        if topics is None:
+            del self.topics
+            return
+        if not isinstance(topics, list):
+            raise TypeError("topics must be of type list")
+        if not all([isinstance(t, ApiCompetitionTopic) for t in topics]):
+            raise TypeError(
+                "topics must contain only items of type ApiCompetitionTopic"
+            )
+        self._topics = topics
 
-  @property
-  def total_count(self) -> int:
-    """Total number of topics matching the query (across all pages)."""
-    return self._total_count
+    @property
+    def total_count(self) -> int:
+        """Total number of topics matching the query (across all pages)."""
+        return self._total_count
 
-  @total_count.setter
-  def total_count(self, total_count: int):
-    if total_count is None:
-      del self.total_count
-      return
-    if not isinstance(total_count, int):
-      raise TypeError('total_count must be of type int')
-    self._total_count = total_count
+    @total_count.setter
+    def total_count(self, total_count: int):
+        if total_count is None:
+            del self.total_count
+            return
+        if not isinstance(total_count, int):
+            raise TypeError("total_count must be of type int")
+        self._total_count = total_count
 
-  @property
-  def totalCount(self):
-    return self.total_count
+    @property
+    def totalCount(self):
+        return self.total_count
 
 
 class ApiListDataFilesRequest(KaggleObject):
-  r"""
-  Attributes:
-    competition_name (str)
-      Competition name. Example: 'titanic'.
-    page_size (int)
-    page_token (str)
-  """
+    r"""
+    Attributes:
+      competition_name (str)
+        Competition name. Example: 'titanic'.
+      page_size (int)
+      page_token (str)
+    """
 
-  def __init__(self):
-    self._competition_name = ""
-    self._page_size = None
-    self._page_token = None
-    self._freeze()
+    def __init__(self):
+        self._competition_name = ""
+        self._page_size = None
+        self._page_token = None
+        self._freeze()
 
-  @property
-  def competition_name(self) -> str:
-    """Competition name. Example: 'titanic'."""
-    return self._competition_name
+    @property
+    def competition_name(self) -> str:
+        """Competition name. Example: 'titanic'."""
+        return self._competition_name
 
-  @competition_name.setter
-  def competition_name(self, competition_name: str):
-    if competition_name is None:
-      del self.competition_name
-      return
-    if not isinstance(competition_name, str):
-      raise TypeError('competition_name must be of type str')
-    self._competition_name = competition_name
+    @competition_name.setter
+    def competition_name(self, competition_name: str):
+        if competition_name is None:
+            del self.competition_name
+            return
+        if not isinstance(competition_name, str):
+            raise TypeError("competition_name must be of type str")
+        self._competition_name = competition_name
 
-  @property
-  def page_size(self) -> int:
-    return self._page_size or 0
+    @property
+    def page_size(self) -> int:
+        return self._page_size or 0
 
-  @page_size.setter
-  def page_size(self, page_size: Optional[int]):
-    if page_size is None:
-      del self.page_size
-      return
-    if not isinstance(page_size, int):
-      raise TypeError('page_size must be of type int')
-    self._page_size = page_size
+    @page_size.setter
+    def page_size(self, page_size: Optional[int]):
+        if page_size is None:
+            del self.page_size
+            return
+        if not isinstance(page_size, int):
+            raise TypeError("page_size must be of type int")
+        self._page_size = page_size
 
-  @property
-  def page_token(self) -> str:
-    return self._page_token or ""
+    @property
+    def page_token(self) -> str:
+        return self._page_token or ""
 
-  @page_token.setter
-  def page_token(self, page_token: Optional[str]):
-    if page_token is None:
-      del self.page_token
-      return
-    if not isinstance(page_token, str):
-      raise TypeError('page_token must be of type str')
-    self._page_token = page_token
+    @page_token.setter
+    def page_token(self, page_token: Optional[str]):
+        if page_token is None:
+            del self.page_token
+            return
+        if not isinstance(page_token, str):
+            raise TypeError("page_token must be of type str")
+        self._page_token = page_token
 
-  def endpoint(self):
-    path = '/api/v1/competitions/data/list/{competition_name}'
-    return path.format_map(self.to_field_map(self))
+    def endpoint(self):
+        path = "/api/v1/competitions/data/list/{competition_name}"
+        return path.format_map(self.to_field_map(self))
 
-  @staticmethod
-  def endpoint_path():
-    return '/api/v1/competitions/data/list/{competition_name}'
+    @staticmethod
+    def endpoint_path():
+        return "/api/v1/competitions/data/list/{competition_name}"
 
 
 class ApiListDataFilesResponse(KaggleObject):
-  r"""
-  Attributes:
-    files (ApiDataFile)
-    next_page_token (str)
-    children_fetch_time_ms (int)
-  """
+    r"""
+    Attributes:
+      files (ApiDataFile)
+      next_page_token (str)
+      children_fetch_time_ms (int)
+    """
 
-  def __init__(self):
-    self._files = []
-    self._next_page_token = None
-    self._children_fetch_time_ms = 0
-    self._freeze()
+    def __init__(self):
+        self._files = []
+        self._next_page_token = None
+        self._children_fetch_time_ms = 0
+        self._freeze()
 
-  @property
-  def files(self) -> Optional[List[Optional['ApiDataFile']]]:
-    return self._files
+    @property
+    def files(self) -> Optional[List[Optional["ApiDataFile"]]]:
+        return self._files
 
-  @files.setter
-  def files(self, files: Optional[List[Optional['ApiDataFile']]]):
-    if files is None:
-      del self.files
-      return
-    if not isinstance(files, list):
-      raise TypeError('files must be of type list')
-    if not all([isinstance(t, ApiDataFile) for t in files]):
-      raise TypeError('files must contain only items of type ApiDataFile')
-    self._files = files
+    @files.setter
+    def files(self, files: Optional[List[Optional["ApiDataFile"]]]):
+        if files is None:
+            del self.files
+            return
+        if not isinstance(files, list):
+            raise TypeError("files must be of type list")
+        if not all([isinstance(t, ApiDataFile) for t in files]):
+            raise TypeError("files must contain only items of type ApiDataFile")
+        self._files = files
 
-  @property
-  def next_page_token(self) -> str:
-    return self._next_page_token or ""
+    @property
+    def next_page_token(self) -> str:
+        return self._next_page_token or ""
 
-  @next_page_token.setter
-  def next_page_token(self, next_page_token: Optional[str]):
-    if next_page_token is None:
-      del self.next_page_token
-      return
-    if not isinstance(next_page_token, str):
-      raise TypeError('next_page_token must be of type str')
-    self._next_page_token = next_page_token
+    @next_page_token.setter
+    def next_page_token(self, next_page_token: Optional[str]):
+        if next_page_token is None:
+            del self.next_page_token
+            return
+        if not isinstance(next_page_token, str):
+            raise TypeError("next_page_token must be of type str")
+        self._next_page_token = next_page_token
 
-  @property
-  def children_fetch_time_ms(self) -> int:
-    return self._children_fetch_time_ms
+    @property
+    def children_fetch_time_ms(self) -> int:
+        return self._children_fetch_time_ms
 
-  @children_fetch_time_ms.setter
-  def children_fetch_time_ms(self, children_fetch_time_ms: int):
-    if children_fetch_time_ms is None:
-      del self.children_fetch_time_ms
-      return
-    if not isinstance(children_fetch_time_ms, int):
-      raise TypeError('children_fetch_time_ms must be of type int')
-    self._children_fetch_time_ms = children_fetch_time_ms
+    @children_fetch_time_ms.setter
+    def children_fetch_time_ms(self, children_fetch_time_ms: int):
+        if children_fetch_time_ms is None:
+            del self.children_fetch_time_ms
+            return
+        if not isinstance(children_fetch_time_ms, int):
+            raise TypeError("children_fetch_time_ms must be of type int")
+        self._children_fetch_time_ms = children_fetch_time_ms
 
-  @property
-  def nextPageToken(self):
-    return self.next_page_token
+    @property
+    def nextPageToken(self):
+        return self.next_page_token
 
-  @property
-  def childrenFetchTimeMs(self):
-    return self.children_fetch_time_ms
+    @property
+    def childrenFetchTimeMs(self):
+        return self.children_fetch_time_ms
 
 
 class ApiListDataTreeFilesRequest(KaggleObject):
-  r"""
-  Attributes:
-    competition_name (str)
-      Competition name. Example: 'titanic'.
-    path (str)
-      The path of the directory to list files from. If not provided, the root
-      directory will be listed.
-    page_size (int)
-    page_token (str)
-  """
-
-  def __init__(self):
-    self._competition_name = ""
-    self._path = None
-    self._page_size = None
-    self._page_token = None
-    self._freeze()
-
-  @property
-  def competition_name(self) -> str:
-    """Competition name. Example: 'titanic'."""
-    return self._competition_name
-
-  @competition_name.setter
-  def competition_name(self, competition_name: str):
-    if competition_name is None:
-      del self.competition_name
-      return
-    if not isinstance(competition_name, str):
-      raise TypeError('competition_name must be of type str')
-    self._competition_name = competition_name
-
-  @property
-  def path(self) -> str:
     r"""
-    The path of the directory to list files from. If not provided, the root
-    directory will be listed.
+    Attributes:
+      competition_name (str)
+        Competition name. Example: 'titanic'.
+      path (str)
+        The path of the directory to list files from. If not provided, the root
+        directory will be listed.
+      page_size (int)
+      page_token (str)
     """
-    return self._path or ""
 
-  @path.setter
-  def path(self, path: Optional[str]):
-    if path is None:
-      del self.path
-      return
-    if not isinstance(path, str):
-      raise TypeError('path must be of type str')
-    self._path = path
+    def __init__(self):
+        self._competition_name = ""
+        self._path = None
+        self._page_size = None
+        self._page_token = None
+        self._freeze()
 
-  @property
-  def page_size(self) -> int:
-    return self._page_size or 0
+    @property
+    def competition_name(self) -> str:
+        """Competition name. Example: 'titanic'."""
+        return self._competition_name
 
-  @page_size.setter
-  def page_size(self, page_size: Optional[int]):
-    if page_size is None:
-      del self.page_size
-      return
-    if not isinstance(page_size, int):
-      raise TypeError('page_size must be of type int')
-    self._page_size = page_size
+    @competition_name.setter
+    def competition_name(self, competition_name: str):
+        if competition_name is None:
+            del self.competition_name
+            return
+        if not isinstance(competition_name, str):
+            raise TypeError("competition_name must be of type str")
+        self._competition_name = competition_name
 
-  @property
-  def page_token(self) -> str:
-    return self._page_token or ""
+    @property
+    def path(self) -> str:
+        r"""
+        The path of the directory to list files from. If not provided, the root
+        directory will be listed.
+        """
+        return self._path or ""
 
-  @page_token.setter
-  def page_token(self, page_token: Optional[str]):
-    if page_token is None:
-      del self.page_token
-      return
-    if not isinstance(page_token, str):
-      raise TypeError('page_token must be of type str')
-    self._page_token = page_token
+    @path.setter
+    def path(self, path: Optional[str]):
+        if path is None:
+            del self.path
+            return
+        if not isinstance(path, str):
+            raise TypeError("path must be of type str")
+        self._path = path
 
-  def endpoint(self):
-    path = '/api/v1/competitions/{competition_name}/data-tree/list/'
-    return path.format_map(self.to_field_map(self))
+    @property
+    def page_size(self) -> int:
+        return self._page_size or 0
 
-  @staticmethod
-  def endpoint_path():
-    return '/api/v1/competitions/{competition_name}/data-tree/list/'
+    @page_size.setter
+    def page_size(self, page_size: Optional[int]):
+        if page_size is None:
+            del self.page_size
+            return
+        if not isinstance(page_size, int):
+            raise TypeError("page_size must be of type int")
+        self._page_size = page_size
+
+    @property
+    def page_token(self) -> str:
+        return self._page_token or ""
+
+    @page_token.setter
+    def page_token(self, page_token: Optional[str]):
+        if page_token is None:
+            del self.page_token
+            return
+        if not isinstance(page_token, str):
+            raise TypeError("page_token must be of type str")
+        self._page_token = page_token
+
+    def endpoint(self):
+        path = "/api/v1/competitions/{competition_name}/data-tree/list/"
+        return path.format_map(self.to_field_map(self))
+
+    @staticmethod
+    def endpoint_path():
+        return "/api/v1/competitions/{competition_name}/data-tree/list/"
 
 
 class ApiListSubmissionEpisodesRequest(KaggleObject):
-  r"""
-  Attributes:
-    submission_id (int)
-  """
+    r"""
+    Attributes:
+      submission_id (int)
+    """
 
-  def __init__(self):
-    self._submission_id = 0
-    self._freeze()
+    def __init__(self):
+        self._submission_id = 0
+        self._freeze()
 
-  @property
-  def submission_id(self) -> int:
-    return self._submission_id
+    @property
+    def submission_id(self) -> int:
+        return self._submission_id
 
-  @submission_id.setter
-  def submission_id(self, submission_id: int):
-    if submission_id is None:
-      del self.submission_id
-      return
-    if not isinstance(submission_id, int):
-      raise TypeError('submission_id must be of type int')
-    self._submission_id = submission_id
+    @submission_id.setter
+    def submission_id(self, submission_id: int):
+        if submission_id is None:
+            del self.submission_id
+            return
+        if not isinstance(submission_id, int):
+            raise TypeError("submission_id must be of type int")
+        self._submission_id = submission_id
 
-  def endpoint(self):
-    path = '/api/v1/competitions/submissions/{submission_id}/episodes'
-    return path.format_map(self.to_field_map(self))
+    def endpoint(self):
+        path = "/api/v1/competitions/submissions/{submission_id}/episodes"
+        return path.format_map(self.to_field_map(self))
 
-  @staticmethod
-  def endpoint_path():
-    return '/api/v1/competitions/submissions/{submission_id}/episodes'
+    @staticmethod
+    def endpoint_path():
+        return "/api/v1/competitions/submissions/{submission_id}/episodes"
 
 
 class ApiListSubmissionEpisodesResponse(KaggleObject):
-  r"""
-  Attributes:
-    episodes (ApiEpisode)
-  """
+    r"""
+    Attributes:
+      episodes (ApiEpisode)
+    """
 
-  def __init__(self):
-    self._episodes = []
-    self._freeze()
+    def __init__(self):
+        self._episodes = []
+        self._freeze()
 
-  @property
-  def episodes(self) -> Optional[List[Optional['ApiEpisode']]]:
-    return self._episodes
+    @property
+    def episodes(self) -> Optional[List[Optional["ApiEpisode"]]]:
+        return self._episodes
 
-  @episodes.setter
-  def episodes(self, episodes: Optional[List[Optional['ApiEpisode']]]):
-    if episodes is None:
-      del self.episodes
-      return
-    if not isinstance(episodes, list):
-      raise TypeError('episodes must be of type list')
-    if not all([isinstance(t, ApiEpisode) for t in episodes]):
-      raise TypeError('episodes must contain only items of type ApiEpisode')
-    self._episodes = episodes
+    @episodes.setter
+    def episodes(self, episodes: Optional[List[Optional["ApiEpisode"]]]):
+        if episodes is None:
+            del self.episodes
+            return
+        if not isinstance(episodes, list):
+            raise TypeError("episodes must be of type list")
+        if not all([isinstance(t, ApiEpisode) for t in episodes]):
+            raise TypeError("episodes must contain only items of type ApiEpisode")
+        self._episodes = episodes
 
 
 class ApiListSubmissionsRequest(KaggleObject):
-  r"""
-  Attributes:
-    competition_name (str)
-    sort_by (SubmissionSortBy)
-    group (SubmissionGroup)
-    page (int)
-    page_token (str)
-    page_size (int)
-  """
+    r"""
+    Attributes:
+      competition_name (str)
+      sort_by (SubmissionSortBy)
+      group (SubmissionGroup)
+      page (int)
+      page_token (str)
+      page_size (int)
+    """
 
-  def __init__(self):
-    self._competition_name = ""
-    self._sort_by = SubmissionSortBy.SUBMISSION_SORT_BY_DATE
-    self._group = SubmissionGroup.SUBMISSION_GROUP_ALL
-    self._page = None
-    self._page_token = None
-    self._page_size = None
-    self._freeze()
+    def __init__(self):
+        self._competition_name = ""
+        self._sort_by = SubmissionSortBy.SUBMISSION_SORT_BY_DATE
+        self._group = SubmissionGroup.SUBMISSION_GROUP_ALL
+        self._page = None
+        self._page_token = None
+        self._page_size = None
+        self._freeze()
 
-  @property
-  def competition_name(self) -> str:
-    return self._competition_name
+    @property
+    def competition_name(self) -> str:
+        return self._competition_name
 
-  @competition_name.setter
-  def competition_name(self, competition_name: str):
-    if competition_name is None:
-      del self.competition_name
-      return
-    if not isinstance(competition_name, str):
-      raise TypeError('competition_name must be of type str')
-    self._competition_name = competition_name
+    @competition_name.setter
+    def competition_name(self, competition_name: str):
+        if competition_name is None:
+            del self.competition_name
+            return
+        if not isinstance(competition_name, str):
+            raise TypeError("competition_name must be of type str")
+        self._competition_name = competition_name
 
-  @property
-  def sort_by(self) -> 'SubmissionSortBy':
-    return self._sort_by
+    @property
+    def sort_by(self) -> "SubmissionSortBy":
+        return self._sort_by
 
-  @sort_by.setter
-  def sort_by(self, sort_by: 'SubmissionSortBy'):
-    if sort_by is None:
-      del self.sort_by
-      return
-    if not isinstance(sort_by, SubmissionSortBy):
-      raise TypeError('sort_by must be of type SubmissionSortBy')
-    self._sort_by = sort_by
+    @sort_by.setter
+    def sort_by(self, sort_by: "SubmissionSortBy"):
+        if sort_by is None:
+            del self.sort_by
+            return
+        if not isinstance(sort_by, SubmissionSortBy):
+            raise TypeError("sort_by must be of type SubmissionSortBy")
+        self._sort_by = sort_by
 
-  @property
-  def group(self) -> 'SubmissionGroup':
-    return self._group
+    @property
+    def group(self) -> "SubmissionGroup":
+        return self._group
 
-  @group.setter
-  def group(self, group: 'SubmissionGroup'):
-    if group is None:
-      del self.group
-      return
-    if not isinstance(group, SubmissionGroup):
-      raise TypeError('group must be of type SubmissionGroup')
-    self._group = group
+    @group.setter
+    def group(self, group: "SubmissionGroup"):
+        if group is None:
+            del self.group
+            return
+        if not isinstance(group, SubmissionGroup):
+            raise TypeError("group must be of type SubmissionGroup")
+        self._group = group
 
-  @property
-  def page(self) -> int:
-    return self._page or 0
+    @property
+    def page(self) -> int:
+        return self._page or 0
 
-  @page.setter
-  def page(self, page: Optional[int]):
-    if page is None:
-      del self.page
-      return
-    if not isinstance(page, int):
-      raise TypeError('page must be of type int')
-    self._page = page
+    @page.setter
+    def page(self, page: Optional[int]):
+        if page is None:
+            del self.page
+            return
+        if not isinstance(page, int):
+            raise TypeError("page must be of type int")
+        self._page = page
 
-  @property
-  def page_token(self) -> str:
-    return self._page_token or ""
+    @property
+    def page_token(self) -> str:
+        return self._page_token or ""
 
-  @page_token.setter
-  def page_token(self, page_token: Optional[str]):
-    if page_token is None:
-      del self.page_token
-      return
-    if not isinstance(page_token, str):
-      raise TypeError('page_token must be of type str')
-    self._page_token = page_token
+    @page_token.setter
+    def page_token(self, page_token: Optional[str]):
+        if page_token is None:
+            del self.page_token
+            return
+        if not isinstance(page_token, str):
+            raise TypeError("page_token must be of type str")
+        self._page_token = page_token
 
-  @property
-  def page_size(self) -> int:
-    return self._page_size or 0
+    @property
+    def page_size(self) -> int:
+        return self._page_size or 0
 
-  @page_size.setter
-  def page_size(self, page_size: Optional[int]):
-    if page_size is None:
-      del self.page_size
-      return
-    if not isinstance(page_size, int):
-      raise TypeError('page_size must be of type int')
-    self._page_size = page_size
+    @page_size.setter
+    def page_size(self, page_size: Optional[int]):
+        if page_size is None:
+            del self.page_size
+            return
+        if not isinstance(page_size, int):
+            raise TypeError("page_size must be of type int")
+        self._page_size = page_size
 
-  def endpoint(self):
-    path = '/api/v1/competitions/submissions/list/{competition_name}'
-    return path.format_map(self.to_field_map(self))
+    def endpoint(self):
+        path = "/api/v1/competitions/submissions/list/{competition_name}"
+        return path.format_map(self.to_field_map(self))
 
-  @staticmethod
-  def endpoint_path():
-    return '/api/v1/competitions/submissions/list/{competition_name}'
+    @staticmethod
+    def endpoint_path():
+        return "/api/v1/competitions/submissions/list/{competition_name}"
 
 
 class ApiListSubmissionsResponse(KaggleObject):
-  r"""
-  Attributes:
-    submissions (ApiSubmission)
-    next_page_token (str)
-  """
+    r"""
+    Attributes:
+      submissions (ApiSubmission)
+      next_page_token (str)
+    """
 
-  def __init__(self):
-    self._submissions = []
-    self._next_page_token = ""
-    self._freeze()
+    def __init__(self):
+        self._submissions = []
+        self._next_page_token = ""
+        self._freeze()
 
-  @property
-  def submissions(self) -> Optional[List[Optional['ApiSubmission']]]:
-    return self._submissions
+    @property
+    def submissions(self) -> Optional[List[Optional["ApiSubmission"]]]:
+        return self._submissions
 
-  @submissions.setter
-  def submissions(self, submissions: Optional[List[Optional['ApiSubmission']]]):
-    if submissions is None:
-      del self.submissions
-      return
-    if not isinstance(submissions, list):
-      raise TypeError('submissions must be of type list')
-    if not all([isinstance(t, ApiSubmission) for t in submissions]):
-      raise TypeError('submissions must contain only items of type ApiSubmission')
-    self._submissions = submissions
+    @submissions.setter
+    def submissions(self, submissions: Optional[List[Optional["ApiSubmission"]]]):
+        if submissions is None:
+            del self.submissions
+            return
+        if not isinstance(submissions, list):
+            raise TypeError("submissions must be of type list")
+        if not all([isinstance(t, ApiSubmission) for t in submissions]):
+            raise TypeError("submissions must contain only items of type ApiSubmission")
+        self._submissions = submissions
 
-  @property
-  def next_page_token(self) -> str:
-    return self._next_page_token
+    @property
+    def next_page_token(self) -> str:
+        return self._next_page_token
 
-  @next_page_token.setter
-  def next_page_token(self, next_page_token: str):
-    if next_page_token is None:
-      del self.next_page_token
-      return
-    if not isinstance(next_page_token, str):
-      raise TypeError('next_page_token must be of type str')
-    self._next_page_token = next_page_token
+    @next_page_token.setter
+    def next_page_token(self, next_page_token: str):
+        if next_page_token is None:
+            del self.next_page_token
+            return
+        if not isinstance(next_page_token, str):
+            raise TypeError("next_page_token must be of type str")
+        self._next_page_token = next_page_token
 
-  @property
-  def nextPageToken(self):
-    return self.next_page_token
+    @property
+    def nextPageToken(self):
+        return self.next_page_token
 
 
 class ApiListTeamPublicSubmissionsRequest(KaggleObject):
-  r"""
-  Attributes:
-    team_id (int)
-  """
+    r"""
+    Attributes:
+      team_id (int)
+    """
 
-  def __init__(self):
-    self._team_id = 0
-    self._freeze()
+    def __init__(self):
+        self._team_id = 0
+        self._freeze()
 
-  @property
-  def team_id(self) -> int:
-    return self._team_id
+    @property
+    def team_id(self) -> int:
+        return self._team_id
 
-  @team_id.setter
-  def team_id(self, team_id: int):
-    if team_id is None:
-      del self.team_id
-      return
-    if not isinstance(team_id, int):
-      raise TypeError('team_id must be of type int')
-    self._team_id = team_id
+    @team_id.setter
+    def team_id(self, team_id: int):
+        if team_id is None:
+            del self.team_id
+            return
+        if not isinstance(team_id, int):
+            raise TypeError("team_id must be of type int")
+        self._team_id = team_id
 
-  def endpoint(self):
-    path = '/api/v1/competitions/teams/{team_id}/public-submissions'
-    return path.format_map(self.to_field_map(self))
+    def endpoint(self):
+        path = "/api/v1/competitions/teams/{team_id}/public-submissions"
+        return path.format_map(self.to_field_map(self))
 
-  @staticmethod
-  def endpoint_path():
-    return '/api/v1/competitions/teams/{team_id}/public-submissions'
+    @staticmethod
+    def endpoint_path():
+        return "/api/v1/competitions/teams/{team_id}/public-submissions"
 
 
 class ApiListTeamPublicSubmissionsResponse(KaggleObject):
-  r"""
-  Attributes:
-    submissions (ApiPublicSubmission)
-  """
+    r"""
+    Attributes:
+      submissions (ApiPublicSubmission)
+    """
 
-  def __init__(self):
-    self._submissions = []
-    self._freeze()
+    def __init__(self):
+        self._submissions = []
+        self._freeze()
 
-  @property
-  def submissions(self) -> Optional[List[Optional['ApiPublicSubmission']]]:
-    return self._submissions
+    @property
+    def submissions(self) -> Optional[List[Optional["ApiPublicSubmission"]]]:
+        return self._submissions
 
-  @submissions.setter
-  def submissions(self, submissions: Optional[List[Optional['ApiPublicSubmission']]]):
-    if submissions is None:
-      del self.submissions
-      return
-    if not isinstance(submissions, list):
-      raise TypeError('submissions must be of type list')
-    if not all([isinstance(t, ApiPublicSubmission) for t in submissions]):
-      raise TypeError('submissions must contain only items of type ApiPublicSubmission')
-    self._submissions = submissions
+    @submissions.setter
+    def submissions(self, submissions: Optional[List[Optional["ApiPublicSubmission"]]]):
+        if submissions is None:
+            del self.submissions
+            return
+        if not isinstance(submissions, list):
+            raise TypeError("submissions must be of type list")
+        if not all([isinstance(t, ApiPublicSubmission) for t in submissions]):
+            raise TypeError(
+                "submissions must contain only items of type ApiPublicSubmission"
+            )
+        self._submissions = submissions
 
 
 class ApiListTopicMessagesRequest(KaggleObject):
-  r"""
-  Attributes:
-    competition_name (str)
-    topic_id (int)
-    sort_by (CommentListSortBy)
-      Sort order for the returned messages. Defaults to the user's preference.
-    page_size (int)
-      Maximum number of top-level messages to return. Defaults to 30. Use -1 to
-      return all messages.
-  """
-
-  def __init__(self):
-    self._competition_name = ""
-    self._topic_id = 0
-    self._sort_by = None
-    self._page_size = None
-    self._freeze()
-
-  @property
-  def competition_name(self) -> str:
-    return self._competition_name
-
-  @competition_name.setter
-  def competition_name(self, competition_name: str):
-    if competition_name is None:
-      del self.competition_name
-      return
-    if not isinstance(competition_name, str):
-      raise TypeError('competition_name must be of type str')
-    self._competition_name = competition_name
-
-  @property
-  def topic_id(self) -> int:
-    return self._topic_id
-
-  @topic_id.setter
-  def topic_id(self, topic_id: int):
-    if topic_id is None:
-      del self.topic_id
-      return
-    if not isinstance(topic_id, int):
-      raise TypeError('topic_id must be of type int')
-    self._topic_id = topic_id
-
-  @property
-  def sort_by(self) -> 'CommentListSortBy':
-    """Sort order for the returned messages. Defaults to the user's preference."""
-    return self._sort_by or CommentListSortBy.COMMENT_LIST_SORT_BY_UNSPECIFIED
-
-  @sort_by.setter
-  def sort_by(self, sort_by: Optional['CommentListSortBy']):
-    if sort_by is None:
-      del self.sort_by
-      return
-    if not isinstance(sort_by, CommentListSortBy):
-      raise TypeError('sort_by must be of type CommentListSortBy')
-    self._sort_by = sort_by
-
-  @property
-  def page_size(self) -> int:
     r"""
-    Maximum number of top-level messages to return. Defaults to 30. Use -1 to
-    return all messages.
+    Attributes:
+      competition_name (str)
+      topic_id (int)
+      sort_by (CommentListSortBy)
+        Sort order for the returned messages. Defaults to the user's preference.
+      page_size (int)
+        Maximum number of top-level messages to return. Defaults to 30. Use -1 to
+        return all messages.
     """
-    return self._page_size or 0
 
-  @page_size.setter
-  def page_size(self, page_size: Optional[int]):
-    if page_size is None:
-      del self.page_size
-      return
-    if not isinstance(page_size, int):
-      raise TypeError('page_size must be of type int')
-    self._page_size = page_size
+    def __init__(self):
+        self._competition_name = ""
+        self._topic_id = 0
+        self._sort_by = None
+        self._page_size = None
+        self._freeze()
 
-  def endpoint(self):
-    path = '/api/v1/competitions/{competition_name}/topics/{topic_id}/messages'
-    return path.format_map(self.to_field_map(self))
+    @property
+    def competition_name(self) -> str:
+        return self._competition_name
 
-  @staticmethod
-  def endpoint_path():
-    return '/api/v1/competitions/{competition_name}/topics/{topic_id}/messages'
+    @competition_name.setter
+    def competition_name(self, competition_name: str):
+        if competition_name is None:
+            del self.competition_name
+            return
+        if not isinstance(competition_name, str):
+            raise TypeError("competition_name must be of type str")
+        self._competition_name = competition_name
+
+    @property
+    def topic_id(self) -> int:
+        return self._topic_id
+
+    @topic_id.setter
+    def topic_id(self, topic_id: int):
+        if topic_id is None:
+            del self.topic_id
+            return
+        if not isinstance(topic_id, int):
+            raise TypeError("topic_id must be of type int")
+        self._topic_id = topic_id
+
+    @property
+    def sort_by(self) -> "CommentListSortBy":
+        """Sort order for the returned messages. Defaults to the user's preference."""
+        return self._sort_by or CommentListSortBy.COMMENT_LIST_SORT_BY_UNSPECIFIED
+
+    @sort_by.setter
+    def sort_by(self, sort_by: Optional["CommentListSortBy"]):
+        if sort_by is None:
+            del self.sort_by
+            return
+        if not isinstance(sort_by, CommentListSortBy):
+            raise TypeError("sort_by must be of type CommentListSortBy")
+        self._sort_by = sort_by
+
+    @property
+    def page_size(self) -> int:
+        r"""
+        Maximum number of top-level messages to return. Defaults to 30. Use -1 to
+        return all messages.
+        """
+        return self._page_size or 0
+
+    @page_size.setter
+    def page_size(self, page_size: Optional[int]):
+        if page_size is None:
+            del self.page_size
+            return
+        if not isinstance(page_size, int):
+            raise TypeError("page_size must be of type int")
+        self._page_size = page_size
+
+    def endpoint(self):
+        path = "/api/v1/competitions/{competition_name}/topics/{topic_id}/messages"
+        return path.format_map(self.to_field_map(self))
+
+    @staticmethod
+    def endpoint_path():
+        return "/api/v1/competitions/{competition_name}/topics/{topic_id}/messages"
 
 
 class ApiListTopicMessagesResponse(KaggleObject):
-  r"""
-  Attributes:
-    messages (ApiTopicMessage)
-  """
+    r"""
+    Attributes:
+      messages (ApiTopicMessage)
+    """
 
-  def __init__(self):
-    self._messages = []
-    self._freeze()
+    def __init__(self):
+        self._messages = []
+        self._freeze()
 
-  @property
-  def messages(self) -> Optional[List[Optional['ApiTopicMessage']]]:
-    return self._messages
+    @property
+    def messages(self) -> Optional[List[Optional["ApiTopicMessage"]]]:
+        return self._messages
 
-  @messages.setter
-  def messages(self, messages: Optional[List[Optional['ApiTopicMessage']]]):
-    if messages is None:
-      del self.messages
-      return
-    if not isinstance(messages, list):
-      raise TypeError('messages must be of type list')
-    if not all([isinstance(t, ApiTopicMessage) for t in messages]):
-      raise TypeError('messages must contain only items of type ApiTopicMessage')
-    self._messages = messages
+    @messages.setter
+    def messages(self, messages: Optional[List[Optional["ApiTopicMessage"]]]):
+        if messages is None:
+            del self.messages
+            return
+        if not isinstance(messages, list):
+            raise TypeError("messages must be of type list")
+        if not all([isinstance(t, ApiTopicMessage) for t in messages]):
+            raise TypeError("messages must contain only items of type ApiTopicMessage")
+        self._messages = messages
 
 
 class ApiMetricColumn(KaggleObject):
-  r"""
-  Attributes:
-    name (str)
-    data_type (str)
-  """
+    r"""
+    Attributes:
+      name (str)
+      data_type (str)
+    """
 
-  def __init__(self):
-    self._name = ""
-    self._data_type = ""
-    self._freeze()
+    def __init__(self):
+        self._name = ""
+        self._data_type = ""
+        self._freeze()
 
-  @property
-  def name(self) -> str:
-    return self._name
+    @property
+    def name(self) -> str:
+        return self._name
 
-  @name.setter
-  def name(self, name: str):
-    if name is None:
-      del self.name
-      return
-    if not isinstance(name, str):
-      raise TypeError('name must be of type str')
-    self._name = name
+    @name.setter
+    def name(self, name: str):
+        if name is None:
+            del self.name
+            return
+        if not isinstance(name, str):
+            raise TypeError("name must be of type str")
+        self._name = name
 
-  @property
-  def data_type(self) -> str:
-    return self._data_type
+    @property
+    def data_type(self) -> str:
+        return self._data_type
 
-  @data_type.setter
-  def data_type(self, data_type: str):
-    if data_type is None:
-      del self.data_type
-      return
-    if not isinstance(data_type, str):
-      raise TypeError('data_type must be of type str')
-    self._data_type = data_type
+    @data_type.setter
+    def data_type(self, data_type: str):
+        if data_type is None:
+            del self.data_type
+            return
+        if not isinstance(data_type, str):
+            raise TypeError("data_type must be of type str")
+        self._data_type = data_type
 
 
 class ApiPublicSubmission(KaggleObject):
-  r"""
-  Public-safe subset of a submission. Only fields safe to expose to any user
-  who can read the team's competition.
+    r"""
+    Public-safe subset of a submission. Only fields safe to expose to any user
+    who can read the team's competition.
 
-  Attributes:
-    id (int)
-    date_submitted (datetime)
-    public_score (str)
-  """
+    Attributes:
+      id (int)
+      date_submitted (datetime)
+      public_score (str)
+    """
 
-  def __init__(self):
-    self._id = 0
-    self._date_submitted = None
-    self._public_score = ""
-    self._freeze()
+    def __init__(self):
+        self._id = 0
+        self._date_submitted = None
+        self._public_score = ""
+        self._freeze()
 
-  @property
-  def id(self) -> int:
-    return self._id
+    @property
+    def id(self) -> int:
+        return self._id
 
-  @id.setter
-  def id(self, id: int):
-    if id is None:
-      del self.id
-      return
-    if not isinstance(id, int):
-      raise TypeError('id must be of type int')
-    self._id = id
+    @id.setter
+    def id(self, id: int):
+        if id is None:
+            del self.id
+            return
+        if not isinstance(id, int):
+            raise TypeError("id must be of type int")
+        self._id = id
 
-  @property
-  def date_submitted(self) -> datetime:
-    return self._date_submitted
+    @property
+    def date_submitted(self) -> datetime:
+        return self._date_submitted
 
-  @date_submitted.setter
-  def date_submitted(self, date_submitted: datetime):
-    if date_submitted is None:
-      del self.date_submitted
-      return
-    if not isinstance(date_submitted, datetime):
-      raise TypeError('date_submitted must be of type datetime')
-    self._date_submitted = date_submitted
+    @date_submitted.setter
+    def date_submitted(self, date_submitted: datetime):
+        if date_submitted is None:
+            del self.date_submitted
+            return
+        if not isinstance(date_submitted, datetime):
+            raise TypeError("date_submitted must be of type datetime")
+        self._date_submitted = date_submitted
 
-  @property
-  def public_score(self) -> str:
-    return self._public_score
+    @property
+    def public_score(self) -> str:
+        return self._public_score
 
-  @public_score.setter
-  def public_score(self, public_score: str):
-    if public_score is None:
-      del self.public_score
-      return
-    if not isinstance(public_score, str):
-      raise TypeError('public_score must be of type str')
-    self._public_score = public_score
+    @public_score.setter
+    def public_score(self, public_score: str):
+        if public_score is None:
+            del self.public_score
+            return
+        if not isinstance(public_score, str):
+            raise TypeError("public_score must be of type str")
+        self._public_score = public_score
 
 
 class ApiSolutionFileInfo(KaggleObject):
-  r"""
-  Attributes:
-    file_name (str)
-    file_size_bytes (int)
-    upload_date (datetime)
-    total_rows (int)
-    public_rows (int)
-    private_rows (int)
-  """
+    r"""
+    Attributes:
+      file_name (str)
+      file_size_bytes (int)
+      upload_date (datetime)
+      total_rows (int)
+      public_rows (int)
+      private_rows (int)
+    """
 
-  def __init__(self):
-    self._file_name = None
-    self._file_size_bytes = None
-    self._upload_date = None
-    self._total_rows = None
-    self._public_rows = None
-    self._private_rows = None
-    self._freeze()
+    def __init__(self):
+        self._file_name = None
+        self._file_size_bytes = None
+        self._upload_date = None
+        self._total_rows = None
+        self._public_rows = None
+        self._private_rows = None
+        self._freeze()
 
-  @property
-  def file_name(self) -> str:
-    return self._file_name or ""
+    @property
+    def file_name(self) -> str:
+        return self._file_name or ""
 
-  @file_name.setter
-  def file_name(self, file_name: Optional[str]):
-    if file_name is None:
-      del self.file_name
-      return
-    if not isinstance(file_name, str):
-      raise TypeError('file_name must be of type str')
-    self._file_name = file_name
+    @file_name.setter
+    def file_name(self, file_name: Optional[str]):
+        if file_name is None:
+            del self.file_name
+            return
+        if not isinstance(file_name, str):
+            raise TypeError("file_name must be of type str")
+        self._file_name = file_name
 
-  @property
-  def file_size_bytes(self) -> int:
-    return self._file_size_bytes or 0
+    @property
+    def file_size_bytes(self) -> int:
+        return self._file_size_bytes or 0
 
-  @file_size_bytes.setter
-  def file_size_bytes(self, file_size_bytes: Optional[int]):
-    if file_size_bytes is None:
-      del self.file_size_bytes
-      return
-    if not isinstance(file_size_bytes, int):
-      raise TypeError('file_size_bytes must be of type int')
-    self._file_size_bytes = file_size_bytes
+    @file_size_bytes.setter
+    def file_size_bytes(self, file_size_bytes: Optional[int]):
+        if file_size_bytes is None:
+            del self.file_size_bytes
+            return
+        if not isinstance(file_size_bytes, int):
+            raise TypeError("file_size_bytes must be of type int")
+        self._file_size_bytes = file_size_bytes
 
-  @property
-  def upload_date(self) -> datetime:
-    return self._upload_date
+    @property
+    def upload_date(self) -> datetime:
+        return self._upload_date
 
-  @upload_date.setter
-  def upload_date(self, upload_date: datetime):
-    if upload_date is None:
-      del self.upload_date
-      return
-    if not isinstance(upload_date, datetime):
-      raise TypeError('upload_date must be of type datetime')
-    self._upload_date = upload_date
+    @upload_date.setter
+    def upload_date(self, upload_date: datetime):
+        if upload_date is None:
+            del self.upload_date
+            return
+        if not isinstance(upload_date, datetime):
+            raise TypeError("upload_date must be of type datetime")
+        self._upload_date = upload_date
 
-  @property
-  def total_rows(self) -> int:
-    return self._total_rows or 0
+    @property
+    def total_rows(self) -> int:
+        return self._total_rows or 0
 
-  @total_rows.setter
-  def total_rows(self, total_rows: Optional[int]):
-    if total_rows is None:
-      del self.total_rows
-      return
-    if not isinstance(total_rows, int):
-      raise TypeError('total_rows must be of type int')
-    self._total_rows = total_rows
+    @total_rows.setter
+    def total_rows(self, total_rows: Optional[int]):
+        if total_rows is None:
+            del self.total_rows
+            return
+        if not isinstance(total_rows, int):
+            raise TypeError("total_rows must be of type int")
+        self._total_rows = total_rows
 
-  @property
-  def public_rows(self) -> int:
-    return self._public_rows or 0
+    @property
+    def public_rows(self) -> int:
+        return self._public_rows or 0
 
-  @public_rows.setter
-  def public_rows(self, public_rows: Optional[int]):
-    if public_rows is None:
-      del self.public_rows
-      return
-    if not isinstance(public_rows, int):
-      raise TypeError('public_rows must be of type int')
-    self._public_rows = public_rows
+    @public_rows.setter
+    def public_rows(self, public_rows: Optional[int]):
+        if public_rows is None:
+            del self.public_rows
+            return
+        if not isinstance(public_rows, int):
+            raise TypeError("public_rows must be of type int")
+        self._public_rows = public_rows
 
-  @property
-  def private_rows(self) -> int:
-    return self._private_rows or 0
+    @property
+    def private_rows(self) -> int:
+        return self._private_rows or 0
 
-  @private_rows.setter
-  def private_rows(self, private_rows: Optional[int]):
-    if private_rows is None:
-      del self.private_rows
-      return
-    if not isinstance(private_rows, int):
-      raise TypeError('private_rows must be of type int')
-    self._private_rows = private_rows
+    @private_rows.setter
+    def private_rows(self, private_rows: Optional[int]):
+        if private_rows is None:
+            del self.private_rows
+            return
+        if not isinstance(private_rows, int):
+            raise TypeError("private_rows must be of type int")
+        self._private_rows = private_rows
 
 
 class ApiStartSubmissionUploadRequest(KaggleObject):
-  r"""
-  Attributes:
-    competition_name (str)
-    content_length (int)
-    last_modified_epoch_seconds (int)
-    file_name (str)
-      Comes from form upload
-  """
+    r"""
+    Attributes:
+      competition_name (str)
+      content_length (int)
+      last_modified_epoch_seconds (int)
+      file_name (str)
+        Comes from form upload
+    """
 
-  def __init__(self):
-    self._competition_name = None
-    self._content_length = 0
-    self._last_modified_epoch_seconds = 0
-    self._file_name = ""
-    self._freeze()
+    def __init__(self):
+        self._competition_name = None
+        self._content_length = 0
+        self._last_modified_epoch_seconds = 0
+        self._file_name = ""
+        self._freeze()
 
-  @property
-  def competition_name(self) -> str:
-    return self._competition_name or ""
+    @property
+    def competition_name(self) -> str:
+        return self._competition_name or ""
 
-  @competition_name.setter
-  def competition_name(self, competition_name: Optional[str]):
-    if competition_name is None:
-      del self.competition_name
-      return
-    if not isinstance(competition_name, str):
-      raise TypeError('competition_name must be of type str')
-    self._competition_name = competition_name
+    @competition_name.setter
+    def competition_name(self, competition_name: Optional[str]):
+        if competition_name is None:
+            del self.competition_name
+            return
+        if not isinstance(competition_name, str):
+            raise TypeError("competition_name must be of type str")
+        self._competition_name = competition_name
 
-  @property
-  def content_length(self) -> int:
-    return self._content_length
+    @property
+    def content_length(self) -> int:
+        return self._content_length
 
-  @content_length.setter
-  def content_length(self, content_length: int):
-    if content_length is None:
-      del self.content_length
-      return
-    if not isinstance(content_length, int):
-      raise TypeError('content_length must be of type int')
-    self._content_length = content_length
+    @content_length.setter
+    def content_length(self, content_length: int):
+        if content_length is None:
+            del self.content_length
+            return
+        if not isinstance(content_length, int):
+            raise TypeError("content_length must be of type int")
+        self._content_length = content_length
 
-  @property
-  def last_modified_epoch_seconds(self) -> int:
-    return self._last_modified_epoch_seconds
+    @property
+    def last_modified_epoch_seconds(self) -> int:
+        return self._last_modified_epoch_seconds
 
-  @last_modified_epoch_seconds.setter
-  def last_modified_epoch_seconds(self, last_modified_epoch_seconds: int):
-    if last_modified_epoch_seconds is None:
-      del self.last_modified_epoch_seconds
-      return
-    if not isinstance(last_modified_epoch_seconds, int):
-      raise TypeError('last_modified_epoch_seconds must be of type int')
-    self._last_modified_epoch_seconds = last_modified_epoch_seconds
+    @last_modified_epoch_seconds.setter
+    def last_modified_epoch_seconds(self, last_modified_epoch_seconds: int):
+        if last_modified_epoch_seconds is None:
+            del self.last_modified_epoch_seconds
+            return
+        if not isinstance(last_modified_epoch_seconds, int):
+            raise TypeError("last_modified_epoch_seconds must be of type int")
+        self._last_modified_epoch_seconds = last_modified_epoch_seconds
 
-  @property
-  def file_name(self) -> str:
-    """Comes from form upload"""
-    return self._file_name
+    @property
+    def file_name(self) -> str:
+        """Comes from form upload"""
+        return self._file_name
 
-  @file_name.setter
-  def file_name(self, file_name: str):
-    if file_name is None:
-      del self.file_name
-      return
-    if not isinstance(file_name, str):
-      raise TypeError('file_name must be of type str')
-    self._file_name = file_name
+    @file_name.setter
+    def file_name(self, file_name: str):
+        if file_name is None:
+            del self.file_name
+            return
+        if not isinstance(file_name, str):
+            raise TypeError("file_name must be of type str")
+        self._file_name = file_name
 
-  def endpoint(self):
-    path = '/api/v1/competitions/submission-url'
-    return path.format_map(self.to_field_map(self))
+    def endpoint(self):
+        path = "/api/v1/competitions/submission-url"
+        return path.format_map(self.to_field_map(self))
 
-
-  @staticmethod
-  def method():
-    return 'POST'
+    @staticmethod
+    def method():
+        return "POST"
 
 
 class ApiStartSubmissionUploadResponse(KaggleObject):
-  r"""
-  Currently identical to StartBlobUploadResponse, but keeping separate since
-  they could change independently and this is a legacy V1 type.
+    r"""
+    Currently identical to StartBlobUploadResponse, but keeping separate since
+    they could change independently and this is a legacy V1 type.
 
-  Attributes:
-    token (str)
-    create_url (str)
-  """
+    Attributes:
+      token (str)
+      create_url (str)
+    """
 
-  def __init__(self):
-    self._token = ""
-    self._create_url = ""
-    self._freeze()
+    def __init__(self):
+        self._token = ""
+        self._create_url = ""
+        self._freeze()
 
-  @property
-  def token(self) -> str:
-    return self._token
+    @property
+    def token(self) -> str:
+        return self._token
 
-  @token.setter
-  def token(self, token: str):
-    if token is None:
-      del self.token
-      return
-    if not isinstance(token, str):
-      raise TypeError('token must be of type str')
-    self._token = token
+    @token.setter
+    def token(self, token: str):
+        if token is None:
+            del self.token
+            return
+        if not isinstance(token, str):
+            raise TypeError("token must be of type str")
+        self._token = token
 
-  @property
-  def create_url(self) -> str:
-    return self._create_url
+    @property
+    def create_url(self) -> str:
+        return self._create_url
 
-  @create_url.setter
-  def create_url(self, create_url: str):
-    if create_url is None:
-      del self.create_url
-      return
-    if not isinstance(create_url, str):
-      raise TypeError('create_url must be of type str')
-    self._create_url = create_url
+    @create_url.setter
+    def create_url(self, create_url: str):
+        if create_url is None:
+            del self.create_url
+            return
+        if not isinstance(create_url, str):
+            raise TypeError("create_url must be of type str")
+        self._create_url = create_url
 
-  @property
-  def createUrl(self):
-    return self.create_url
+    @property
+    def createUrl(self):
+        return self.create_url
 
 
 class ApiSubmission(KaggleObject):
-  r"""
-  Attributes:
-    ref (int)
-    total_bytes (int)
-    date (datetime)
-    description (str)
-    error_description (str)
-    file_name (str)
-    public_score (str)
-    private_score (str)
-    status (SubmissionStatus)
-    submitted_by (str)
-    submitted_by_ref (str)
-    team_name (str)
-    url (str)
-      Minor note: ListSubmissions and GetSubmission may differ in setting this
-      field.
-  """
-
-  def __init__(self):
-    self._ref = 0
-    self._total_bytes = None
-    self._date = None
-    self._description = None
-    self._error_description = None
-    self._file_name = None
-    self._public_score = None
-    self._private_score = None
-    self._status = SubmissionStatus.PENDING
-    self._submitted_by = None
-    self._submitted_by_ref = None
-    self._team_name = None
-    self._url = None
-    self._freeze()
-
-  @property
-  def ref(self) -> int:
-    return self._ref
-
-  @ref.setter
-  def ref(self, ref: int):
-    if ref is None:
-      del self.ref
-      return
-    if not isinstance(ref, int):
-      raise TypeError('ref must be of type int')
-    self._ref = ref
-
-  @property
-  def total_bytes(self) -> int:
-    return self._total_bytes or 0
-
-  @total_bytes.setter
-  def total_bytes(self, total_bytes: Optional[int]):
-    if total_bytes is None:
-      del self.total_bytes
-      return
-    if not isinstance(total_bytes, int):
-      raise TypeError('total_bytes must be of type int')
-    self._total_bytes = total_bytes
-
-  @property
-  def date(self) -> datetime:
-    return self._date
-
-  @date.setter
-  def date(self, date: datetime):
-    if date is None:
-      del self.date
-      return
-    if not isinstance(date, datetime):
-      raise TypeError('date must be of type datetime')
-    self._date = date
-
-  @property
-  def description(self) -> str:
-    return self._description or ""
-
-  @description.setter
-  def description(self, description: Optional[str]):
-    if description is None:
-      del self.description
-      return
-    if not isinstance(description, str):
-      raise TypeError('description must be of type str')
-    self._description = description
-
-  @property
-  def error_description(self) -> str:
-    return self._error_description or ""
-
-  @error_description.setter
-  def error_description(self, error_description: Optional[str]):
-    if error_description is None:
-      del self.error_description
-      return
-    if not isinstance(error_description, str):
-      raise TypeError('error_description must be of type str')
-    self._error_description = error_description
-
-  @property
-  def file_name(self) -> str:
-    return self._file_name or ""
-
-  @file_name.setter
-  def file_name(self, file_name: Optional[str]):
-    if file_name is None:
-      del self.file_name
-      return
-    if not isinstance(file_name, str):
-      raise TypeError('file_name must be of type str')
-    self._file_name = file_name
-
-  @property
-  def public_score(self) -> str:
-    return self._public_score or ""
-
-  @public_score.setter
-  def public_score(self, public_score: Optional[str]):
-    if public_score is None:
-      del self.public_score
-      return
-    if not isinstance(public_score, str):
-      raise TypeError('public_score must be of type str')
-    self._public_score = public_score
-
-  @property
-  def private_score(self) -> str:
-    return self._private_score or ""
-
-  @private_score.setter
-  def private_score(self, private_score: Optional[str]):
-    if private_score is None:
-      del self.private_score
-      return
-    if not isinstance(private_score, str):
-      raise TypeError('private_score must be of type str')
-    self._private_score = private_score
-
-  @property
-  def status(self) -> 'SubmissionStatus':
-    return self._status
-
-  @status.setter
-  def status(self, status: 'SubmissionStatus'):
-    if status is None:
-      del self.status
-      return
-    if not isinstance(status, SubmissionStatus):
-      raise TypeError('status must be of type SubmissionStatus')
-    self._status = status
-
-  @property
-  def submitted_by(self) -> str:
-    return self._submitted_by or ""
-
-  @submitted_by.setter
-  def submitted_by(self, submitted_by: Optional[str]):
-    if submitted_by is None:
-      del self.submitted_by
-      return
-    if not isinstance(submitted_by, str):
-      raise TypeError('submitted_by must be of type str')
-    self._submitted_by = submitted_by
-
-  @property
-  def submitted_by_ref(self) -> str:
-    return self._submitted_by_ref or ""
-
-  @submitted_by_ref.setter
-  def submitted_by_ref(self, submitted_by_ref: Optional[str]):
-    if submitted_by_ref is None:
-      del self.submitted_by_ref
-      return
-    if not isinstance(submitted_by_ref, str):
-      raise TypeError('submitted_by_ref must be of type str')
-    self._submitted_by_ref = submitted_by_ref
-
-  @property
-  def team_name(self) -> str:
-    return self._team_name or ""
-
-  @team_name.setter
-  def team_name(self, team_name: Optional[str]):
-    if team_name is None:
-      del self.team_name
-      return
-    if not isinstance(team_name, str):
-      raise TypeError('team_name must be of type str')
-    self._team_name = team_name
-
-  @property
-  def url(self) -> str:
     r"""
-    Minor note: ListSubmissions and GetSubmission may differ in setting this
-    field.
+    Attributes:
+      ref (int)
+      total_bytes (int)
+      date (datetime)
+      description (str)
+      error_description (str)
+      file_name (str)
+      public_score (str)
+      private_score (str)
+      status (SubmissionStatus)
+      submitted_by (str)
+      submitted_by_ref (str)
+      team_name (str)
+      url (str)
+        Minor note: ListSubmissions and GetSubmission may differ in setting this
+        field.
     """
-    return self._url or ""
 
-  @url.setter
-  def url(self, url: Optional[str]):
-    if url is None:
-      del self.url
-      return
-    if not isinstance(url, str):
-      raise TypeError('url must be of type str')
-    self._url = url
+    def __init__(self):
+        self._ref = 0
+        self._total_bytes = None
+        self._date = None
+        self._description = None
+        self._error_description = None
+        self._file_name = None
+        self._public_score = None
+        self._private_score = None
+        self._status = SubmissionStatus.PENDING
+        self._submitted_by = None
+        self._submitted_by_ref = None
+        self._team_name = None
+        self._url = None
+        self._freeze()
+
+    @property
+    def ref(self) -> int:
+        return self._ref
+
+    @ref.setter
+    def ref(self, ref: int):
+        if ref is None:
+            del self.ref
+            return
+        if not isinstance(ref, int):
+            raise TypeError("ref must be of type int")
+        self._ref = ref
+
+    @property
+    def total_bytes(self) -> int:
+        return self._total_bytes or 0
+
+    @total_bytes.setter
+    def total_bytes(self, total_bytes: Optional[int]):
+        if total_bytes is None:
+            del self.total_bytes
+            return
+        if not isinstance(total_bytes, int):
+            raise TypeError("total_bytes must be of type int")
+        self._total_bytes = total_bytes
+
+    @property
+    def date(self) -> datetime:
+        return self._date
+
+    @date.setter
+    def date(self, date: datetime):
+        if date is None:
+            del self.date
+            return
+        if not isinstance(date, datetime):
+            raise TypeError("date must be of type datetime")
+        self._date = date
+
+    @property
+    def description(self) -> str:
+        return self._description or ""
+
+    @description.setter
+    def description(self, description: Optional[str]):
+        if description is None:
+            del self.description
+            return
+        if not isinstance(description, str):
+            raise TypeError("description must be of type str")
+        self._description = description
+
+    @property
+    def error_description(self) -> str:
+        return self._error_description or ""
+
+    @error_description.setter
+    def error_description(self, error_description: Optional[str]):
+        if error_description is None:
+            del self.error_description
+            return
+        if not isinstance(error_description, str):
+            raise TypeError("error_description must be of type str")
+        self._error_description = error_description
+
+    @property
+    def file_name(self) -> str:
+        return self._file_name or ""
+
+    @file_name.setter
+    def file_name(self, file_name: Optional[str]):
+        if file_name is None:
+            del self.file_name
+            return
+        if not isinstance(file_name, str):
+            raise TypeError("file_name must be of type str")
+        self._file_name = file_name
+
+    @property
+    def public_score(self) -> str:
+        return self._public_score or ""
+
+    @public_score.setter
+    def public_score(self, public_score: Optional[str]):
+        if public_score is None:
+            del self.public_score
+            return
+        if not isinstance(public_score, str):
+            raise TypeError("public_score must be of type str")
+        self._public_score = public_score
+
+    @property
+    def private_score(self) -> str:
+        return self._private_score or ""
+
+    @private_score.setter
+    def private_score(self, private_score: Optional[str]):
+        if private_score is None:
+            del self.private_score
+            return
+        if not isinstance(private_score, str):
+            raise TypeError("private_score must be of type str")
+        self._private_score = private_score
+
+    @property
+    def status(self) -> "SubmissionStatus":
+        return self._status
+
+    @status.setter
+    def status(self, status: "SubmissionStatus"):
+        if status is None:
+            del self.status
+            return
+        if not isinstance(status, SubmissionStatus):
+            raise TypeError("status must be of type SubmissionStatus")
+        self._status = status
+
+    @property
+    def submitted_by(self) -> str:
+        return self._submitted_by or ""
+
+    @submitted_by.setter
+    def submitted_by(self, submitted_by: Optional[str]):
+        if submitted_by is None:
+            del self.submitted_by
+            return
+        if not isinstance(submitted_by, str):
+            raise TypeError("submitted_by must be of type str")
+        self._submitted_by = submitted_by
+
+    @property
+    def submitted_by_ref(self) -> str:
+        return self._submitted_by_ref or ""
+
+    @submitted_by_ref.setter
+    def submitted_by_ref(self, submitted_by_ref: Optional[str]):
+        if submitted_by_ref is None:
+            del self.submitted_by_ref
+            return
+        if not isinstance(submitted_by_ref, str):
+            raise TypeError("submitted_by_ref must be of type str")
+        self._submitted_by_ref = submitted_by_ref
+
+    @property
+    def team_name(self) -> str:
+        return self._team_name or ""
+
+    @team_name.setter
+    def team_name(self, team_name: Optional[str]):
+        if team_name is None:
+            del self.team_name
+            return
+        if not isinstance(team_name, str):
+            raise TypeError("team_name must be of type str")
+        self._team_name = team_name
+
+    @property
+    def url(self) -> str:
+        r"""
+        Minor note: ListSubmissions and GetSubmission may differ in setting this
+        field.
+        """
+        return self._url or ""
+
+    @url.setter
+    def url(self, url: Optional[str]):
+        if url is None:
+            del self.url
+            return
+        if not isinstance(url, str):
+            raise TypeError("url must be of type str")
+        self._url = url
 
 
 class ApiTopicMessage(KaggleObject):
-  r"""
-  Attributes:
-    id (int)
-    post_date (datetime)
-    content (str)
-    raw_markdown (str)
-    author_name (str)
-    votes (int)
-    is_deleted (bool)
-    is_pinned (bool)
-    replies (ApiTopicMessage)
-      Replies to this message, if any. Nesting is capped server-side; deeper
-      replies are flattened into the closest ancestor still under the cap.
-  """
-
-  def __init__(self):
-    self._id = 0
-    self._post_date = None
-    self._content = None
-    self._raw_markdown = None
-    self._author_name = None
-    self._votes = 0
-    self._is_deleted = False
-    self._is_pinned = False
-    self._replies = []
-    self._freeze()
-
-  @property
-  def id(self) -> int:
-    return self._id
-
-  @id.setter
-  def id(self, id: int):
-    if id is None:
-      del self.id
-      return
-    if not isinstance(id, int):
-      raise TypeError('id must be of type int')
-    self._id = id
-
-  @property
-  def post_date(self) -> datetime:
-    return self._post_date
-
-  @post_date.setter
-  def post_date(self, post_date: datetime):
-    if post_date is None:
-      del self.post_date
-      return
-    if not isinstance(post_date, datetime):
-      raise TypeError('post_date must be of type datetime')
-    self._post_date = post_date
-
-  @property
-  def content(self) -> str:
-    return self._content or ""
-
-  @content.setter
-  def content(self, content: Optional[str]):
-    if content is None:
-      del self.content
-      return
-    if not isinstance(content, str):
-      raise TypeError('content must be of type str')
-    self._content = content
-
-  @property
-  def raw_markdown(self) -> str:
-    return self._raw_markdown or ""
-
-  @raw_markdown.setter
-  def raw_markdown(self, raw_markdown: Optional[str]):
-    if raw_markdown is None:
-      del self.raw_markdown
-      return
-    if not isinstance(raw_markdown, str):
-      raise TypeError('raw_markdown must be of type str')
-    self._raw_markdown = raw_markdown
-
-  @property
-  def author_name(self) -> str:
-    return self._author_name or ""
-
-  @author_name.setter
-  def author_name(self, author_name: Optional[str]):
-    if author_name is None:
-      del self.author_name
-      return
-    if not isinstance(author_name, str):
-      raise TypeError('author_name must be of type str')
-    self._author_name = author_name
-
-  @property
-  def votes(self) -> int:
-    return self._votes
-
-  @votes.setter
-  def votes(self, votes: int):
-    if votes is None:
-      del self.votes
-      return
-    if not isinstance(votes, int):
-      raise TypeError('votes must be of type int')
-    self._votes = votes
-
-  @property
-  def is_deleted(self) -> bool:
-    return self._is_deleted
-
-  @is_deleted.setter
-  def is_deleted(self, is_deleted: bool):
-    if is_deleted is None:
-      del self.is_deleted
-      return
-    if not isinstance(is_deleted, bool):
-      raise TypeError('is_deleted must be of type bool')
-    self._is_deleted = is_deleted
-
-  @property
-  def is_pinned(self) -> bool:
-    return self._is_pinned
-
-  @is_pinned.setter
-  def is_pinned(self, is_pinned: bool):
-    if is_pinned is None:
-      del self.is_pinned
-      return
-    if not isinstance(is_pinned, bool):
-      raise TypeError('is_pinned must be of type bool')
-    self._is_pinned = is_pinned
-
-  @property
-  def replies(self) -> Optional[List[Optional['ApiTopicMessage']]]:
     r"""
-    Replies to this message, if any. Nesting is capped server-side; deeper
-    replies are flattened into the closest ancestor still under the cap.
+    Attributes:
+      id (int)
+      post_date (datetime)
+      content (str)
+      raw_markdown (str)
+      author_name (str)
+      votes (int)
+      is_deleted (bool)
+      is_pinned (bool)
+      replies (ApiTopicMessage)
+        Replies to this message, if any. Nesting is capped server-side; deeper
+        replies are flattened into the closest ancestor still under the cap.
     """
-    return self._replies
 
-  @replies.setter
-  def replies(self, replies: Optional[List[Optional['ApiTopicMessage']]]):
-    if replies is None:
-      del self.replies
-      return
-    if not isinstance(replies, list):
-      raise TypeError('replies must be of type list')
-    if not all([isinstance(t, ApiTopicMessage) for t in replies]):
-      raise TypeError('replies must contain only items of type ApiTopicMessage')
-    self._replies = replies
+    def __init__(self):
+        self._id = 0
+        self._post_date = None
+        self._content = None
+        self._raw_markdown = None
+        self._author_name = None
+        self._votes = 0
+        self._is_deleted = False
+        self._is_pinned = False
+        self._replies = []
+        self._freeze()
+
+    @property
+    def id(self) -> int:
+        return self._id
+
+    @id.setter
+    def id(self, id: int):
+        if id is None:
+            del self.id
+            return
+        if not isinstance(id, int):
+            raise TypeError("id must be of type int")
+        self._id = id
+
+    @property
+    def post_date(self) -> datetime:
+        return self._post_date
+
+    @post_date.setter
+    def post_date(self, post_date: datetime):
+        if post_date is None:
+            del self.post_date
+            return
+        if not isinstance(post_date, datetime):
+            raise TypeError("post_date must be of type datetime")
+        self._post_date = post_date
+
+    @property
+    def content(self) -> str:
+        return self._content or ""
+
+    @content.setter
+    def content(self, content: Optional[str]):
+        if content is None:
+            del self.content
+            return
+        if not isinstance(content, str):
+            raise TypeError("content must be of type str")
+        self._content = content
+
+    @property
+    def raw_markdown(self) -> str:
+        return self._raw_markdown or ""
+
+    @raw_markdown.setter
+    def raw_markdown(self, raw_markdown: Optional[str]):
+        if raw_markdown is None:
+            del self.raw_markdown
+            return
+        if not isinstance(raw_markdown, str):
+            raise TypeError("raw_markdown must be of type str")
+        self._raw_markdown = raw_markdown
+
+    @property
+    def author_name(self) -> str:
+        return self._author_name or ""
+
+    @author_name.setter
+    def author_name(self, author_name: Optional[str]):
+        if author_name is None:
+            del self.author_name
+            return
+        if not isinstance(author_name, str):
+            raise TypeError("author_name must be of type str")
+        self._author_name = author_name
+
+    @property
+    def votes(self) -> int:
+        return self._votes
+
+    @votes.setter
+    def votes(self, votes: int):
+        if votes is None:
+            del self.votes
+            return
+        if not isinstance(votes, int):
+            raise TypeError("votes must be of type int")
+        self._votes = votes
+
+    @property
+    def is_deleted(self) -> bool:
+        return self._is_deleted
+
+    @is_deleted.setter
+    def is_deleted(self, is_deleted: bool):
+        if is_deleted is None:
+            del self.is_deleted
+            return
+        if not isinstance(is_deleted, bool):
+            raise TypeError("is_deleted must be of type bool")
+        self._is_deleted = is_deleted
+
+    @property
+    def is_pinned(self) -> bool:
+        return self._is_pinned
+
+    @is_pinned.setter
+    def is_pinned(self, is_pinned: bool):
+        if is_pinned is None:
+            del self.is_pinned
+            return
+        if not isinstance(is_pinned, bool):
+            raise TypeError("is_pinned must be of type bool")
+        self._is_pinned = is_pinned
+
+    @property
+    def replies(self) -> Optional[List[Optional["ApiTopicMessage"]]]:
+        r"""
+        Replies to this message, if any. Nesting is capped server-side; deeper
+        replies are flattened into the closest ancestor still under the cap.
+        """
+        return self._replies
+
+    @replies.setter
+    def replies(self, replies: Optional[List[Optional["ApiTopicMessage"]]]):
+        if replies is None:
+            del self.replies
+            return
+        if not isinstance(replies, list):
+            raise TypeError("replies must be of type list")
+        if not all([isinstance(t, ApiTopicMessage) for t in replies]):
+            raise TypeError("replies must contain only items of type ApiTopicMessage")
+        self._replies = replies
 
 
 class ApiUpdateCompetitionPageRequest(KaggleObject):
-  r"""
-  Attributes:
-    competition_name (str)
-    page_name (str)
-      Current name of the page to update (used as the identifier). If
-      `update_mask` includes 'name', the page will be renamed to `page.name`.
-    page (ApiCompetitionPage)
-    update_mask (FieldMask)
-      Field paths within `page` to apply. Supported paths: name, content,
-      is_published, post_title, mime_type. 'order' is intentionally unsupported
-      here (use SwapPageOrders).
-  """
-
-  def __init__(self):
-    self._competition_name = ""
-    self._page_name = ""
-    self._page = None
-    self._update_mask = None
-    self._freeze()
-
-  @property
-  def competition_name(self) -> str:
-    return self._competition_name
-
-  @competition_name.setter
-  def competition_name(self, competition_name: str):
-    if competition_name is None:
-      del self.competition_name
-      return
-    if not isinstance(competition_name, str):
-      raise TypeError('competition_name must be of type str')
-    self._competition_name = competition_name
-
-  @property
-  def page_name(self) -> str:
     r"""
-    Current name of the page to update (used as the identifier). If
-    `update_mask` includes 'name', the page will be renamed to `page.name`.
+    Attributes:
+      competition_name (str)
+      page_name (str)
+        Current name of the page to update (used as the identifier). If
+        `update_mask` includes 'name', the page will be renamed to `page.name`.
+      page (ApiCompetitionPage)
+      update_mask (FieldMask)
+        Field paths within `page` to apply. Supported paths: name, content,
+        is_published, post_title, mime_type. 'order' is intentionally unsupported
+        here (use SwapPageOrders).
     """
-    return self._page_name
 
-  @page_name.setter
-  def page_name(self, page_name: str):
-    if page_name is None:
-      del self.page_name
-      return
-    if not isinstance(page_name, str):
-      raise TypeError('page_name must be of type str')
-    self._page_name = page_name
+    def __init__(self):
+        self._competition_name = ""
+        self._page_name = ""
+        self._page = None
+        self._update_mask = None
+        self._freeze()
 
-  @property
-  def page(self) -> Optional['ApiCompetitionPage']:
-    return self._page
+    @property
+    def competition_name(self) -> str:
+        return self._competition_name
 
-  @page.setter
-  def page(self, page: Optional['ApiCompetitionPage']):
-    if page is None:
-      del self.page
-      return
-    if not isinstance(page, ApiCompetitionPage):
-      raise TypeError('page must be of type ApiCompetitionPage')
-    self._page = page
+    @competition_name.setter
+    def competition_name(self, competition_name: str):
+        if competition_name is None:
+            del self.competition_name
+            return
+        if not isinstance(competition_name, str):
+            raise TypeError("competition_name must be of type str")
+        self._competition_name = competition_name
 
-  @property
-  def update_mask(self) -> FieldMask:
-    r"""
-    Field paths within `page` to apply. Supported paths: name, content,
-    is_published, post_title, mime_type. 'order' is intentionally unsupported
-    here (use SwapPageOrders).
-    """
-    return self._update_mask
+    @property
+    def page_name(self) -> str:
+        r"""
+        Current name of the page to update (used as the identifier). If
+        `update_mask` includes 'name', the page will be renamed to `page.name`.
+        """
+        return self._page_name
 
-  @update_mask.setter
-  def update_mask(self, update_mask: FieldMask):
-    if update_mask is None:
-      del self.update_mask
-      return
-    if not isinstance(update_mask, FieldMask):
-      raise TypeError('update_mask must be of type FieldMask')
-    self._update_mask = update_mask
+    @page_name.setter
+    def page_name(self, page_name: str):
+        if page_name is None:
+            del self.page_name
+            return
+        if not isinstance(page_name, str):
+            raise TypeError("page_name must be of type str")
+        self._page_name = page_name
 
-  def endpoint(self):
-    path = '/api/v1/competitions/{competition_name}/pages/{page_name}/update'
-    return path.format_map(self.to_field_map(self))
+    @property
+    def page(self) -> Optional["ApiCompetitionPage"]:
+        return self._page
 
+    @page.setter
+    def page(self, page: Optional["ApiCompetitionPage"]):
+        if page is None:
+            del self.page
+            return
+        if not isinstance(page, ApiCompetitionPage):
+            raise TypeError("page must be of type ApiCompetitionPage")
+        self._page = page
 
-  @staticmethod
-  def method():
-    return 'POST'
+    @property
+    def update_mask(self) -> FieldMask:
+        r"""
+        Field paths within `page` to apply. Supported paths: name, content,
+        is_published, post_title, mime_type. 'order' is intentionally unsupported
+        here (use SwapPageOrders).
+        """
+        return self._update_mask
 
-  @staticmethod
-  def body_fields():
-    return '*'
+    @update_mask.setter
+    def update_mask(self, update_mask: FieldMask):
+        if update_mask is None:
+            del self.update_mask
+            return
+        if not isinstance(update_mask, FieldMask):
+            raise TypeError("update_mask must be of type FieldMask")
+        self._update_mask = update_mask
+
+    def endpoint(self):
+        path = "/api/v1/competitions/{competition_name}/pages/{page_name}/update"
+        return path.format_map(self.to_field_map(self))
+
+    @staticmethod
+    def method():
+        return "POST"
+
+    @staticmethod
+    def body_fields():
+        return "*"
 
 
 class ApiUpdateCompetitionSettingsRequest(KaggleObject):
-  r"""
-  Attributes:
-    competition_name (str)
-    settings (CompetitionSettings)
-      Only fields listed in update_mask are written. Reserved CompetitionSettings
-      fields (deadline, reward, num_prizes, max_team_size, etc.) are web-only.
-    update_mask (FieldMask)
-  """
-
-  def __init__(self):
-    self._competition_name = ""
-    self._settings = None
-    self._update_mask = None
-    self._freeze()
-
-  @property
-  def competition_name(self) -> str:
-    return self._competition_name
-
-  @competition_name.setter
-  def competition_name(self, competition_name: str):
-    if competition_name is None:
-      del self.competition_name
-      return
-    if not isinstance(competition_name, str):
-      raise TypeError('competition_name must be of type str')
-    self._competition_name = competition_name
-
-  @property
-  def settings(self) -> Optional['CompetitionSettings']:
     r"""
-    Only fields listed in update_mask are written. Reserved CompetitionSettings
-    fields (deadline, reward, num_prizes, max_team_size, etc.) are web-only.
+    Attributes:
+      competition_name (str)
+      settings (CompetitionSettings)
+        Only fields listed in update_mask are written. Reserved CompetitionSettings
+        fields (deadline, reward, num_prizes, max_team_size, etc.) are web-only.
+      update_mask (FieldMask)
     """
-    return self._settings
 
-  @settings.setter
-  def settings(self, settings: Optional['CompetitionSettings']):
-    if settings is None:
-      del self.settings
-      return
-    if not isinstance(settings, CompetitionSettings):
-      raise TypeError('settings must be of type CompetitionSettings')
-    self._settings = settings
+    def __init__(self):
+        self._competition_name = ""
+        self._settings = None
+        self._update_mask = None
+        self._freeze()
 
-  @property
-  def update_mask(self) -> FieldMask:
-    return self._update_mask
+    @property
+    def competition_name(self) -> str:
+        return self._competition_name
 
-  @update_mask.setter
-  def update_mask(self, update_mask: FieldMask):
-    if update_mask is None:
-      del self.update_mask
-      return
-    if not isinstance(update_mask, FieldMask):
-      raise TypeError('update_mask must be of type FieldMask')
-    self._update_mask = update_mask
+    @competition_name.setter
+    def competition_name(self, competition_name: str):
+        if competition_name is None:
+            del self.competition_name
+            return
+        if not isinstance(competition_name, str):
+            raise TypeError("competition_name must be of type str")
+        self._competition_name = competition_name
 
-  def endpoint(self):
-    path = '/api/v1/competitions/{competition_name}/settings/update'
-    return path.format_map(self.to_field_map(self))
+    @property
+    def settings(self) -> Optional["CompetitionSettings"]:
+        r"""
+        Only fields listed in update_mask are written. Reserved CompetitionSettings
+        fields (deadline, reward, num_prizes, max_team_size, etc.) are web-only.
+        """
+        return self._settings
 
+    @settings.setter
+    def settings(self, settings: Optional["CompetitionSettings"]):
+        if settings is None:
+            del self.settings
+            return
+        if not isinstance(settings, CompetitionSettings):
+            raise TypeError("settings must be of type CompetitionSettings")
+        self._settings = settings
 
-  @staticmethod
-  def method():
-    return 'POST'
+    @property
+    def update_mask(self) -> FieldMask:
+        return self._update_mask
 
-  @staticmethod
-  def body_fields():
-    return '*'
+    @update_mask.setter
+    def update_mask(self, update_mask: FieldMask):
+        if update_mask is None:
+            del self.update_mask
+            return
+        if not isinstance(update_mask, FieldMask):
+            raise TypeError("update_mask must be of type FieldMask")
+        self._update_mask = update_mask
+
+    def endpoint(self):
+        path = "/api/v1/competitions/{competition_name}/settings/update"
+        return path.format_map(self.to_field_map(self))
+
+    @staticmethod
+    def method():
+        return "POST"
+
+    @staticmethod
+    def body_fields():
+        return "*"
 
 
 ApiCategory._fields = [
-  FieldMetadata("ref", "ref", "_ref", str, "", PredefinedSerializer()),
-  FieldMetadata("name", "name", "_name", str, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("description", "description", "_description", str, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("fullPath", "full_path", "_full_path", str, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("competitionCount", "competition_count", "_competition_count", int, 0, PredefinedSerializer()),
-  FieldMetadata("datasetCount", "dataset_count", "_dataset_count", int, 0, PredefinedSerializer()),
-  FieldMetadata("scriptCount", "script_count", "_script_count", int, 0, PredefinedSerializer()),
-  FieldMetadata("totalCount", "total_count", "_total_count", int, 0, PredefinedSerializer()),
+    FieldMetadata("ref", "ref", "_ref", str, "", PredefinedSerializer()),
+    FieldMetadata(
+        "name", "name", "_name", str, None, PredefinedSerializer(), optional=True
+    ),
+    FieldMetadata(
+        "description",
+        "description",
+        "_description",
+        str,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
+    FieldMetadata(
+        "fullPath",
+        "full_path",
+        "_full_path",
+        str,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
+    FieldMetadata(
+        "competitionCount",
+        "competition_count",
+        "_competition_count",
+        int,
+        0,
+        PredefinedSerializer(),
+    ),
+    FieldMetadata(
+        "datasetCount",
+        "dataset_count",
+        "_dataset_count",
+        int,
+        0,
+        PredefinedSerializer(),
+    ),
+    FieldMetadata(
+        "scriptCount", "script_count", "_script_count", int, 0, PredefinedSerializer()
+    ),
+    FieldMetadata(
+        "totalCount", "total_count", "_total_count", int, 0, PredefinedSerializer()
+    ),
 ]
 
 ApiCompetition._fields = [
-  FieldMetadata("id", "id", "_id", int, 0, PredefinedSerializer()),
-  FieldMetadata("ref", "ref", "_ref", str, "", PredefinedSerializer()),
-  FieldMetadata("title", "title", "_title", str, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("url", "url", "_url", str, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("description", "description", "_description", str, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("organizationName", "organization_name", "_organization_name", str, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("organizationRef", "organization_ref", "_organization_ref", str, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("category", "category", "_category", str, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("reward", "reward", "_reward", str, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("tags", "tags", "_tags", ApiCategory, [], ListSerializer(KaggleObjectSerializer())),
-  FieldMetadata("deadline", "deadline", "_deadline", datetime, None, DateTimeSerializer()),
-  FieldMetadata("kernelCount", "kernel_count", "_kernel_count", int, 0, PredefinedSerializer()),
-  FieldMetadata("teamCount", "team_count", "_team_count", int, 0, PredefinedSerializer()),
-  FieldMetadata("userHasEntered", "user_has_entered", "_user_has_entered", bool, False, PredefinedSerializer()),
-  FieldMetadata("userRank", "user_rank", "_user_rank", int, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("mergerDeadline", "merger_deadline", "_merger_deadline", datetime, None, DateTimeSerializer()),
-  FieldMetadata("newEntrantDeadline", "new_entrant_deadline", "_new_entrant_deadline", datetime, None, DateTimeSerializer()),
-  FieldMetadata("enabledDate", "enabled_date", "_enabled_date", datetime, None, DateTimeSerializer()),
-  FieldMetadata("maxDailySubmissions", "max_daily_submissions", "_max_daily_submissions", int, 0, PredefinedSerializer()),
-  FieldMetadata("maxTeamSize", "max_team_size", "_max_team_size", int, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("evaluationMetric", "evaluation_metric", "_evaluation_metric", str, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("awardsPoints", "awards_points", "_awards_points", bool, False, PredefinedSerializer()),
-  FieldMetadata("isKernelsSubmissionsOnly", "is_kernels_submissions_only", "_is_kernels_submissions_only", bool, False, PredefinedSerializer()),
-  FieldMetadata("submissionsDisabled", "submissions_disabled", "_submissions_disabled", bool, False, PredefinedSerializer()),
-  FieldMetadata("thumbnailImageUrl", "thumbnail_image_url", "_thumbnail_image_url", str, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("hostName", "host_name", "_host_name", str, "", PredefinedSerializer()),
-  FieldMetadata("dateCreated", "date_created", "_date_created", datetime, None, DateTimeSerializer()),
+    FieldMetadata("id", "id", "_id", int, 0, PredefinedSerializer()),
+    FieldMetadata("ref", "ref", "_ref", str, "", PredefinedSerializer()),
+    FieldMetadata(
+        "title", "title", "_title", str, None, PredefinedSerializer(), optional=True
+    ),
+    FieldMetadata(
+        "url", "url", "_url", str, None, PredefinedSerializer(), optional=True
+    ),
+    FieldMetadata(
+        "description",
+        "description",
+        "_description",
+        str,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
+    FieldMetadata(
+        "organizationName",
+        "organization_name",
+        "_organization_name",
+        str,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
+    FieldMetadata(
+        "organizationRef",
+        "organization_ref",
+        "_organization_ref",
+        str,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
+    FieldMetadata(
+        "category",
+        "category",
+        "_category",
+        str,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
+    FieldMetadata(
+        "reward", "reward", "_reward", str, None, PredefinedSerializer(), optional=True
+    ),
+    FieldMetadata(
+        "tags",
+        "tags",
+        "_tags",
+        ApiCategory,
+        [],
+        ListSerializer(KaggleObjectSerializer()),
+    ),
+    FieldMetadata(
+        "deadline", "deadline", "_deadline", datetime, None, DateTimeSerializer()
+    ),
+    FieldMetadata(
+        "kernelCount", "kernel_count", "_kernel_count", int, 0, PredefinedSerializer()
+    ),
+    FieldMetadata(
+        "teamCount", "team_count", "_team_count", int, 0, PredefinedSerializer()
+    ),
+    FieldMetadata(
+        "userHasEntered",
+        "user_has_entered",
+        "_user_has_entered",
+        bool,
+        False,
+        PredefinedSerializer(),
+    ),
+    FieldMetadata(
+        "userRank",
+        "user_rank",
+        "_user_rank",
+        int,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
+    FieldMetadata(
+        "mergerDeadline",
+        "merger_deadline",
+        "_merger_deadline",
+        datetime,
+        None,
+        DateTimeSerializer(),
+    ),
+    FieldMetadata(
+        "newEntrantDeadline",
+        "new_entrant_deadline",
+        "_new_entrant_deadline",
+        datetime,
+        None,
+        DateTimeSerializer(),
+    ),
+    FieldMetadata(
+        "enabledDate",
+        "enabled_date",
+        "_enabled_date",
+        datetime,
+        None,
+        DateTimeSerializer(),
+    ),
+    FieldMetadata(
+        "maxDailySubmissions",
+        "max_daily_submissions",
+        "_max_daily_submissions",
+        int,
+        0,
+        PredefinedSerializer(),
+    ),
+    FieldMetadata(
+        "maxTeamSize",
+        "max_team_size",
+        "_max_team_size",
+        int,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
+    FieldMetadata(
+        "evaluationMetric",
+        "evaluation_metric",
+        "_evaluation_metric",
+        str,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
+    FieldMetadata(
+        "awardsPoints",
+        "awards_points",
+        "_awards_points",
+        bool,
+        False,
+        PredefinedSerializer(),
+    ),
+    FieldMetadata(
+        "isKernelsSubmissionsOnly",
+        "is_kernels_submissions_only",
+        "_is_kernels_submissions_only",
+        bool,
+        False,
+        PredefinedSerializer(),
+    ),
+    FieldMetadata(
+        "submissionsDisabled",
+        "submissions_disabled",
+        "_submissions_disabled",
+        bool,
+        False,
+        PredefinedSerializer(),
+    ),
+    FieldMetadata(
+        "thumbnailImageUrl",
+        "thumbnail_image_url",
+        "_thumbnail_image_url",
+        str,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
+    FieldMetadata(
+        "hostName", "host_name", "_host_name", str, "", PredefinedSerializer()
+    ),
+    FieldMetadata(
+        "dateCreated",
+        "date_created",
+        "_date_created",
+        datetime,
+        None,
+        DateTimeSerializer(),
+    ),
 ]
 
 ApiCompetitionDataFile._fields = [
-  FieldMetadata("name", "name", "_name", str, "", PredefinedSerializer()),
-  FieldMetadata("token", "token", "_token", str, "", PredefinedSerializer()),
+    FieldMetadata("name", "name", "_name", str, "", PredefinedSerializer()),
+    FieldMetadata("token", "token", "_token", str, "", PredefinedSerializer()),
 ]
 
 ApiCompetitionHost._fields = [
-  FieldMetadata("id", "id", "_id", int, 0, PredefinedSerializer()),
-  FieldMetadata("userName", "user_name", "_user_name", str, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("displayName", "display_name", "_display_name", str, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("profileUrl", "profile_url", "_profile_url", str, None, PredefinedSerializer(), optional=True),
+    FieldMetadata("id", "id", "_id", int, 0, PredefinedSerializer()),
+    FieldMetadata(
+        "userName",
+        "user_name",
+        "_user_name",
+        str,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
+    FieldMetadata(
+        "displayName",
+        "display_name",
+        "_display_name",
+        str,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
+    FieldMetadata(
+        "profileUrl",
+        "profile_url",
+        "_profile_url",
+        str,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
 ]
 
 ApiCompetitionPage._fields = [
-  FieldMetadata("name", "name", "_name", str, "", PredefinedSerializer()),
-  FieldMetadata("content", "content", "_content", str, "", PredefinedSerializer()),
-  FieldMetadata("isPublished", "is_published", "_is_published", bool, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("postTitle", "post_title", "_post_title", str, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("mimeType", "mime_type", "_mime_type", str, None, PredefinedSerializer(), optional=True),
+    FieldMetadata("name", "name", "_name", str, "", PredefinedSerializer()),
+    FieldMetadata("content", "content", "_content", str, "", PredefinedSerializer()),
+    FieldMetadata(
+        "isPublished",
+        "is_published",
+        "_is_published",
+        bool,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
+    FieldMetadata(
+        "postTitle",
+        "post_title",
+        "_post_title",
+        str,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
+    FieldMetadata(
+        "mimeType",
+        "mime_type",
+        "_mime_type",
+        str,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
 ]
 
 ApiCompetitionSolutionStatus._fields = [
-  FieldMetadata("ready", "ready", "_ready", bool, False, PredefinedSerializer()),
-  FieldMetadata("setupError", "setup_error", "_setup_error", str, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("kernelsMetric", "kernels_metric", "_kernels_metric", bool, False, PredefinedSerializer()),
-  FieldMetadata("rowIdColumnName", "row_id_column_name", "_row_id_column_name", str, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("columnMapping", "column_mapping", "_column_mapping", str, {}, MapSerializer(PredefinedSerializer())),
-  FieldMetadata("requiredMetricColumns", "required_metric_columns", "_required_metric_columns", ApiMetricColumn, [], ListSerializer(KaggleObjectSerializer())),
-  FieldMetadata("solutionInfo", "solution_info", "_solution_info", ApiSolutionFileInfo, None, KaggleObjectSerializer()),
+    FieldMetadata("ready", "ready", "_ready", bool, False, PredefinedSerializer()),
+    FieldMetadata(
+        "setupError",
+        "setup_error",
+        "_setup_error",
+        str,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
+    FieldMetadata(
+        "kernelsMetric",
+        "kernels_metric",
+        "_kernels_metric",
+        bool,
+        False,
+        PredefinedSerializer(),
+    ),
+    FieldMetadata(
+        "rowIdColumnName",
+        "row_id_column_name",
+        "_row_id_column_name",
+        str,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
+    FieldMetadata(
+        "columnMapping",
+        "column_mapping",
+        "_column_mapping",
+        str,
+        {},
+        MapSerializer(PredefinedSerializer()),
+    ),
+    FieldMetadata(
+        "requiredMetricColumns",
+        "required_metric_columns",
+        "_required_metric_columns",
+        ApiMetricColumn,
+        [],
+        ListSerializer(KaggleObjectSerializer()),
+    ),
+    FieldMetadata(
+        "solutionInfo",
+        "solution_info",
+        "_solution_info",
+        ApiSolutionFileInfo,
+        None,
+        KaggleObjectSerializer(),
+    ),
 ]
 
 ApiCompetitionTopic._fields = [
-  FieldMetadata("id", "id", "_id", int, 0, PredefinedSerializer()),
-  FieldMetadata("title", "title", "_title", str, "", PredefinedSerializer()),
-  FieldMetadata("topicUrl", "topic_url", "_topic_url", str, "", PredefinedSerializer()),
-  FieldMetadata("authorName", "author_name", "_author_name", str, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("commentCount", "comment_count", "_comment_count", int, 0, PredefinedSerializer()),
-  FieldMetadata("votes", "votes", "_votes", int, 0, PredefinedSerializer()),
-  FieldMetadata("postDate", "post_date", "_post_date", datetime, None, DateTimeSerializer()),
-  FieldMetadata("lastCommentPostDate", "last_comment_post_date", "_last_comment_post_date", datetime, None, DateTimeSerializer()),
-  FieldMetadata("isSticky", "is_sticky", "_is_sticky", bool, False, PredefinedSerializer()),
+    FieldMetadata("id", "id", "_id", int, 0, PredefinedSerializer()),
+    FieldMetadata("title", "title", "_title", str, "", PredefinedSerializer()),
+    FieldMetadata(
+        "topicUrl", "topic_url", "_topic_url", str, "", PredefinedSerializer()
+    ),
+    FieldMetadata(
+        "authorName",
+        "author_name",
+        "_author_name",
+        str,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
+    FieldMetadata(
+        "commentCount",
+        "comment_count",
+        "_comment_count",
+        int,
+        0,
+        PredefinedSerializer(),
+    ),
+    FieldMetadata("votes", "votes", "_votes", int, 0, PredefinedSerializer()),
+    FieldMetadata(
+        "postDate", "post_date", "_post_date", datetime, None, DateTimeSerializer()
+    ),
+    FieldMetadata(
+        "lastCommentPostDate",
+        "last_comment_post_date",
+        "_last_comment_post_date",
+        datetime,
+        None,
+        DateTimeSerializer(),
+    ),
+    FieldMetadata(
+        "isSticky", "is_sticky", "_is_sticky", bool, False, PredefinedSerializer()
+    ),
 ]
 
 ApiCreateCodeSubmissionRequest._fields = [
-  FieldMetadata("competitionName", "competition_name", "_competition_name", str, "", PredefinedSerializer()),
-  FieldMetadata("kernelOwner", "kernel_owner", "_kernel_owner", str, "", PredefinedSerializer()),
-  FieldMetadata("kernelSlug", "kernel_slug", "_kernel_slug", str, "", PredefinedSerializer()),
-  FieldMetadata("kernelVersion", "kernel_version", "_kernel_version", int, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("fileName", "file_name", "_file_name", str, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("submissionDescription", "submission_description", "_submission_description", str, None, PredefinedSerializer(), optional=True),
+    FieldMetadata(
+        "competitionName",
+        "competition_name",
+        "_competition_name",
+        str,
+        "",
+        PredefinedSerializer(),
+    ),
+    FieldMetadata(
+        "kernelOwner", "kernel_owner", "_kernel_owner", str, "", PredefinedSerializer()
+    ),
+    FieldMetadata(
+        "kernelSlug", "kernel_slug", "_kernel_slug", str, "", PredefinedSerializer()
+    ),
+    FieldMetadata(
+        "kernelVersion",
+        "kernel_version",
+        "_kernel_version",
+        int,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
+    FieldMetadata(
+        "fileName",
+        "file_name",
+        "_file_name",
+        str,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
+    FieldMetadata(
+        "submissionDescription",
+        "submission_description",
+        "_submission_description",
+        str,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
 ]
 
 ApiCreateCodeSubmissionResponse._fields = [
-  FieldMetadata("message", "message", "_message", str, "", PredefinedSerializer()),
-  FieldMetadata("ref", "ref", "_ref", int, 0, PredefinedSerializer()),
+    FieldMetadata("message", "message", "_message", str, "", PredefinedSerializer()),
+    FieldMetadata("ref", "ref", "_ref", int, 0, PredefinedSerializer()),
 ]
 
 ApiCreateCompetitionDataRequest._fields = [
-  FieldMetadata("competitionName", "competition_name", "_competition_name", str, "", PredefinedSerializer()),
-  FieldMetadata("versionNotes", "version_notes", "_version_notes", str, "", PredefinedSerializer()),
-  FieldMetadata("files", "files", "_files", ApiCompetitionDataFile, [], ListSerializer(KaggleObjectSerializer())),
-  FieldMetadata("competitionDatabundleType", "competition_databundle_type", "_competition_databundle_type", CompetitionDatabundleType, CompetitionDatabundleType.COMPETITION_DATABUNDLE_TYPE_UNSPECIFIED, EnumSerializer()),
+    FieldMetadata(
+        "competitionName",
+        "competition_name",
+        "_competition_name",
+        str,
+        "",
+        PredefinedSerializer(),
+    ),
+    FieldMetadata(
+        "versionNotes",
+        "version_notes",
+        "_version_notes",
+        str,
+        "",
+        PredefinedSerializer(),
+    ),
+    FieldMetadata(
+        "files",
+        "files",
+        "_files",
+        ApiCompetitionDataFile,
+        [],
+        ListSerializer(KaggleObjectSerializer()),
+    ),
+    FieldMetadata(
+        "competitionDatabundleType",
+        "competition_databundle_type",
+        "_competition_databundle_type",
+        CompetitionDatabundleType,
+        CompetitionDatabundleType.COMPETITION_DATABUNDLE_TYPE_UNSPECIFIED,
+        EnumSerializer(),
+    ),
 ]
 
 ApiCreateCompetitionDataResponse._fields = [
-  FieldMetadata("url", "url", "_url", str, "", PredefinedSerializer()),
-  FieldMetadata("databundleId", "databundle_id", "_databundle_id", int, 0, PredefinedSerializer()),
-  FieldMetadata("databundleVersionId", "databundle_version_id", "_databundle_version_id", int, 0, PredefinedSerializer()),
+    FieldMetadata("url", "url", "_url", str, "", PredefinedSerializer()),
+    FieldMetadata(
+        "databundleId",
+        "databundle_id",
+        "_databundle_id",
+        int,
+        0,
+        PredefinedSerializer(),
+    ),
+    FieldMetadata(
+        "databundleVersionId",
+        "databundle_version_id",
+        "_databundle_version_id",
+        int,
+        0,
+        PredefinedSerializer(),
+    ),
 ]
 
 ApiCreateCompetitionPageRequest._fields = [
-  FieldMetadata("competitionName", "competition_name", "_competition_name", str, "", PredefinedSerializer()),
-  FieldMetadata("page", "page", "_page", ApiCompetitionPage, None, KaggleObjectSerializer()),
+    FieldMetadata(
+        "competitionName",
+        "competition_name",
+        "_competition_name",
+        str,
+        "",
+        PredefinedSerializer(),
+    ),
+    FieldMetadata(
+        "page", "page", "_page", ApiCompetitionPage, None, KaggleObjectSerializer()
+    ),
 ]
 
 ApiCreateCompetitionRequest._fields = [
-  FieldMetadata("title", "title", "_title", str, "", PredefinedSerializer()),
-  FieldMetadata("slug", "slug", "_slug", str, "", PredefinedSerializer()),
-  FieldMetadata("briefDescription", "brief_description", "_brief_description", str, "", PredefinedSerializer()),
-  FieldMetadata("privacy", "privacy", "_privacy", CompetitionPrivacy, CompetitionPrivacy.COMPETITION_PRIVACY_UNSPECIFIED, EnumSerializer()),
-  FieldMetadata("cloneCompetitionId", "clone_competition_id", "_clone_competition_id", int, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("disableKernels", "disable_kernels", "_disable_kernels", bool, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("restrictLinkToEmailList", "restrict_link_to_email_list", "_restrict_link_to_email_list", bool, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("licenseId", "license_id", "_license_id", int, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("organizationId", "organization_id", "_organization_id", int, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("cloneExcludeCompetitionData", "clone_exclude_competition_data", "_clone_exclude_competition_data", bool, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("clonePageNames", "clone_page_names", "_clone_page_names", str, [], ListSerializer(PredefinedSerializer())),
-  FieldMetadata("reward", "reward", "_reward", Reward, None, KaggleObjectSerializer(), optional=True),
-  FieldMetadata("hackathon", "hackathon", "_hackathon", bool, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("numPrizes", "num_prizes", "_num_prizes", int, None, PredefinedSerializer(), optional=True),
+    FieldMetadata("title", "title", "_title", str, "", PredefinedSerializer()),
+    FieldMetadata("slug", "slug", "_slug", str, "", PredefinedSerializer()),
+    FieldMetadata(
+        "briefDescription",
+        "brief_description",
+        "_brief_description",
+        str,
+        "",
+        PredefinedSerializer(),
+    ),
+    FieldMetadata(
+        "privacy",
+        "privacy",
+        "_privacy",
+        CompetitionPrivacy,
+        CompetitionPrivacy.COMPETITION_PRIVACY_UNSPECIFIED,
+        EnumSerializer(),
+    ),
+    FieldMetadata(
+        "cloneCompetitionId",
+        "clone_competition_id",
+        "_clone_competition_id",
+        int,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
+    FieldMetadata(
+        "disableKernels",
+        "disable_kernels",
+        "_disable_kernels",
+        bool,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
+    FieldMetadata(
+        "restrictLinkToEmailList",
+        "restrict_link_to_email_list",
+        "_restrict_link_to_email_list",
+        bool,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
+    FieldMetadata(
+        "licenseId",
+        "license_id",
+        "_license_id",
+        int,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
+    FieldMetadata(
+        "organizationId",
+        "organization_id",
+        "_organization_id",
+        int,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
+    FieldMetadata(
+        "cloneExcludeCompetitionData",
+        "clone_exclude_competition_data",
+        "_clone_exclude_competition_data",
+        bool,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
+    FieldMetadata(
+        "clonePageNames",
+        "clone_page_names",
+        "_clone_page_names",
+        str,
+        [],
+        ListSerializer(PredefinedSerializer()),
+    ),
+    FieldMetadata(
+        "reward",
+        "reward",
+        "_reward",
+        Reward,
+        None,
+        KaggleObjectSerializer(),
+        optional=True,
+    ),
+    FieldMetadata(
+        "hackathon",
+        "hackathon",
+        "_hackathon",
+        bool,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
+    FieldMetadata(
+        "numPrizes",
+        "num_prizes",
+        "_num_prizes",
+        int,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
 ]
 
 ApiCreateCompetitionResponse._fields = [
-  FieldMetadata("id", "id", "_id", int, 0, PredefinedSerializer()),
-  FieldMetadata("ref", "ref", "_ref", str, "", PredefinedSerializer()),
-  FieldMetadata("url", "url", "_url", str, "", PredefinedSerializer()),
+    FieldMetadata("id", "id", "_id", int, 0, PredefinedSerializer()),
+    FieldMetadata("ref", "ref", "_ref", str, "", PredefinedSerializer()),
+    FieldMetadata("url", "url", "_url", str, "", PredefinedSerializer()),
 ]
 
 ApiCreateCompetitionSampleSubmissionRequest._fields = [
-  FieldMetadata("competitionName", "competition_name", "_competition_name", str, "", PredefinedSerializer()),
-  FieldMetadata("blobToken", "blob_token", "_blob_token", str, "", PredefinedSerializer()),
+    FieldMetadata(
+        "competitionName",
+        "competition_name",
+        "_competition_name",
+        str,
+        "",
+        PredefinedSerializer(),
+    ),
+    FieldMetadata(
+        "blobToken", "blob_token", "_blob_token", str, "", PredefinedSerializer()
+    ),
 ]
 
 ApiCreateCompetitionSolutionRequest._fields = [
-  FieldMetadata("competitionName", "competition_name", "_competition_name", str, "", PredefinedSerializer()),
-  FieldMetadata("blobToken", "blob_token", "_blob_token", str, "", PredefinedSerializer()),
+    FieldMetadata(
+        "competitionName",
+        "competition_name",
+        "_competition_name",
+        str,
+        "",
+        PredefinedSerializer(),
+    ),
+    FieldMetadata(
+        "blobToken", "blob_token", "_blob_token", str, "", PredefinedSerializer()
+    ),
 ]
 
 ApiCreateSubmissionRequest._fields = [
-  FieldMetadata("competitionName", "competition_name", "_competition_name", str, "", PredefinedSerializer()),
-  FieldMetadata("blobFileTokens", "blob_file_tokens", "_blob_file_tokens", str, "", PredefinedSerializer()),
-  FieldMetadata("submissionDescription", "submission_description", "_submission_description", str, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("benchmarkModelVersionId", "benchmark_model_version_id", "_benchmark_model_version_id", int, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("sandbox", "sandbox", "_sandbox", bool, None, PredefinedSerializer(), optional=True),
+    FieldMetadata(
+        "competitionName",
+        "competition_name",
+        "_competition_name",
+        str,
+        "",
+        PredefinedSerializer(),
+    ),
+    FieldMetadata(
+        "blobFileTokens",
+        "blob_file_tokens",
+        "_blob_file_tokens",
+        str,
+        "",
+        PredefinedSerializer(),
+    ),
+    FieldMetadata(
+        "submissionDescription",
+        "submission_description",
+        "_submission_description",
+        str,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
+    FieldMetadata(
+        "benchmarkModelVersionId",
+        "benchmark_model_version_id",
+        "_benchmark_model_version_id",
+        int,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
+    FieldMetadata(
+        "sandbox",
+        "sandbox",
+        "_sandbox",
+        bool,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
 ]
 
 ApiCreateSubmissionResponse._fields = [
-  FieldMetadata("message", "message", "_message", str, "", PredefinedSerializer()),
-  FieldMetadata("ref", "ref", "_ref", int, 0, PredefinedSerializer()),
+    FieldMetadata("message", "message", "_message", str, "", PredefinedSerializer()),
+    FieldMetadata("ref", "ref", "_ref", int, 0, PredefinedSerializer()),
 ]
 
 ApiDataFile._fields = [
-  FieldMetadata("ref", "ref", "_ref", str, "", PredefinedSerializer()),
-  FieldMetadata("name", "name", "_name", str, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("description", "description", "_description", str, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("totalBytes", "total_bytes", "_total_bytes", int, 0, PredefinedSerializer()),
-  FieldMetadata("url", "url", "_url", str, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("creationDate", "creation_date", "_creation_date", datetime, None, DateTimeSerializer()),
+    FieldMetadata("ref", "ref", "_ref", str, "", PredefinedSerializer()),
+    FieldMetadata(
+        "name", "name", "_name", str, None, PredefinedSerializer(), optional=True
+    ),
+    FieldMetadata(
+        "description",
+        "description",
+        "_description",
+        str,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
+    FieldMetadata(
+        "totalBytes", "total_bytes", "_total_bytes", int, 0, PredefinedSerializer()
+    ),
+    FieldMetadata(
+        "url", "url", "_url", str, None, PredefinedSerializer(), optional=True
+    ),
+    FieldMetadata(
+        "creationDate",
+        "creation_date",
+        "_creation_date",
+        datetime,
+        None,
+        DateTimeSerializer(),
+    ),
 ]
 
 ApiDeleteCompetitionPageRequest._fields = [
-  FieldMetadata("competitionName", "competition_name", "_competition_name", str, "", PredefinedSerializer()),
-  FieldMetadata("pageName", "page_name", "_page_name", str, "", PredefinedSerializer()),
+    FieldMetadata(
+        "competitionName",
+        "competition_name",
+        "_competition_name",
+        str,
+        "",
+        PredefinedSerializer(),
+    ),
+    FieldMetadata(
+        "pageName", "page_name", "_page_name", str, "", PredefinedSerializer()
+    ),
 ]
 
 ApiDownloadDataFileRequest._fields = [
-  FieldMetadata("competitionName", "competition_name", "_competition_name", str, "", PredefinedSerializer()),
-  FieldMetadata("fileName", "file_name", "_file_name", str, "", PredefinedSerializer()),
+    FieldMetadata(
+        "competitionName",
+        "competition_name",
+        "_competition_name",
+        str,
+        "",
+        PredefinedSerializer(),
+    ),
+    FieldMetadata(
+        "fileName", "file_name", "_file_name", str, "", PredefinedSerializer()
+    ),
 ]
 
 ApiDownloadDataFilesRequest._fields = [
-  FieldMetadata("competitionName", "competition_name", "_competition_name", str, "", PredefinedSerializer()),
+    FieldMetadata(
+        "competitionName",
+        "competition_name",
+        "_competition_name",
+        str,
+        "",
+        PredefinedSerializer(),
+    ),
 ]
 
 ApiDownloadLeaderboardRequest._fields = [
-  FieldMetadata("competitionName", "competition_name", "_competition_name", str, "", PredefinedSerializer()),
+    FieldMetadata(
+        "competitionName",
+        "competition_name",
+        "_competition_name",
+        str,
+        "",
+        PredefinedSerializer(),
+    ),
 ]
 
 ApiEpisode._fields = [
-  FieldMetadata("id", "id", "_id", int, 0, PredefinedSerializer()),
-  FieldMetadata("createTime", "create_time", "_create_time", datetime, None, DateTimeSerializer()),
-  FieldMetadata("endTime", "end_time", "_end_time", datetime, None, DateTimeSerializer()),
-  FieldMetadata("state", "state", "_state", EpisodeState, EpisodeState.EPISODE_STATE_UNSPECIFIED, EnumSerializer()),
-  FieldMetadata("type", "type", "_type", EpisodeType, EpisodeType.EPISODE_TYPE_UNSPECIFIED, EnumSerializer()),
-  FieldMetadata("agents", "agents", "_agents", ApiEpisodeAgent, [], ListSerializer(KaggleObjectSerializer())),
+    FieldMetadata("id", "id", "_id", int, 0, PredefinedSerializer()),
+    FieldMetadata(
+        "createTime",
+        "create_time",
+        "_create_time",
+        datetime,
+        None,
+        DateTimeSerializer(),
+    ),
+    FieldMetadata(
+        "endTime", "end_time", "_end_time", datetime, None, DateTimeSerializer()
+    ),
+    FieldMetadata(
+        "state",
+        "state",
+        "_state",
+        EpisodeState,
+        EpisodeState.EPISODE_STATE_UNSPECIFIED,
+        EnumSerializer(),
+    ),
+    FieldMetadata(
+        "type",
+        "type",
+        "_type",
+        EpisodeType,
+        EpisodeType.EPISODE_TYPE_UNSPECIFIED,
+        EnumSerializer(),
+    ),
+    FieldMetadata(
+        "agents",
+        "agents",
+        "_agents",
+        ApiEpisodeAgent,
+        [],
+        ListSerializer(KaggleObjectSerializer()),
+    ),
 ]
 
 ApiEpisodeAgent._fields = [
-  FieldMetadata("submissionId", "submission_id", "_submission_id", int, 0, PredefinedSerializer()),
-  FieldMetadata("index", "index", "_index", int, 0, PredefinedSerializer()),
-  FieldMetadata("reward", "reward", "_reward", float, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("state", "state", "_state", EpisodeAgentState, EpisodeAgentState.EPISODE_AGENT_STATE_UNSPECIFIED, EnumSerializer()),
-  FieldMetadata("teamName", "team_name", "_team_name", str, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("teamId", "team_id", "_team_id", int, 0, PredefinedSerializer()),
+    FieldMetadata(
+        "submissionId",
+        "submission_id",
+        "_submission_id",
+        int,
+        0,
+        PredefinedSerializer(),
+    ),
+    FieldMetadata("index", "index", "_index", int, 0, PredefinedSerializer()),
+    FieldMetadata(
+        "reward",
+        "reward",
+        "_reward",
+        float,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
+    FieldMetadata(
+        "state",
+        "state",
+        "_state",
+        EpisodeAgentState,
+        EpisodeAgentState.EPISODE_AGENT_STATE_UNSPECIFIED,
+        EnumSerializer(),
+    ),
+    FieldMetadata(
+        "teamName",
+        "team_name",
+        "_team_name",
+        str,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
+    FieldMetadata("teamId", "team_id", "_team_id", int, 0, PredefinedSerializer()),
 ]
 
 ApiGetCompetitionDataFilesSummaryRequest._fields = [
-  FieldMetadata("competitionName", "competition_name", "_competition_name", str, "", PredefinedSerializer()),
+    FieldMetadata(
+        "competitionName",
+        "competition_name",
+        "_competition_name",
+        str,
+        "",
+        PredefinedSerializer(),
+    ),
 ]
 
 ApiGetCompetitionRequest._fields = [
-  FieldMetadata("competitionName", "competition_name", "_competition_name", str, "", PredefinedSerializer()),
+    FieldMetadata(
+        "competitionName",
+        "competition_name",
+        "_competition_name",
+        str,
+        "",
+        PredefinedSerializer(),
+    ),
 ]
 
 ApiGetCompetitionSettingsRequest._fields = [
-  FieldMetadata("competitionName", "competition_name", "_competition_name", str, "", PredefinedSerializer()),
+    FieldMetadata(
+        "competitionName",
+        "competition_name",
+        "_competition_name",
+        str,
+        "",
+        PredefinedSerializer(),
+    ),
 ]
 
 ApiGetCompetitionSolutionStatusRequest._fields = [
-  FieldMetadata("competitionName", "competition_name", "_competition_name", str, "", PredefinedSerializer()),
+    FieldMetadata(
+        "competitionName",
+        "competition_name",
+        "_competition_name",
+        str,
+        "",
+        PredefinedSerializer(),
+    ),
 ]
 
 ApiGetEpisodeAgentLogsRequest._fields = [
-  FieldMetadata("episodeId", "episode_id", "_episode_id", int, 0, PredefinedSerializer()),
-  FieldMetadata("agentIndex", "agent_index", "_agent_index", int, 0, PredefinedSerializer()),
+    FieldMetadata(
+        "episodeId", "episode_id", "_episode_id", int, 0, PredefinedSerializer()
+    ),
+    FieldMetadata(
+        "agentIndex", "agent_index", "_agent_index", int, 0, PredefinedSerializer()
+    ),
 ]
 
 ApiGetEpisodeReplayRequest._fields = [
-  FieldMetadata("episodeId", "episode_id", "_episode_id", int, 0, PredefinedSerializer()),
+    FieldMetadata(
+        "episodeId", "episode_id", "_episode_id", int, 0, PredefinedSerializer()
+    ),
 ]
 
 ApiGetLeaderboardRequest._fields = [
-  FieldMetadata("competitionName", "competition_name", "_competition_name", str, "", PredefinedSerializer()),
-  FieldMetadata("overridePublic", "override_public", "_override_public", bool, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("pageSize", "page_size", "_page_size", int, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("pageToken", "page_token", "_page_token", str, None, PredefinedSerializer(), optional=True),
+    FieldMetadata(
+        "competitionName",
+        "competition_name",
+        "_competition_name",
+        str,
+        "",
+        PredefinedSerializer(),
+    ),
+    FieldMetadata(
+        "overridePublic",
+        "override_public",
+        "_override_public",
+        bool,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
+    FieldMetadata(
+        "pageSize",
+        "page_size",
+        "_page_size",
+        int,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
+    FieldMetadata(
+        "pageToken",
+        "page_token",
+        "_page_token",
+        str,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
 ]
 
 ApiGetLeaderboardResponse._fields = [
-  FieldMetadata("submissions", "submissions", "_submissions", ApiLeaderboardSubmission, [], ListSerializer(KaggleObjectSerializer())),
-  FieldMetadata("nextPageToken", "next_page_token", "_next_page_token", str, "", PredefinedSerializer()),
+    FieldMetadata(
+        "submissions",
+        "submissions",
+        "_submissions",
+        ApiLeaderboardSubmission,
+        [],
+        ListSerializer(KaggleObjectSerializer()),
+    ),
+    FieldMetadata(
+        "nextPageToken",
+        "next_page_token",
+        "_next_page_token",
+        str,
+        "",
+        PredefinedSerializer(),
+    ),
 ]
 
 ApiGetSubmissionRequest._fields = [
-  FieldMetadata("ref", "ref", "_ref", int, 0, PredefinedSerializer()),
+    FieldMetadata("ref", "ref", "_ref", int, 0, PredefinedSerializer()),
 ]
 
 ApiLaunchCompetitionRequest._fields = [
-  FieldMetadata("competitionName", "competition_name", "_competition_name", str, "", PredefinedSerializer()),
-  FieldMetadata("futureTime", "future_time", "_future_time", datetime, None, DateTimeSerializer()),
+    FieldMetadata(
+        "competitionName",
+        "competition_name",
+        "_competition_name",
+        str,
+        "",
+        PredefinedSerializer(),
+    ),
+    FieldMetadata(
+        "futureTime",
+        "future_time",
+        "_future_time",
+        datetime,
+        None,
+        DateTimeSerializer(),
+    ),
 ]
 
 ApiLeaderboardSubmission._fields = [
-  FieldMetadata("teamId", "team_id", "_team_id", int, 0, PredefinedSerializer()),
-  FieldMetadata("teamName", "team_name", "_team_name", str, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("submissionDate", "submission_date", "_submission_date", datetime, None, DateTimeSerializer()),
-  FieldMetadata("score", "score", "_score", str, None, PredefinedSerializer(), optional=True),
+    FieldMetadata("teamId", "team_id", "_team_id", int, 0, PredefinedSerializer()),
+    FieldMetadata(
+        "teamName",
+        "team_name",
+        "_team_name",
+        str,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
+    FieldMetadata(
+        "submissionDate",
+        "submission_date",
+        "_submission_date",
+        datetime,
+        None,
+        DateTimeSerializer(),
+    ),
+    FieldMetadata(
+        "score", "score", "_score", str, None, PredefinedSerializer(), optional=True
+    ),
 ]
 
 ApiListCompetitionHostsRequest._fields = [
-  FieldMetadata("competitionName", "competition_name", "_competition_name", str, "", PredefinedSerializer()),
+    FieldMetadata(
+        "competitionName",
+        "competition_name",
+        "_competition_name",
+        str,
+        "",
+        PredefinedSerializer(),
+    ),
 ]
 
 ApiListCompetitionHostsResponse._fields = [
-  FieldMetadata("hosts", "hosts", "_hosts", ApiCompetitionHost, [], ListSerializer(KaggleObjectSerializer())),
+    FieldMetadata(
+        "hosts",
+        "hosts",
+        "_hosts",
+        ApiCompetitionHost,
+        [],
+        ListSerializer(KaggleObjectSerializer()),
+    ),
 ]
 
 ApiListCompetitionPagesRequest._fields = [
-  FieldMetadata("competitionName", "competition_name", "_competition_name", str, "", PredefinedSerializer()),
-  FieldMetadata("pageName", "page_name", "_page_name", str, None, PredefinedSerializer(), optional=True),
+    FieldMetadata(
+        "competitionName",
+        "competition_name",
+        "_competition_name",
+        str,
+        "",
+        PredefinedSerializer(),
+    ),
+    FieldMetadata(
+        "pageName",
+        "page_name",
+        "_page_name",
+        str,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
 ]
 
 ApiListCompetitionPagesResponse._fields = [
-  FieldMetadata("pages", "pages", "_pages", ApiCompetitionPage, [], ListSerializer(KaggleObjectSerializer())),
+    FieldMetadata(
+        "pages",
+        "pages",
+        "_pages",
+        ApiCompetitionPage,
+        [],
+        ListSerializer(KaggleObjectSerializer()),
+    ),
 ]
 
 ApiListCompetitionsRequest._fields = [
-  FieldMetadata("group", "group", "_group", CompetitionListTab, None, EnumSerializer(), optional=True),
-  FieldMetadata("category", "category", "_category", HostSegment, None, EnumSerializer(), optional=True),
-  FieldMetadata("sortBy", "sort_by", "_sort_by", CompetitionSortBy, None, EnumSerializer(), optional=True),
-  FieldMetadata("search", "search", "_search", str, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("page", "page", "_page", int, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("pageToken", "page_token", "_page_token", str, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("pageSize", "page_size", "_page_size", int, None, PredefinedSerializer(), optional=True),
+    FieldMetadata(
+        "group",
+        "group",
+        "_group",
+        CompetitionListTab,
+        None,
+        EnumSerializer(),
+        optional=True,
+    ),
+    FieldMetadata(
+        "category",
+        "category",
+        "_category",
+        HostSegment,
+        None,
+        EnumSerializer(),
+        optional=True,
+    ),
+    FieldMetadata(
+        "sortBy",
+        "sort_by",
+        "_sort_by",
+        CompetitionSortBy,
+        None,
+        EnumSerializer(),
+        optional=True,
+    ),
+    FieldMetadata(
+        "search", "search", "_search", str, None, PredefinedSerializer(), optional=True
+    ),
+    FieldMetadata(
+        "page", "page", "_page", int, None, PredefinedSerializer(), optional=True
+    ),
+    FieldMetadata(
+        "pageToken",
+        "page_token",
+        "_page_token",
+        str,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
+    FieldMetadata(
+        "pageSize",
+        "page_size",
+        "_page_size",
+        int,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
 ]
 
 ApiListCompetitionsResponse._fields = [
-  FieldMetadata("competitions", "competitions", "_competitions", ApiCompetition, [], ListSerializer(KaggleObjectSerializer())),
-  FieldMetadata("nextPageToken", "next_page_token", "_next_page_token", str, "", PredefinedSerializer()),
+    FieldMetadata(
+        "competitions",
+        "competitions",
+        "_competitions",
+        ApiCompetition,
+        [],
+        ListSerializer(KaggleObjectSerializer()),
+    ),
+    FieldMetadata(
+        "nextPageToken",
+        "next_page_token",
+        "_next_page_token",
+        str,
+        "",
+        PredefinedSerializer(),
+    ),
 ]
 
 ApiListCompetitionTopicsRequest._fields = [
-  FieldMetadata("competitionName", "competition_name", "_competition_name", str, "", PredefinedSerializer()),
-  FieldMetadata("sortBy", "sort_by", "_sort_by", TopicListSortBy, None, EnumSerializer(), optional=True),
-  FieldMetadata("page", "page", "_page", int, None, PredefinedSerializer(), optional=True),
+    FieldMetadata(
+        "competitionName",
+        "competition_name",
+        "_competition_name",
+        str,
+        "",
+        PredefinedSerializer(),
+    ),
+    FieldMetadata(
+        "sortBy",
+        "sort_by",
+        "_sort_by",
+        TopicListSortBy,
+        None,
+        EnumSerializer(),
+        optional=True,
+    ),
+    FieldMetadata(
+        "page", "page", "_page", int, None, PredefinedSerializer(), optional=True
+    ),
 ]
 
 ApiListCompetitionTopicsResponse._fields = [
-  FieldMetadata("topics", "topics", "_topics", ApiCompetitionTopic, [], ListSerializer(KaggleObjectSerializer())),
-  FieldMetadata("totalCount", "total_count", "_total_count", int, 0, PredefinedSerializer()),
+    FieldMetadata(
+        "topics",
+        "topics",
+        "_topics",
+        ApiCompetitionTopic,
+        [],
+        ListSerializer(KaggleObjectSerializer()),
+    ),
+    FieldMetadata(
+        "totalCount", "total_count", "_total_count", int, 0, PredefinedSerializer()
+    ),
 ]
 
 ApiListDataFilesRequest._fields = [
-  FieldMetadata("competitionName", "competition_name", "_competition_name", str, "", PredefinedSerializer()),
-  FieldMetadata("pageSize", "page_size", "_page_size", int, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("pageToken", "page_token", "_page_token", str, None, PredefinedSerializer(), optional=True),
+    FieldMetadata(
+        "competitionName",
+        "competition_name",
+        "_competition_name",
+        str,
+        "",
+        PredefinedSerializer(),
+    ),
+    FieldMetadata(
+        "pageSize",
+        "page_size",
+        "_page_size",
+        int,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
+    FieldMetadata(
+        "pageToken",
+        "page_token",
+        "_page_token",
+        str,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
 ]
 
 ApiListDataFilesResponse._fields = [
-  FieldMetadata("files", "files", "_files", ApiDataFile, [], ListSerializer(KaggleObjectSerializer())),
-  FieldMetadata("nextPageToken", "next_page_token", "_next_page_token", str, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("childrenFetchTimeMs", "children_fetch_time_ms", "_children_fetch_time_ms", int, 0, PredefinedSerializer()),
+    FieldMetadata(
+        "files",
+        "files",
+        "_files",
+        ApiDataFile,
+        [],
+        ListSerializer(KaggleObjectSerializer()),
+    ),
+    FieldMetadata(
+        "nextPageToken",
+        "next_page_token",
+        "_next_page_token",
+        str,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
+    FieldMetadata(
+        "childrenFetchTimeMs",
+        "children_fetch_time_ms",
+        "_children_fetch_time_ms",
+        int,
+        0,
+        PredefinedSerializer(),
+    ),
 ]
 
 ApiListDataTreeFilesRequest._fields = [
-  FieldMetadata("competitionName", "competition_name", "_competition_name", str, "", PredefinedSerializer()),
-  FieldMetadata("path", "path", "_path", str, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("pageSize", "page_size", "_page_size", int, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("pageToken", "page_token", "_page_token", str, None, PredefinedSerializer(), optional=True),
+    FieldMetadata(
+        "competitionName",
+        "competition_name",
+        "_competition_name",
+        str,
+        "",
+        PredefinedSerializer(),
+    ),
+    FieldMetadata(
+        "path", "path", "_path", str, None, PredefinedSerializer(), optional=True
+    ),
+    FieldMetadata(
+        "pageSize",
+        "page_size",
+        "_page_size",
+        int,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
+    FieldMetadata(
+        "pageToken",
+        "page_token",
+        "_page_token",
+        str,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
 ]
 
 ApiListSubmissionEpisodesRequest._fields = [
-  FieldMetadata("submissionId", "submission_id", "_submission_id", int, 0, PredefinedSerializer()),
+    FieldMetadata(
+        "submissionId",
+        "submission_id",
+        "_submission_id",
+        int,
+        0,
+        PredefinedSerializer(),
+    ),
 ]
 
 ApiListSubmissionEpisodesResponse._fields = [
-  FieldMetadata("episodes", "episodes", "_episodes", ApiEpisode, [], ListSerializer(KaggleObjectSerializer())),
+    FieldMetadata(
+        "episodes",
+        "episodes",
+        "_episodes",
+        ApiEpisode,
+        [],
+        ListSerializer(KaggleObjectSerializer()),
+    ),
 ]
 
 ApiListSubmissionsRequest._fields = [
-  FieldMetadata("competitionName", "competition_name", "_competition_name", str, "", PredefinedSerializer()),
-  FieldMetadata("sortBy", "sort_by", "_sort_by", SubmissionSortBy, SubmissionSortBy.SUBMISSION_SORT_BY_DATE, EnumSerializer()),
-  FieldMetadata("group", "group", "_group", SubmissionGroup, SubmissionGroup.SUBMISSION_GROUP_ALL, EnumSerializer()),
-  FieldMetadata("page", "page", "_page", int, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("pageToken", "page_token", "_page_token", str, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("pageSize", "page_size", "_page_size", int, None, PredefinedSerializer(), optional=True),
+    FieldMetadata(
+        "competitionName",
+        "competition_name",
+        "_competition_name",
+        str,
+        "",
+        PredefinedSerializer(),
+    ),
+    FieldMetadata(
+        "sortBy",
+        "sort_by",
+        "_sort_by",
+        SubmissionSortBy,
+        SubmissionSortBy.SUBMISSION_SORT_BY_DATE,
+        EnumSerializer(),
+    ),
+    FieldMetadata(
+        "group",
+        "group",
+        "_group",
+        SubmissionGroup,
+        SubmissionGroup.SUBMISSION_GROUP_ALL,
+        EnumSerializer(),
+    ),
+    FieldMetadata(
+        "page", "page", "_page", int, None, PredefinedSerializer(), optional=True
+    ),
+    FieldMetadata(
+        "pageToken",
+        "page_token",
+        "_page_token",
+        str,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
+    FieldMetadata(
+        "pageSize",
+        "page_size",
+        "_page_size",
+        int,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
 ]
 
 ApiListSubmissionsResponse._fields = [
-  FieldMetadata("submissions", "submissions", "_submissions", ApiSubmission, [], ListSerializer(KaggleObjectSerializer())),
-  FieldMetadata("nextPageToken", "next_page_token", "_next_page_token", str, "", PredefinedSerializer()),
+    FieldMetadata(
+        "submissions",
+        "submissions",
+        "_submissions",
+        ApiSubmission,
+        [],
+        ListSerializer(KaggleObjectSerializer()),
+    ),
+    FieldMetadata(
+        "nextPageToken",
+        "next_page_token",
+        "_next_page_token",
+        str,
+        "",
+        PredefinedSerializer(),
+    ),
 ]
 
 ApiListTeamPublicSubmissionsRequest._fields = [
-  FieldMetadata("teamId", "team_id", "_team_id", int, 0, PredefinedSerializer()),
+    FieldMetadata("teamId", "team_id", "_team_id", int, 0, PredefinedSerializer()),
 ]
 
 ApiListTeamPublicSubmissionsResponse._fields = [
-  FieldMetadata("submissions", "submissions", "_submissions", ApiPublicSubmission, [], ListSerializer(KaggleObjectSerializer())),
+    FieldMetadata(
+        "submissions",
+        "submissions",
+        "_submissions",
+        ApiPublicSubmission,
+        [],
+        ListSerializer(KaggleObjectSerializer()),
+    ),
 ]
 
 ApiListTopicMessagesRequest._fields = [
-  FieldMetadata("competitionName", "competition_name", "_competition_name", str, "", PredefinedSerializer()),
-  FieldMetadata("topicId", "topic_id", "_topic_id", int, 0, PredefinedSerializer()),
-  FieldMetadata("sortBy", "sort_by", "_sort_by", CommentListSortBy, None, EnumSerializer(), optional=True),
-  FieldMetadata("pageSize", "page_size", "_page_size", int, None, PredefinedSerializer(), optional=True),
+    FieldMetadata(
+        "competitionName",
+        "competition_name",
+        "_competition_name",
+        str,
+        "",
+        PredefinedSerializer(),
+    ),
+    FieldMetadata("topicId", "topic_id", "_topic_id", int, 0, PredefinedSerializer()),
+    FieldMetadata(
+        "sortBy",
+        "sort_by",
+        "_sort_by",
+        CommentListSortBy,
+        None,
+        EnumSerializer(),
+        optional=True,
+    ),
+    FieldMetadata(
+        "pageSize",
+        "page_size",
+        "_page_size",
+        int,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
 ]
 
 ApiListTopicMessagesResponse._fields = [
-  FieldMetadata("messages", "messages", "_messages", ApiTopicMessage, [], ListSerializer(KaggleObjectSerializer())),
+    FieldMetadata(
+        "messages",
+        "messages",
+        "_messages",
+        ApiTopicMessage,
+        [],
+        ListSerializer(KaggleObjectSerializer()),
+    ),
 ]
 
 ApiMetricColumn._fields = [
-  FieldMetadata("name", "name", "_name", str, "", PredefinedSerializer()),
-  FieldMetadata("dataType", "data_type", "_data_type", str, "", PredefinedSerializer()),
+    FieldMetadata("name", "name", "_name", str, "", PredefinedSerializer()),
+    FieldMetadata(
+        "dataType", "data_type", "_data_type", str, "", PredefinedSerializer()
+    ),
 ]
 
 ApiPublicSubmission._fields = [
-  FieldMetadata("id", "id", "_id", int, 0, PredefinedSerializer()),
-  FieldMetadata("dateSubmitted", "date_submitted", "_date_submitted", datetime, None, DateTimeSerializer()),
-  FieldMetadata("publicScore", "public_score", "_public_score", str, "", PredefinedSerializer()),
+    FieldMetadata("id", "id", "_id", int, 0, PredefinedSerializer()),
+    FieldMetadata(
+        "dateSubmitted",
+        "date_submitted",
+        "_date_submitted",
+        datetime,
+        None,
+        DateTimeSerializer(),
+    ),
+    FieldMetadata(
+        "publicScore", "public_score", "_public_score", str, "", PredefinedSerializer()
+    ),
 ]
 
 ApiSolutionFileInfo._fields = [
-  FieldMetadata("fileName", "file_name", "_file_name", str, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("fileSizeBytes", "file_size_bytes", "_file_size_bytes", int, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("uploadDate", "upload_date", "_upload_date", datetime, None, DateTimeSerializer()),
-  FieldMetadata("totalRows", "total_rows", "_total_rows", int, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("publicRows", "public_rows", "_public_rows", int, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("privateRows", "private_rows", "_private_rows", int, None, PredefinedSerializer(), optional=True),
+    FieldMetadata(
+        "fileName",
+        "file_name",
+        "_file_name",
+        str,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
+    FieldMetadata(
+        "fileSizeBytes",
+        "file_size_bytes",
+        "_file_size_bytes",
+        int,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
+    FieldMetadata(
+        "uploadDate",
+        "upload_date",
+        "_upload_date",
+        datetime,
+        None,
+        DateTimeSerializer(),
+    ),
+    FieldMetadata(
+        "totalRows",
+        "total_rows",
+        "_total_rows",
+        int,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
+    FieldMetadata(
+        "publicRows",
+        "public_rows",
+        "_public_rows",
+        int,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
+    FieldMetadata(
+        "privateRows",
+        "private_rows",
+        "_private_rows",
+        int,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
 ]
 
 ApiStartSubmissionUploadRequest._fields = [
-  FieldMetadata("competitionName", "competition_name", "_competition_name", str, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("contentLength", "content_length", "_content_length", int, 0, PredefinedSerializer()),
-  FieldMetadata("lastModifiedEpochSeconds", "last_modified_epoch_seconds", "_last_modified_epoch_seconds", int, 0, PredefinedSerializer()),
-  FieldMetadata("fileName", "file_name", "_file_name", str, "", PredefinedSerializer()),
+    FieldMetadata(
+        "competitionName",
+        "competition_name",
+        "_competition_name",
+        str,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
+    FieldMetadata(
+        "contentLength",
+        "content_length",
+        "_content_length",
+        int,
+        0,
+        PredefinedSerializer(),
+    ),
+    FieldMetadata(
+        "lastModifiedEpochSeconds",
+        "last_modified_epoch_seconds",
+        "_last_modified_epoch_seconds",
+        int,
+        0,
+        PredefinedSerializer(),
+    ),
+    FieldMetadata(
+        "fileName", "file_name", "_file_name", str, "", PredefinedSerializer()
+    ),
 ]
 
 ApiStartSubmissionUploadResponse._fields = [
-  FieldMetadata("token", "token", "_token", str, "", PredefinedSerializer()),
-  FieldMetadata("createUrl", "create_url", "_create_url", str, "", PredefinedSerializer()),
+    FieldMetadata("token", "token", "_token", str, "", PredefinedSerializer()),
+    FieldMetadata(
+        "createUrl", "create_url", "_create_url", str, "", PredefinedSerializer()
+    ),
 ]
 
 ApiSubmission._fields = [
-  FieldMetadata("ref", "ref", "_ref", int, 0, PredefinedSerializer()),
-  FieldMetadata("totalBytes", "total_bytes", "_total_bytes", int, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("date", "date", "_date", datetime, None, DateTimeSerializer()),
-  FieldMetadata("description", "description", "_description", str, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("errorDescription", "error_description", "_error_description", str, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("fileName", "file_name", "_file_name", str, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("publicScore", "public_score", "_public_score", str, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("privateScore", "private_score", "_private_score", str, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("status", "status", "_status", SubmissionStatus, SubmissionStatus.PENDING, EnumSerializer()),
-  FieldMetadata("submittedBy", "submitted_by", "_submitted_by", str, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("submittedByRef", "submitted_by_ref", "_submitted_by_ref", str, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("teamName", "team_name", "_team_name", str, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("url", "url", "_url", str, None, PredefinedSerializer(), optional=True),
+    FieldMetadata("ref", "ref", "_ref", int, 0, PredefinedSerializer()),
+    FieldMetadata(
+        "totalBytes",
+        "total_bytes",
+        "_total_bytes",
+        int,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
+    FieldMetadata("date", "date", "_date", datetime, None, DateTimeSerializer()),
+    FieldMetadata(
+        "description",
+        "description",
+        "_description",
+        str,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
+    FieldMetadata(
+        "errorDescription",
+        "error_description",
+        "_error_description",
+        str,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
+    FieldMetadata(
+        "fileName",
+        "file_name",
+        "_file_name",
+        str,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
+    FieldMetadata(
+        "publicScore",
+        "public_score",
+        "_public_score",
+        str,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
+    FieldMetadata(
+        "privateScore",
+        "private_score",
+        "_private_score",
+        str,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
+    FieldMetadata(
+        "status",
+        "status",
+        "_status",
+        SubmissionStatus,
+        SubmissionStatus.PENDING,
+        EnumSerializer(),
+    ),
+    FieldMetadata(
+        "submittedBy",
+        "submitted_by",
+        "_submitted_by",
+        str,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
+    FieldMetadata(
+        "submittedByRef",
+        "submitted_by_ref",
+        "_submitted_by_ref",
+        str,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
+    FieldMetadata(
+        "teamName",
+        "team_name",
+        "_team_name",
+        str,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
+    FieldMetadata(
+        "url", "url", "_url", str, None, PredefinedSerializer(), optional=True
+    ),
 ]
 
 ApiTopicMessage._fields = [
-  FieldMetadata("id", "id", "_id", int, 0, PredefinedSerializer()),
-  FieldMetadata("postDate", "post_date", "_post_date", datetime, None, DateTimeSerializer()),
-  FieldMetadata("content", "content", "_content", str, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("rawMarkdown", "raw_markdown", "_raw_markdown", str, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("authorName", "author_name", "_author_name", str, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("votes", "votes", "_votes", int, 0, PredefinedSerializer()),
-  FieldMetadata("isDeleted", "is_deleted", "_is_deleted", bool, False, PredefinedSerializer()),
-  FieldMetadata("isPinned", "is_pinned", "_is_pinned", bool, False, PredefinedSerializer()),
-  FieldMetadata("replies", "replies", "_replies", ApiTopicMessage, [], ListSerializer(KaggleObjectSerializer())),
+    FieldMetadata("id", "id", "_id", int, 0, PredefinedSerializer()),
+    FieldMetadata(
+        "postDate", "post_date", "_post_date", datetime, None, DateTimeSerializer()
+    ),
+    FieldMetadata(
+        "content",
+        "content",
+        "_content",
+        str,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
+    FieldMetadata(
+        "rawMarkdown",
+        "raw_markdown",
+        "_raw_markdown",
+        str,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
+    FieldMetadata(
+        "authorName",
+        "author_name",
+        "_author_name",
+        str,
+        None,
+        PredefinedSerializer(),
+        optional=True,
+    ),
+    FieldMetadata("votes", "votes", "_votes", int, 0, PredefinedSerializer()),
+    FieldMetadata(
+        "isDeleted", "is_deleted", "_is_deleted", bool, False, PredefinedSerializer()
+    ),
+    FieldMetadata(
+        "isPinned", "is_pinned", "_is_pinned", bool, False, PredefinedSerializer()
+    ),
+    FieldMetadata(
+        "replies",
+        "replies",
+        "_replies",
+        ApiTopicMessage,
+        [],
+        ListSerializer(KaggleObjectSerializer()),
+    ),
 ]
 
 ApiUpdateCompetitionPageRequest._fields = [
-  FieldMetadata("competitionName", "competition_name", "_competition_name", str, "", PredefinedSerializer()),
-  FieldMetadata("pageName", "page_name", "_page_name", str, "", PredefinedSerializer()),
-  FieldMetadata("page", "page", "_page", ApiCompetitionPage, None, KaggleObjectSerializer()),
-  FieldMetadata("updateMask", "update_mask", "_update_mask", FieldMask, None, FieldMaskSerializer()),
+    FieldMetadata(
+        "competitionName",
+        "competition_name",
+        "_competition_name",
+        str,
+        "",
+        PredefinedSerializer(),
+    ),
+    FieldMetadata(
+        "pageName", "page_name", "_page_name", str, "", PredefinedSerializer()
+    ),
+    FieldMetadata(
+        "page", "page", "_page", ApiCompetitionPage, None, KaggleObjectSerializer()
+    ),
+    FieldMetadata(
+        "updateMask",
+        "update_mask",
+        "_update_mask",
+        FieldMask,
+        None,
+        FieldMaskSerializer(),
+    ),
 ]
 
 ApiUpdateCompetitionSettingsRequest._fields = [
-  FieldMetadata("competitionName", "competition_name", "_competition_name", str, "", PredefinedSerializer()),
-  FieldMetadata("settings", "settings", "_settings", CompetitionSettings, None, KaggleObjectSerializer()),
-  FieldMetadata("updateMask", "update_mask", "_update_mask", FieldMask, None, FieldMaskSerializer()),
+    FieldMetadata(
+        "competitionName",
+        "competition_name",
+        "_competition_name",
+        str,
+        "",
+        PredefinedSerializer(),
+    ),
+    FieldMetadata(
+        "settings",
+        "settings",
+        "_settings",
+        CompetitionSettings,
+        None,
+        KaggleObjectSerializer(),
+    ),
+    FieldMetadata(
+        "updateMask",
+        "update_mask",
+        "_update_mask",
+        FieldMask,
+        None,
+        FieldMaskSerializer(),
+    ),
 ]
-

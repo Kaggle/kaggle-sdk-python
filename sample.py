@@ -29,7 +29,9 @@ from kagglesdk import KaggleClient, KaggleEnv
 def get_competition(client: CompetitionClient):
     competition = client.get_competition(competition_name="titanic")
     print("Competition:")
-    print(f"/competitions/{competition.competition_name} {competition.title} {competition.brief_description}")
+    print(
+        f"/competitions/{competition.competition_name} {competition.title} {competition.brief_description}"
+    )
     print()
 
 
@@ -37,14 +39,22 @@ def list_competitions(client: CompetitionClient):
     request = ListCompetitionsRequest()
     request.page_size = 5
     request.selector = ListCompetitionsRequest.Selector()
-    request.selector.list_option = ListCompetitionsRequest.Selector.ListOption.LIST_OPTION_ACTIVE
-    request.selector.sort_option = ListCompetitionsRequest.Selector.SortOption.SORT_OPTION_NUM_TEAMS
-    request.selector.visibility_filter = ListCompetitionsRequest.Selector.VisibilityFilter.VISIBILITY_FILTER_PUBLIC
+    request.selector.list_option = (
+        ListCompetitionsRequest.Selector.ListOption.LIST_OPTION_ACTIVE
+    )
+    request.selector.sort_option = (
+        ListCompetitionsRequest.Selector.SortOption.SORT_OPTION_NUM_TEAMS
+    )
+    request.selector.visibility_filter = (
+        ListCompetitionsRequest.Selector.VisibilityFilter.VISIBILITY_FILTER_PUBLIC
+    )
 
     response = client.list_competitions(request)
     print("Competitions:")
     for competition in response.competitions:
-        print(f'/competitions/{competition.competition_name} "{competition.title}" "{competition.brief_description}"')
+        print(
+            f'/competitions/{competition.competition_name} "{competition.title}" "{competition.brief_description}"'
+        )
     print()
 
 
@@ -61,7 +71,9 @@ def list_kernels(client: KernelsClient):
     response = response = client.list_kernels(request)
     print("Kernels:")
     for kernel in response.kernels:
-        print(f'/code/{kernel.current_url_slug} "{kernel.title}" by "{kernel.author.display_name}"')
+        print(
+            f'/code/{kernel.current_url_slug} "{kernel.title}" by "{kernel.author.display_name}"'
+        )
     print()
 
 
@@ -87,7 +99,9 @@ def get_current_user(client: UsersClient):
 def search_users_suggestions(client: UsersClient):
     topic_id = 293861  # /discussions/getting-started/293861
 
-    response = client.search_users_suggestions(query="yas", topic_id=topic_id, page_size=5)
+    response = client.search_users_suggestions(
+        query="yas", topic_id=topic_id, page_size=5
+    )
 
     print("User suggestions:")
     for user in response.users_suggestions:
@@ -99,7 +113,11 @@ def _build_kaggle_client(args):
     env = (
         KaggleEnv.STAGING
         if "--staging" in args
-        else (KaggleEnv.ADMIN if "--admin" in args else KaggleEnv.QA if "--qa" in args else KaggleEnv.LOCAL)
+        else (
+            KaggleEnv.ADMIN
+            if "--admin" in args
+            else KaggleEnv.QA if "--qa" in args else KaggleEnv.LOCAL
+        )
     )
     verbose = "--verbose" in args or "-v" in args
     return KaggleClient(env=env, verbose=verbose)

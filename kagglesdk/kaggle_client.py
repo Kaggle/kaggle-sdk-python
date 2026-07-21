@@ -1,7 +1,9 @@
 from kagglesdk.admin.services.inbox_file_service import InboxFileClient
 from kagglesdk.agents.services.agent_exam_service import AgentExamClient
 from kagglesdk.benchmarks.services.benchmarks_api_service import BenchmarksApiClient
-from kagglesdk.benchmarks.services.benchmark_tasks_api_service import BenchmarkTasksApiClient
+from kagglesdk.benchmarks.services.benchmark_tasks_api_service import (
+    BenchmarkTasksApiClient,
+)
 from kagglesdk.blobs.services.blob_api_service import BlobApiClient
 from kagglesdk.common.services.operations_service import OperationsClient
 from kagglesdk.competitions.services.competition_api_service import CompetitionApiClient
@@ -24,98 +26,115 @@ from kagglesdk.kaggle_http_client import KaggleHttpClient
 
 
 class KaggleClient(object):
-  class Admin(object):
-    def __init__(self, http_client: KaggleHttpClient):
-      self.inbox_file_client = InboxFileClient(http_client)
+    class Admin(object):
+        def __init__(self, http_client: KaggleHttpClient):
+            self.inbox_file_client = InboxFileClient(http_client)
 
-  class Agents(object):
-    def __init__(self, http_client: KaggleHttpClient):
-      self.agent_exam_client = AgentExamClient(http_client)
+    class Agents(object):
+        def __init__(self, http_client: KaggleHttpClient):
+            self.agent_exam_client = AgentExamClient(http_client)
 
-  class Benchmarks(object):
-    def __init__(self, http_client: KaggleHttpClient):
-      self.benchmarks_api_client = BenchmarksApiClient(http_client)
-      self.benchmark_tasks_api_client = BenchmarkTasksApiClient(http_client)
+    class Benchmarks(object):
+        def __init__(self, http_client: KaggleHttpClient):
+            self.benchmarks_api_client = BenchmarksApiClient(http_client)
+            self.benchmark_tasks_api_client = BenchmarkTasksApiClient(http_client)
 
-  class Blobs(object):
-    def __init__(self, http_client: KaggleHttpClient):
-      self.blob_api_client = BlobApiClient(http_client)
+    class Blobs(object):
+        def __init__(self, http_client: KaggleHttpClient):
+            self.blob_api_client = BlobApiClient(http_client)
 
-  class Common(object):
-    def __init__(self, http_client: KaggleHttpClient):
-      self.operations_client = OperationsClient(http_client)
+    class Common(object):
+        def __init__(self, http_client: KaggleHttpClient):
+            self.operations_client = OperationsClient(http_client)
 
-  class Competitions(object):
-    def __init__(self, http_client: KaggleHttpClient):
-      self.competition_api_client = CompetitionApiClient(http_client)
-      self.hackathon_api_client = HackathonApiClient(http_client)
+    class Competitions(object):
+        def __init__(self, http_client: KaggleHttpClient):
+            self.competition_api_client = CompetitionApiClient(http_client)
+            self.hackathon_api_client = HackathonApiClient(http_client)
 
-  class Datasets(object):
-    def __init__(self, http_client: KaggleHttpClient):
-      self.dataset_api_client = DatasetApiClient(http_client)
+    class Datasets(object):
+        def __init__(self, http_client: KaggleHttpClient):
+            self.dataset_api_client = DatasetApiClient(http_client)
 
-  class Discussions(object):
-    def __init__(self, http_client: KaggleHttpClient):
-      self.discussion_api_client = DiscussionApiClient(http_client)
-      self.write_ups_api_client = WriteUpsApiClient(http_client)
+    class Discussions(object):
+        def __init__(self, http_client: KaggleHttpClient):
+            self.discussion_api_client = DiscussionApiClient(http_client)
+            self.write_ups_api_client = WriteUpsApiClient(http_client)
 
-  class Education(object):
-    def __init__(self, http_client: KaggleHttpClient):
-      self.education_api_client = EducationApiClient(http_client)
+    class Education(object):
+        def __init__(self, http_client: KaggleHttpClient):
+            self.education_api_client = EducationApiClient(http_client)
 
-  class Kernels(object):
-    def __init__(self, http_client: KaggleHttpClient):
-      self.kernels_api_client = KernelsApiClient(http_client)
+    class Kernels(object):
+        def __init__(self, http_client: KaggleHttpClient):
+            self.kernels_api_client = KernelsApiClient(http_client)
 
-  class Models(object):
-    def __init__(self, http_client: KaggleHttpClient):
-      self.model_api_client = ModelApiClient(http_client)
-      self.model_proxy_api_client = ModelProxyApiClient(http_client)
-      self.model_client = ModelClient(http_client)
+    class Models(object):
+        def __init__(self, http_client: KaggleHttpClient):
+            self.model_api_client = ModelApiClient(http_client)
+            self.model_proxy_api_client = ModelProxyApiClient(http_client)
+            self.model_client = ModelClient(http_client)
 
-  class Search(object):
-    def __init__(self, http_client: KaggleHttpClient):
-      self.search_api_client = SearchApiClient(http_client)
+    class Search(object):
+        def __init__(self, http_client: KaggleHttpClient):
+            self.search_api_client = SearchApiClient(http_client)
 
-  class Security(object):
-    def __init__(self, http_client: KaggleHttpClient):
-      self.iam_client = IamClient(http_client)
-      self.oauth_client = OAuthClient(http_client)
+    class Security(object):
+        def __init__(self, http_client: KaggleHttpClient):
+            self.iam_client = IamClient(http_client)
+            self.oauth_client = OAuthClient(http_client)
 
-  class Users(object):
-    def __init__(self, http_client: KaggleHttpClient):
-      self.account_client = AccountClient(http_client)
-      self.group_api_client = GroupApiClient(http_client)
+    class Users(object):
+        def __init__(self, http_client: KaggleHttpClient):
+            self.account_client = AccountClient(http_client)
+            self.group_api_client = GroupApiClient(http_client)
 
-  def __init__(self, env: KaggleEnv = None, verbose: bool = False, username: str = None, password: str = None, api_token: str = None, user_agent: str = '', response_processor=None):
-    self._http_client = http_client = KaggleHttpClient(env, verbose, username=username, password=password, api_token=api_token, user_agent=user_agent, response_processor=response_processor)
-    self.admin = KaggleClient.Admin(http_client)
-    self.agents = KaggleClient.Agents(http_client)
-    self.benchmarks = KaggleClient.Benchmarks(http_client)
-    self.blobs = KaggleClient.Blobs(http_client)
-    self.common = KaggleClient.Common(http_client)
-    self.competitions = KaggleClient.Competitions(http_client)
-    self.datasets = KaggleClient.Datasets(http_client)
-    self.discussions = KaggleClient.Discussions(http_client)
-    self.education = KaggleClient.Education(http_client)
-    self.kernels = KaggleClient.Kernels(http_client)
-    self.models = KaggleClient.Models(http_client)
-    self.search = KaggleClient.Search(http_client)
-    self.security = KaggleClient.Security(http_client)
-    self.users = KaggleClient.Users(http_client)
-    self.username = username
-    self.password = password
-    self.api_token = api_token
+    def __init__(
+        self,
+        env: KaggleEnv = None,
+        verbose: bool = False,
+        username: str = None,
+        password: str = None,
+        api_token: str = None,
+        user_agent: str = "",
+        response_processor=None,
+    ):
+        self._http_client = http_client = KaggleHttpClient(
+            env,
+            verbose,
+            username=username,
+            password=password,
+            api_token=api_token,
+            user_agent=user_agent,
+            response_processor=response_processor,
+        )
+        self.admin = KaggleClient.Admin(http_client)
+        self.agents = KaggleClient.Agents(http_client)
+        self.benchmarks = KaggleClient.Benchmarks(http_client)
+        self.blobs = KaggleClient.Blobs(http_client)
+        self.common = KaggleClient.Common(http_client)
+        self.competitions = KaggleClient.Competitions(http_client)
+        self.datasets = KaggleClient.Datasets(http_client)
+        self.discussions = KaggleClient.Discussions(http_client)
+        self.education = KaggleClient.Education(http_client)
+        self.kernels = KaggleClient.Kernels(http_client)
+        self.models = KaggleClient.Models(http_client)
+        self.search = KaggleClient.Search(http_client)
+        self.security = KaggleClient.Security(http_client)
+        self.users = KaggleClient.Users(http_client)
+        self.username = username
+        self.password = password
+        self.api_token = api_token
 
-  def http_client(self) -> KaggleHttpClient:
-    return self._http_client
+    def http_client(self) -> KaggleHttpClient:
+        return self._http_client
 
-  def _renew_iap_token(self) -> str:
-    return self.admin.admin_client.renew_iap_token()
+    def _renew_iap_token(self) -> str:
+        return self.admin.admin_client.renew_iap_token()
 
-  def __enter__(self):
-    self._http_client.__enter__()
-    return self
+    def __enter__(self):
+        self._http_client.__enter__()
+        return self
 
-  def __exit__(self, exc_type, exc_value, tb):
-    self._http_client.__exit__(exc_type, exc_value, tb)
+    def __exit__(self, exc_type, exc_value, tb):
+        self._http_client.__exit__(exc_type, exc_value, tb)

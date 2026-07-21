@@ -11,7 +11,6 @@ from kagglesdk.models.types.model_api_service import (
 from kagglesdk.models.types.model_enums import ModelFramework
 from kagglesdk import KaggleClient, KaggleEnv
 
-
 # An example that illustrates how to use the generated API.
 # This exercises all the derived, conditional endpoints.
 # Requests cannot be reused since the #framework property is deleted.
@@ -91,7 +90,11 @@ def download_model_instance_version(client: ModelApiClient):
 
 
 def _build_kaggle_client(args):
-    env = KaggleEnv.STAGING if "--staging" in args else KaggleEnv.ADMIN if "--admin" in args else KaggleEnv.LOCAL
+    env = (
+        KaggleEnv.STAGING
+        if "--staging" in args
+        else KaggleEnv.ADMIN if "--admin" in args else KaggleEnv.LOCAL
+    )
     verbose = "--verbose" in args or "-v" in args
     return KaggleClient(env=env, verbose=verbose)
 
