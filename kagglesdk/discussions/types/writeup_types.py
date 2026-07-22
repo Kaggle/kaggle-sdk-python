@@ -304,6 +304,10 @@ class WriteUp(KaggleObject):
     doi (str)
       A DataCite DOI reference identifier, if available.
       e.g. '12.34567/KAGGLE/W/1234567'
+    is_user_author (bool)
+      Indicates whether the requesting user is the author of the WriteUp.
+      This is equivalent to `message.is_user_author`, but sometimes `message` is
+      dropped from the mask due to performance considerations.
   """
 
   def __init__(self):
@@ -335,6 +339,7 @@ class WriteUp(KaggleObject):
     self._saved_cover_image_url = ""
     self._saved_thumbnail_image_url = ""
     self._doi = None
+    self._is_user_author = False
     self._freeze()
 
   @property
@@ -751,6 +756,24 @@ class WriteUp(KaggleObject):
     if not isinstance(doi, str):
       raise TypeError('doi must be of type str')
     self._doi = doi
+
+  @property
+  def is_user_author(self) -> bool:
+    r"""
+    Indicates whether the requesting user is the author of the WriteUp.
+    This is equivalent to `message.is_user_author`, but sometimes `message` is
+    dropped from the mask due to performance considerations.
+    """
+    return self._is_user_author
+
+  @is_user_author.setter
+  def is_user_author(self, is_user_author: bool):
+    if is_user_author is None:
+      del self.is_user_author
+      return
+    if not isinstance(is_user_author, bool):
+      raise TypeError('is_user_author must be of type bool')
+    self._is_user_author = is_user_author
 
 
 class WriteUpImageInfo(KaggleObject):
@@ -1399,6 +1422,7 @@ WriteUp._fields = [
   FieldMetadata("savedCoverImageUrl", "saved_cover_image_url", "_saved_cover_image_url", str, "", PredefinedSerializer()),
   FieldMetadata("savedThumbnailImageUrl", "saved_thumbnail_image_url", "_saved_thumbnail_image_url", str, "", PredefinedSerializer()),
   FieldMetadata("doi", "doi", "_doi", str, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("isUserAuthor", "is_user_author", "_is_user_author", bool, False, PredefinedSerializer()),
 ]
 
 WriteUpImageInfo._fields = [

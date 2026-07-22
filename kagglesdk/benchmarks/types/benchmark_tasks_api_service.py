@@ -1269,11 +1269,136 @@ class BenchmarkTaskDefinition(KaggleObject):
 
 class BenchmarkTaskDockerImageDefinition(KaggleObject):
   r"""
-  TODO(bml): Setup for docker images
+  User-supplied Docker image task definition.
 
+  Attributes:
+    docker_image_url (str)
+      Required. Full image ref (e.g. gcr.io/project/image:tag).
+    description (str)
+      Required on new tasks; ignored on version bumps (existing description
+      carries over). Task description.
+    title (str)
+      Optional. Display name for the task. Defaults to the slug when omitted.
+      Ignored on version bumps.
+    env_variables (EnvVariable)
+      Optional. Environment variables set on the container.
+    secrets (UserSecret)
+      Optional. Create/update UserSecrets inline before running.
+    nested_virtualization_required (bool)
+      Optional. Run the container with nested virtualization enabled — set
+      when the image needs to launch VMs (e.g. QEMU/KVM guests) inside its
+      sandbox. Ignored unless the caller has the
+      BENCHMARKS_ALLOW_NESTED_VIRTUALIZATION feature flag.
   """
 
-  pass
+  def __init__(self):
+    self._docker_image_url = ""
+    self._description = None
+    self._title = None
+    self._env_variables = []
+    self._secrets = []
+    self._nested_virtualization_required = False
+    self._freeze()
+
+  @property
+  def docker_image_url(self) -> str:
+    """Required. Full image ref (e.g. gcr.io/project/image:tag)."""
+    return self._docker_image_url
+
+  @docker_image_url.setter
+  def docker_image_url(self, docker_image_url: str):
+    if docker_image_url is None:
+      del self.docker_image_url
+      return
+    if not isinstance(docker_image_url, str):
+      raise TypeError('docker_image_url must be of type str')
+    self._docker_image_url = docker_image_url
+
+  @property
+  def description(self) -> str:
+    r"""
+    Required on new tasks; ignored on version bumps (existing description
+    carries over). Task description.
+    """
+    return self._description or ""
+
+  @description.setter
+  def description(self, description: Optional[str]):
+    if description is None:
+      del self.description
+      return
+    if not isinstance(description, str):
+      raise TypeError('description must be of type str')
+    self._description = description
+
+  @property
+  def title(self) -> str:
+    r"""
+    Optional. Display name for the task. Defaults to the slug when omitted.
+    Ignored on version bumps.
+    """
+    return self._title or ""
+
+  @title.setter
+  def title(self, title: Optional[str]):
+    if title is None:
+      del self.title
+      return
+    if not isinstance(title, str):
+      raise TypeError('title must be of type str')
+    self._title = title
+
+  @property
+  def env_variables(self) -> Optional[List[Optional['EnvVariable']]]:
+    """Optional. Environment variables set on the container."""
+    return self._env_variables
+
+  @env_variables.setter
+  def env_variables(self, env_variables: Optional[List[Optional['EnvVariable']]]):
+    if env_variables is None:
+      del self.env_variables
+      return
+    if not isinstance(env_variables, list):
+      raise TypeError('env_variables must be of type list')
+    if not all([isinstance(t, EnvVariable) for t in env_variables]):
+      raise TypeError('env_variables must contain only items of type EnvVariable')
+    self._env_variables = env_variables
+
+  @property
+  def secrets(self) -> Optional[List[Optional['UserSecret']]]:
+    """Optional. Create/update UserSecrets inline before running."""
+    return self._secrets
+
+  @secrets.setter
+  def secrets(self, secrets: Optional[List[Optional['UserSecret']]]):
+    if secrets is None:
+      del self.secrets
+      return
+    if not isinstance(secrets, list):
+      raise TypeError('secrets must be of type list')
+    if not all([isinstance(t, UserSecret) for t in secrets]):
+      raise TypeError('secrets must contain only items of type UserSecret')
+    self._secrets = secrets
+
+  @property
+  def nested_virtualization_required(self) -> bool:
+    r"""
+    Optional. Run the container with nested virtualization enabled — set
+    when the image needs to launch VMs (e.g. QEMU/KVM guests) inside its
+    sandbox. Ignored unless the caller has the
+    BENCHMARKS_ALLOW_NESTED_VIRTUALIZATION feature flag.
+    """
+    return self._nested_virtualization_required
+
+  @nested_virtualization_required.setter
+  def nested_virtualization_required(self, nested_virtualization_required: bool):
+    if nested_virtualization_required is None:
+      del self.nested_virtualization_required
+      return
+    if not isinstance(nested_virtualization_required, bool):
+      raise TypeError('nested_virtualization_required must be of type bool')
+    self._nested_virtualization_required = nested_virtualization_required
+
 
 class BenchmarkTaskGitDefinition(KaggleObject):
   r"""
@@ -1290,6 +1415,9 @@ class BenchmarkTaskGitDefinition(KaggleObject):
       Optional. Environment variables to expose to the Harbor session container.
     secrets (UserSecret)
       Optional. Create/update UserSecrets inline before running.
+    use_accelerator (bool)
+      Optional. Route the Harbor session to an L4-GPU exeunit pool. Ignored
+      unless the caller has the BENCHMARKS_ALLOW_USE_ACCELERATOR feature flag.
   """
 
   def __init__(self):
@@ -1298,6 +1426,7 @@ class BenchmarkTaskGitDefinition(KaggleObject):
     self._subpath = ""
     self._env_variables = []
     self._secrets = []
+    self._use_accelerator = False
     self._freeze()
 
   @property
@@ -1373,6 +1502,23 @@ class BenchmarkTaskGitDefinition(KaggleObject):
     if not all([isinstance(t, UserSecret) for t in secrets]):
       raise TypeError('secrets must contain only items of type UserSecret')
     self._secrets = secrets
+
+  @property
+  def use_accelerator(self) -> bool:
+    r"""
+    Optional. Route the Harbor session to an L4-GPU exeunit pool. Ignored
+    unless the caller has the BENCHMARKS_ALLOW_USE_ACCELERATOR feature flag.
+    """
+    return self._use_accelerator
+
+  @use_accelerator.setter
+  def use_accelerator(self, use_accelerator: bool):
+    if use_accelerator is None:
+      del self.use_accelerator
+      return
+    if not isinstance(use_accelerator, bool):
+      raise TypeError('use_accelerator must be of type bool')
+    self._use_accelerator = use_accelerator
 
 
 class BenchmarkTaskNotebookDefinition(KaggleObject):
@@ -1488,7 +1634,14 @@ BenchmarkTaskDefinition._fields = [
   FieldMetadata("harborGit", "harbor_git", "_harbor_git", BenchmarkTaskGitDefinition, None, KaggleObjectSerializer(), optional=True),
 ]
 
-BenchmarkTaskDockerImageDefinition._fields = []
+BenchmarkTaskDockerImageDefinition._fields = [
+  FieldMetadata("dockerImageUrl", "docker_image_url", "_docker_image_url", str, "", PredefinedSerializer()),
+  FieldMetadata("description", "description", "_description", str, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("title", "title", "_title", str, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("envVariables", "env_variables", "_env_variables", EnvVariable, [], ListSerializer(KaggleObjectSerializer())),
+  FieldMetadata("secrets", "secrets", "_secrets", UserSecret, [], ListSerializer(KaggleObjectSerializer())),
+  FieldMetadata("nestedVirtualizationRequired", "nested_virtualization_required", "_nested_virtualization_required", bool, False, PredefinedSerializer()),
+]
 
 BenchmarkTaskGitDefinition._fields = [
   FieldMetadata("url", "url", "_url", str, "", PredefinedSerializer()),
@@ -1496,6 +1649,7 @@ BenchmarkTaskGitDefinition._fields = [
   FieldMetadata("subpath", "subpath", "_subpath", str, "", PredefinedSerializer()),
   FieldMetadata("envVariables", "env_variables", "_env_variables", EnvVariable, [], ListSerializer(KaggleObjectSerializer())),
   FieldMetadata("secrets", "secrets", "_secrets", UserSecret, [], ListSerializer(KaggleObjectSerializer())),
+  FieldMetadata("useAccelerator", "use_accelerator", "_use_accelerator", bool, False, PredefinedSerializer()),
 ]
 
 BenchmarkTaskNotebookDefinition._fields = []
