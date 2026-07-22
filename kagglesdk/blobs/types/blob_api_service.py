@@ -7,6 +7,7 @@ class ApiBlobType(enum.Enum):
   DATASET = 1
   MODEL = 2
   INBOX = 3
+  COMPETITION_SOLUTION = 4
 
 class ApiStartBlobUploadRequest(KaggleObject):
   r"""
