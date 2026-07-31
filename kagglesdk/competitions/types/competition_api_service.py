@@ -2348,6 +2348,38 @@ class ApiDownloadLeaderboardRequest(KaggleObject):
     return '/api/v1/competitions/{competition_name}/leaderboard/download'
 
 
+class ApiDownloadSubmissionRequest(KaggleObject):
+  r"""
+  Attributes:
+    submission_id (int)
+  """
+
+  def __init__(self):
+    self._submission_id = 0
+    self._freeze()
+
+  @property
+  def submission_id(self) -> int:
+    return self._submission_id
+
+  @submission_id.setter
+  def submission_id(self, submission_id: int):
+    if submission_id is None:
+      del self.submission_id
+      return
+    if not isinstance(submission_id, int):
+      raise TypeError('submission_id must be of type int')
+    self._submission_id = submission_id
+
+  def endpoint(self):
+    path = '/api/v1/competitions/submissions/download/{submission_id}'
+    return path.format_map(self.to_field_map(self))
+
+  @staticmethod
+  def endpoint_path():
+    return '/api/v1/competitions/submissions/download/{submission_id}'
+
+
 class ApiEpisode(KaggleObject):
   r"""
   Attributes:
@@ -4982,7 +5014,7 @@ class ApiUpdateCompetitionSettingsRequest(KaggleObject):
     competition_name (str)
     settings (CompetitionSettings)
       Only fields listed in update_mask are written. Reserved CompetitionSettings
-      fields (deadline, reward, num_prizes, max_team_size, etc.) are web-only.
+      fields (reward, num_prizes, max_team_size, etc.) are web-only.
     update_mask (FieldMask)
   """
 
@@ -5009,7 +5041,7 @@ class ApiUpdateCompetitionSettingsRequest(KaggleObject):
   def settings(self) -> Optional['CompetitionSettings']:
     r"""
     Only fields listed in update_mask are written. Reserved CompetitionSettings
-    fields (deadline, reward, num_prizes, max_team_size, etc.) are web-only.
+    fields (reward, num_prizes, max_team_size, etc.) are web-only.
     """
     return self._settings
 
@@ -5235,6 +5267,10 @@ ApiDownloadDataFilesRequest._fields = [
 
 ApiDownloadLeaderboardRequest._fields = [
   FieldMetadata("competitionName", "competition_name", "_competition_name", str, "", PredefinedSerializer()),
+]
+
+ApiDownloadSubmissionRequest._fields = [
+  FieldMetadata("submissionId", "submission_id", "_submission_id", int, 0, PredefinedSerializer()),
 ]
 
 ApiEpisode._fields = [

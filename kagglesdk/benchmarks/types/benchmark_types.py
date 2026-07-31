@@ -683,6 +683,155 @@ class BenchmarkResult(KaggleObject):
     self._evaluation_date = evaluation_date
 
 
+class BenchmarkTaskKaggleDatasetsDefinition(KaggleObject):
+  r"""
+  Task definition and asset mounts for a Harbor task whose definition and data
+  live in mounted Kaggle datasets instead of a git clone. Dataset references
+  are pinned to an immutable version for reproducibility.
+
+  Attributes:
+    definition_source (BenchmarkTaskKaggleDatasetsDefinition.DefinitionSource)
+    mounts (BenchmarkTaskKaggleDatasetsDefinition.DatasetMount)
+  """
+
+  class DatasetMount(KaggleObject):
+    r"""
+    Attributes:
+      dataset_version_slug (str)
+        'owner/slug/versions/N' — the version segment is REQUIRED for
+        reproducibility. Requests without an explicit version are rejected.
+      mount_path (str)
+        Absolute path inside the container where the dataset is mounted. Callers
+        pick this so tasks can locate their data anywhere. Unique across the
+        mount list; must not shadow the task-definition mount.
+    """
+
+    def __init__(self):
+      self._dataset_version_slug = ""
+      self._mount_path = ""
+      self._freeze()
+
+    @property
+    def dataset_version_slug(self) -> str:
+      r"""
+      'owner/slug/versions/N' — the version segment is REQUIRED for
+      reproducibility. Requests without an explicit version are rejected.
+      """
+      return self._dataset_version_slug
+
+    @dataset_version_slug.setter
+    def dataset_version_slug(self, dataset_version_slug: str):
+      if dataset_version_slug is None:
+        del self.dataset_version_slug
+        return
+      if not isinstance(dataset_version_slug, str):
+        raise TypeError('dataset_version_slug must be of type str')
+      self._dataset_version_slug = dataset_version_slug
+
+    @property
+    def mount_path(self) -> str:
+      r"""
+      Absolute path inside the container where the dataset is mounted. Callers
+      pick this so tasks can locate their data anywhere. Unique across the
+      mount list; must not shadow the task-definition mount.
+      """
+      return self._mount_path
+
+    @mount_path.setter
+    def mount_path(self, mount_path: str):
+      if mount_path is None:
+        del self.mount_path
+        return
+      if not isinstance(mount_path, str):
+        raise TypeError('mount_path must be of type str')
+      self._mount_path = mount_path
+
+
+  class DefinitionSource(KaggleObject):
+    r"""
+    Attributes:
+      dataset_version_slug (str)
+        'owner/slug/versions/N' — the version segment is REQUIRED for
+        reproducibility. Requests without an explicit version are rejected.
+      sub_path (str)
+        Sub-directory within the dataset containing task.toml. Empty means the
+        dataset root.
+    """
+
+    def __init__(self):
+      self._dataset_version_slug = ""
+      self._sub_path = ""
+      self._freeze()
+
+    @property
+    def dataset_version_slug(self) -> str:
+      r"""
+      'owner/slug/versions/N' — the version segment is REQUIRED for
+      reproducibility. Requests without an explicit version are rejected.
+      """
+      return self._dataset_version_slug
+
+    @dataset_version_slug.setter
+    def dataset_version_slug(self, dataset_version_slug: str):
+      if dataset_version_slug is None:
+        del self.dataset_version_slug
+        return
+      if not isinstance(dataset_version_slug, str):
+        raise TypeError('dataset_version_slug must be of type str')
+      self._dataset_version_slug = dataset_version_slug
+
+    @property
+    def sub_path(self) -> str:
+      r"""
+      Sub-directory within the dataset containing task.toml. Empty means the
+      dataset root.
+      """
+      return self._sub_path
+
+    @sub_path.setter
+    def sub_path(self, sub_path: str):
+      if sub_path is None:
+        del self.sub_path
+        return
+      if not isinstance(sub_path, str):
+        raise TypeError('sub_path must be of type str')
+      self._sub_path = sub_path
+
+
+  def __init__(self):
+    self._definition_source = None
+    self._mounts = []
+    self._freeze()
+
+  @property
+  def definition_source(self) -> Optional['BenchmarkTaskKaggleDatasetsDefinition.DefinitionSource']:
+    return self._definition_source
+
+  @definition_source.setter
+  def definition_source(self, definition_source: Optional['BenchmarkTaskKaggleDatasetsDefinition.DefinitionSource']):
+    if definition_source is None:
+      del self.definition_source
+      return
+    if not isinstance(definition_source, BenchmarkTaskKaggleDatasetsDefinition.DefinitionSource):
+      raise TypeError('definition_source must be of type BenchmarkTaskKaggleDatasetsDefinition.DefinitionSource')
+    self._definition_source = definition_source
+
+  @property
+  def mounts(self) -> Optional[List[Optional['BenchmarkTaskKaggleDatasetsDefinition.DatasetMount']]]:
+    return self._mounts
+
+  @mounts.setter
+  def mounts(self, mounts: Optional[List[Optional['BenchmarkTaskKaggleDatasetsDefinition.DatasetMount']]]):
+    if mounts is None:
+      del self.mounts
+      return
+    if not isinstance(mounts, list):
+      raise TypeError('mounts must be of type list')
+    if not all([isinstance(t, BenchmarkTaskKaggleDatasetsDefinition.DatasetMount) for t in mounts]):
+      raise TypeError('mounts must contain only items of type BenchmarkTaskKaggleDatasetsDefinition.DatasetMount')
+    self._mounts = mounts
+
+
 class BenchmarkTaskOptions(KaggleObject):
   r"""
   Options persisted on a BenchmarkTaskVersion. Currently only carries
@@ -914,6 +1063,21 @@ BenchmarkResult._fields = [
   FieldMetadata("numericResultPublic", "numeric_result_public", "_numeric_result_public", NumericResult, None, KaggleObjectSerializer(), optional=True),
   FieldMetadata("evaluationDate", "evaluation_date", "_evaluation_date", datetime, None, DateTimeSerializer(), optional=True),
   FieldMetadata("taskVersionId", "task_version_id", "_task_version_id", int, None, PredefinedSerializer(), optional=True),
+]
+
+BenchmarkTaskKaggleDatasetsDefinition.DatasetMount._fields = [
+  FieldMetadata("datasetVersionSlug", "dataset_version_slug", "_dataset_version_slug", str, "", PredefinedSerializer()),
+  FieldMetadata("mountPath", "mount_path", "_mount_path", str, "", PredefinedSerializer()),
+]
+
+BenchmarkTaskKaggleDatasetsDefinition.DefinitionSource._fields = [
+  FieldMetadata("datasetVersionSlug", "dataset_version_slug", "_dataset_version_slug", str, "", PredefinedSerializer()),
+  FieldMetadata("subPath", "sub_path", "_sub_path", str, "", PredefinedSerializer()),
+]
+
+BenchmarkTaskKaggleDatasetsDefinition._fields = [
+  FieldMetadata("definitionSource", "definition_source", "_definition_source", BenchmarkTaskKaggleDatasetsDefinition.DefinitionSource, None, KaggleObjectSerializer()),
+  FieldMetadata("mounts", "mounts", "_mounts", BenchmarkTaskKaggleDatasetsDefinition.DatasetMount, [], ListSerializer(KaggleObjectSerializer())),
 ]
 
 BenchmarkTaskOptions._fields = [

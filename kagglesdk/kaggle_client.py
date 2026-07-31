@@ -1,5 +1,6 @@
 from kagglesdk.admin.services.inbox_file_service import InboxFileClient
 from kagglesdk.agents.services.agent_exam_service import AgentExamClient
+from kagglesdk.agents.services.agents_api_service import AgentsApiClient
 from kagglesdk.benchmarks.services.benchmarks_api_service import BenchmarksApiClient
 from kagglesdk.benchmarks.services.benchmark_tasks_api_service import BenchmarkTasksApiClient
 from kagglesdk.blobs.services.blob_api_service import BlobApiClient
@@ -32,6 +33,7 @@ class KaggleClient(object):
   class Agents(object):
     def __init__(self, http_client: KaggleHttpClient):
       self.agent_exam_client = AgentExamClient(http_client)
+      self.agents_api_client = AgentsApiClient(http_client)
 
   class Benchmarks(object):
     def __init__(self, http_client: KaggleHttpClient):

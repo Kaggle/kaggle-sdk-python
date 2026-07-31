@@ -154,6 +154,241 @@ class ApiBenchmarkLeaderboard(KaggleObject):
     self._rows = rows
 
 
+class ApiBenchmarkModelVersionConfig(KaggleObject):
+  r"""
+  API equivalent of BenchmarkModelVersionConfig from benchmark_types.proto:
+  a fully-configured, runnable BenchmarkModelVersion (which LLM + all its
+  sampling parameters).
+
+  Attributes:
+    id (int)
+      Output-only on create.
+    benchmark_model_version_id (int)
+      The BenchmarkModelVersion (i.e. the LLM) being configured.
+    display_name (str)
+      ex: 'Claude Opus 4.8 High Reasoning Effort'.
+    slug (str)
+      ex: 'claude-opus-4.8-high-reasoning-effort'.
+    reasoning_effort (str)
+    temperature (float)
+    top_p (float)
+    max_output_tokens (int)
+    top_k (int)
+      Only supported by some providers (e.g. Anthropic, Google).
+    seed (int)
+      Only supported by some providers.
+    thinking_budget (int)
+      Alternative to reasoning_effort for providers that expose a token budget
+      directly.
+  """
+
+  def __init__(self):
+    self._id = 0
+    self._benchmark_model_version_id = 0
+    self._display_name = ""
+    self._slug = ""
+    self._reasoning_effort = ""
+    self._temperature = 0.0
+    self._top_p = 0.0
+    self._max_output_tokens = 0
+    self._top_k = None
+    self._seed = None
+    self._thinking_budget = None
+    self._freeze()
+
+  @property
+  def id(self) -> int:
+    """Output-only on create."""
+    return self._id
+
+  @id.setter
+  def id(self, id: int):
+    if id is None:
+      del self.id
+      return
+    if not isinstance(id, int):
+      raise TypeError('id must be of type int')
+    self._id = id
+
+  @property
+  def benchmark_model_version_id(self) -> int:
+    """The BenchmarkModelVersion (i.e. the LLM) being configured."""
+    return self._benchmark_model_version_id
+
+  @benchmark_model_version_id.setter
+  def benchmark_model_version_id(self, benchmark_model_version_id: int):
+    if benchmark_model_version_id is None:
+      del self.benchmark_model_version_id
+      return
+    if not isinstance(benchmark_model_version_id, int):
+      raise TypeError('benchmark_model_version_id must be of type int')
+    self._benchmark_model_version_id = benchmark_model_version_id
+
+  @property
+  def display_name(self) -> str:
+    """ex: 'Claude Opus 4.8 High Reasoning Effort'."""
+    return self._display_name
+
+  @display_name.setter
+  def display_name(self, display_name: str):
+    if display_name is None:
+      del self.display_name
+      return
+    if not isinstance(display_name, str):
+      raise TypeError('display_name must be of type str')
+    self._display_name = display_name
+
+  @property
+  def slug(self) -> str:
+    """ex: 'claude-opus-4.8-high-reasoning-effort'."""
+    return self._slug
+
+  @slug.setter
+  def slug(self, slug: str):
+    if slug is None:
+      del self.slug
+      return
+    if not isinstance(slug, str):
+      raise TypeError('slug must be of type str')
+    self._slug = slug
+
+  @property
+  def reasoning_effort(self) -> str:
+    return self._reasoning_effort
+
+  @reasoning_effort.setter
+  def reasoning_effort(self, reasoning_effort: str):
+    if reasoning_effort is None:
+      del self.reasoning_effort
+      return
+    if not isinstance(reasoning_effort, str):
+      raise TypeError('reasoning_effort must be of type str')
+    self._reasoning_effort = reasoning_effort
+
+  @property
+  def temperature(self) -> float:
+    return self._temperature
+
+  @temperature.setter
+  def temperature(self, temperature: float):
+    if temperature is None:
+      del self.temperature
+      return
+    if not isinstance(temperature, float):
+      raise TypeError('temperature must be of type float')
+    self._temperature = temperature
+
+  @property
+  def top_p(self) -> float:
+    return self._top_p
+
+  @top_p.setter
+  def top_p(self, top_p: float):
+    if top_p is None:
+      del self.top_p
+      return
+    if not isinstance(top_p, float):
+      raise TypeError('top_p must be of type float')
+    self._top_p = top_p
+
+  @property
+  def max_output_tokens(self) -> int:
+    return self._max_output_tokens
+
+  @max_output_tokens.setter
+  def max_output_tokens(self, max_output_tokens: int):
+    if max_output_tokens is None:
+      del self.max_output_tokens
+      return
+    if not isinstance(max_output_tokens, int):
+      raise TypeError('max_output_tokens must be of type int')
+    self._max_output_tokens = max_output_tokens
+
+  @property
+  def top_k(self) -> int:
+    """Only supported by some providers (e.g. Anthropic, Google)."""
+    return self._top_k or 0
+
+  @top_k.setter
+  def top_k(self, top_k: Optional[int]):
+    if top_k is None:
+      del self.top_k
+      return
+    if not isinstance(top_k, int):
+      raise TypeError('top_k must be of type int')
+    self._top_k = top_k
+
+  @property
+  def seed(self) -> int:
+    """Only supported by some providers."""
+    return self._seed or 0
+
+  @seed.setter
+  def seed(self, seed: Optional[int]):
+    if seed is None:
+      del self.seed
+      return
+    if not isinstance(seed, int):
+      raise TypeError('seed must be of type int')
+    self._seed = seed
+
+  @property
+  def thinking_budget(self) -> int:
+    r"""
+    Alternative to reasoning_effort for providers that expose a token budget
+    directly.
+    """
+    return self._thinking_budget or 0
+
+  @thinking_budget.setter
+  def thinking_budget(self, thinking_budget: Optional[int]):
+    if thinking_budget is None:
+      del self.thinking_budget
+      return
+    if not isinstance(thinking_budget, int):
+      raise TypeError('thinking_budget must be of type int')
+    self._thinking_budget = thinking_budget
+
+
+class ApiCreateBenchmarkModelVersionConfigRequest(KaggleObject):
+  r"""
+  Attributes:
+    config (ApiBenchmarkModelVersionConfig)
+      The config to create.
+  """
+
+  def __init__(self):
+    self._config = None
+    self._freeze()
+
+  @property
+  def config(self) -> Optional['ApiBenchmarkModelVersionConfig']:
+    """The config to create."""
+    return self._config
+
+  @config.setter
+  def config(self, config: Optional['ApiBenchmarkModelVersionConfig']):
+    if config is None:
+      del self.config
+      return
+    if not isinstance(config, ApiBenchmarkModelVersionConfig):
+      raise TypeError('config must be of type ApiBenchmarkModelVersionConfig')
+    self._config = config
+
+  def endpoint(self):
+    path = '/api/v1/benchmarks/models/versions/configs/create'
+    return path.format_map(self.to_field_map(self))
+
+
+  @staticmethod
+  def method():
+    return 'POST'
+
+  @staticmethod
+  def body_fields():
+    return '*'
+
+
 class ApiGetBenchmarkLeaderboardRequest(KaggleObject):
   r"""
   Attributes:
@@ -217,6 +452,40 @@ class ApiGetBenchmarkLeaderboardRequest(KaggleObject):
   @staticmethod
   def endpoint_path():
     return '/api/v1/benchmarks/{owner_slug}/{benchmark_slug}/leaderboard'
+
+
+class ApiGetBenchmarkModelVersionConfigRequest(KaggleObject):
+  r"""
+  Attributes:
+    id (int)
+      Id of the config to fetch.
+  """
+
+  def __init__(self):
+    self._id = 0
+    self._freeze()
+
+  @property
+  def id(self) -> int:
+    """Id of the config to fetch."""
+    return self._id
+
+  @id.setter
+  def id(self, id: int):
+    if id is None:
+      del self.id
+      return
+    if not isinstance(id, int):
+      raise TypeError('id must be of type int')
+    self._id = id
+
+  def endpoint(self):
+    path = '/api/v1/benchmarks/models/versions/configs/{id}'
+    return path.format_map(self.to_field_map(self))
+
+  @staticmethod
+  def endpoint_path():
+    return '/api/v1/benchmarks/models/versions/configs/{id}'
 
 
 class ApiListBenchmarkModelsRequest(KaggleObject):
@@ -332,6 +601,117 @@ class ApiListBenchmarkModelsResponse(KaggleObject):
     return self.next_page_token
 
 
+class ApiListBenchmarkModelVersionConfigsRequest(KaggleObject):
+  r"""
+  Attributes:
+    benchmark_model_version_ids (int)
+      If set, only return configs whose parent BenchmarkModelVersionId is in
+      this list.
+    page_size (int)
+    page_token (str)
+  """
+
+  def __init__(self):
+    self._benchmark_model_version_ids = []
+    self._page_size = 0
+    self._page_token = ""
+    self._freeze()
+
+  @property
+  def benchmark_model_version_ids(self) -> Optional[List[int]]:
+    r"""
+    If set, only return configs whose parent BenchmarkModelVersionId is in
+    this list.
+    """
+    return self._benchmark_model_version_ids
+
+  @benchmark_model_version_ids.setter
+  def benchmark_model_version_ids(self, benchmark_model_version_ids: Optional[List[int]]):
+    if benchmark_model_version_ids is None:
+      del self.benchmark_model_version_ids
+      return
+    if not isinstance(benchmark_model_version_ids, list):
+      raise TypeError('benchmark_model_version_ids must be of type list')
+    if not all([isinstance(t, int) for t in benchmark_model_version_ids]):
+      raise TypeError('benchmark_model_version_ids must contain only items of type int')
+    self._benchmark_model_version_ids = benchmark_model_version_ids
+
+  @property
+  def page_size(self) -> int:
+    return self._page_size
+
+  @page_size.setter
+  def page_size(self, page_size: int):
+    if page_size is None:
+      del self.page_size
+      return
+    if not isinstance(page_size, int):
+      raise TypeError('page_size must be of type int')
+    self._page_size = page_size
+
+  @property
+  def page_token(self) -> str:
+    return self._page_token
+
+  @page_token.setter
+  def page_token(self, page_token: str):
+    if page_token is None:
+      del self.page_token
+      return
+    if not isinstance(page_token, str):
+      raise TypeError('page_token must be of type str')
+    self._page_token = page_token
+
+  def endpoint(self):
+    path = '/api/v1/benchmarks/models/versions/configs/list'
+    return path.format_map(self.to_field_map(self))
+
+
+class ApiListBenchmarkModelVersionConfigsResponse(KaggleObject):
+  r"""
+  Attributes:
+    configs (ApiBenchmarkModelVersionConfig)
+    next_page_token (str)
+  """
+
+  def __init__(self):
+    self._configs = []
+    self._next_page_token = None
+    self._freeze()
+
+  @property
+  def configs(self) -> Optional[List[Optional['ApiBenchmarkModelVersionConfig']]]:
+    return self._configs
+
+  @configs.setter
+  def configs(self, configs: Optional[List[Optional['ApiBenchmarkModelVersionConfig']]]):
+    if configs is None:
+      del self.configs
+      return
+    if not isinstance(configs, list):
+      raise TypeError('configs must be of type list')
+    if not all([isinstance(t, ApiBenchmarkModelVersionConfig) for t in configs]):
+      raise TypeError('configs must contain only items of type ApiBenchmarkModelVersionConfig')
+    self._configs = configs
+
+  @property
+  def next_page_token(self) -> str:
+    return self._next_page_token or ""
+
+  @next_page_token.setter
+  def next_page_token(self, next_page_token: Optional[str]):
+    if next_page_token is None:
+      del self.next_page_token
+      return
+    if not isinstance(next_page_token, str):
+      raise TypeError('next_page_token must be of type str')
+    self._next_page_token = next_page_token
+
+  @property
+  def nextPageToken(self):
+    return self.next_page_token
+
+
 ApiBenchmarkLeaderboard.LeaderboardRow._fields = [
   FieldMetadata("modelVersionName", "model_version_name", "_model_version_name", str, "", PredefinedSerializer()),
   FieldMetadata("modelVersionSlug", "model_version_slug", "_model_version_slug", str, "", PredefinedSerializer()),
@@ -349,10 +729,32 @@ ApiBenchmarkLeaderboard._fields = [
   FieldMetadata("rows", "rows", "_rows", ApiBenchmarkLeaderboard.LeaderboardRow, [], ListSerializer(KaggleObjectSerializer())),
 ]
 
+ApiBenchmarkModelVersionConfig._fields = [
+  FieldMetadata("id", "id", "_id", int, 0, PredefinedSerializer()),
+  FieldMetadata("benchmarkModelVersionId", "benchmark_model_version_id", "_benchmark_model_version_id", int, 0, PredefinedSerializer()),
+  FieldMetadata("displayName", "display_name", "_display_name", str, "", PredefinedSerializer()),
+  FieldMetadata("slug", "slug", "_slug", str, "", PredefinedSerializer()),
+  FieldMetadata("reasoningEffort", "reasoning_effort", "_reasoning_effort", str, "", PredefinedSerializer()),
+  FieldMetadata("temperature", "temperature", "_temperature", float, 0.0, PredefinedSerializer()),
+  FieldMetadata("topP", "top_p", "_top_p", float, 0.0, PredefinedSerializer()),
+  FieldMetadata("maxOutputTokens", "max_output_tokens", "_max_output_tokens", int, 0, PredefinedSerializer()),
+  FieldMetadata("topK", "top_k", "_top_k", int, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("seed", "seed", "_seed", int, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("thinkingBudget", "thinking_budget", "_thinking_budget", int, None, PredefinedSerializer(), optional=True),
+]
+
+ApiCreateBenchmarkModelVersionConfigRequest._fields = [
+  FieldMetadata("config", "config", "_config", ApiBenchmarkModelVersionConfig, None, KaggleObjectSerializer()),
+]
+
 ApiGetBenchmarkLeaderboardRequest._fields = [
   FieldMetadata("ownerSlug", "owner_slug", "_owner_slug", str, "", PredefinedSerializer()),
   FieldMetadata("benchmarkSlug", "benchmark_slug", "_benchmark_slug", str, "", PredefinedSerializer()),
   FieldMetadata("versionNumber", "version_number", "_version_number", int, None, PredefinedSerializer(), optional=True),
+]
+
+ApiGetBenchmarkModelVersionConfigRequest._fields = [
+  FieldMetadata("id", "id", "_id", int, 0, PredefinedSerializer()),
 ]
 
 ApiListBenchmarkModelsRequest._fields = [
@@ -363,6 +765,17 @@ ApiListBenchmarkModelsRequest._fields = [
 
 ApiListBenchmarkModelsResponse._fields = [
   FieldMetadata("benchmarkModels", "benchmark_models", "_benchmark_models", BenchmarkModel, [], ListSerializer(KaggleObjectSerializer())),
+  FieldMetadata("nextPageToken", "next_page_token", "_next_page_token", str, None, PredefinedSerializer(), optional=True),
+]
+
+ApiListBenchmarkModelVersionConfigsRequest._fields = [
+  FieldMetadata("benchmarkModelVersionIds", "benchmark_model_version_ids", "_benchmark_model_version_ids", int, [], ListSerializer(PredefinedSerializer())),
+  FieldMetadata("pageSize", "page_size", "_page_size", int, 0, PredefinedSerializer()),
+  FieldMetadata("pageToken", "page_token", "_page_token", str, "", PredefinedSerializer()),
+]
+
+ApiListBenchmarkModelVersionConfigsResponse._fields = [
+  FieldMetadata("configs", "configs", "_configs", ApiBenchmarkModelVersionConfig, [], ListSerializer(KaggleObjectSerializer())),
   FieldMetadata("nextPageToken", "next_page_token", "_next_page_token", str, None, PredefinedSerializer(), optional=True),
 ]
 

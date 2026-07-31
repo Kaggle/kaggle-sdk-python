@@ -43,6 +43,9 @@ class CompetitionSettings(KaggleObject):
       --)
       Should only be set if enable_team_files is true.
       Team File Drop Deadline' in the UI.
+    deadline (datetime)
+      KEY DATES SETTINGS GROUP (field numbers 40-59)
+      'Competition Deadline' in the UI.
     team_merger_explicit_deadline (datetime)
       KEY DATES SETTINGS GROUP: ADMIN ONLY
       'Team Merger Deadline' in the UI.
@@ -113,6 +116,7 @@ class CompetitionSettings(KaggleObject):
     self._requires_identity_verification = False
     self._enable_team_files = False
     self._team_file_deadline = None
+    self._deadline = None
     self._team_merger_explicit_deadline = None
     self._prohibit_new_entrants_explicit_deadline = None
     self._kernels_publishing_disabled_deadline = None
@@ -298,6 +302,23 @@ class CompetitionSettings(KaggleObject):
     if not isinstance(team_file_deadline, datetime):
       raise TypeError('team_file_deadline must be of type datetime')
     self._team_file_deadline = team_file_deadline
+
+  @property
+  def deadline(self) -> datetime:
+    r"""
+    KEY DATES SETTINGS GROUP (field numbers 40-59)
+    'Competition Deadline' in the UI.
+    """
+    return self._deadline
+
+  @deadline.setter
+  def deadline(self, deadline: datetime):
+    if deadline is None:
+      del self.deadline
+      return
+    if not isinstance(deadline, datetime):
+      raise TypeError('deadline must be of type datetime')
+    self._deadline = deadline
 
   @property
   def team_merger_explicit_deadline(self) -> datetime:
@@ -604,6 +625,7 @@ CompetitionSettings._fields = [
   FieldMetadata("requiresIdentityVerification", "requires_identity_verification", "_requires_identity_verification", bool, False, PredefinedSerializer()),
   FieldMetadata("enableTeamFiles", "enable_team_files", "_enable_team_files", bool, False, PredefinedSerializer()),
   FieldMetadata("teamFileDeadline", "team_file_deadline", "_team_file_deadline", datetime, None, DateTimeSerializer()),
+  FieldMetadata("deadline", "deadline", "_deadline", datetime, None, DateTimeSerializer()),
   FieldMetadata("teamMergerExplicitDeadline", "team_merger_explicit_deadline", "_team_merger_explicit_deadline", datetime, None, DateTimeSerializer()),
   FieldMetadata("prohibitNewEntrantsExplicitDeadline", "prohibit_new_entrants_explicit_deadline", "_prohibit_new_entrants_explicit_deadline", datetime, None, DateTimeSerializer()),
   FieldMetadata("kernelsPublishingDisabledDeadline", "kernels_publishing_disabled_deadline", "_kernels_publishing_disabled_deadline", datetime, None, DateTimeSerializer()),
