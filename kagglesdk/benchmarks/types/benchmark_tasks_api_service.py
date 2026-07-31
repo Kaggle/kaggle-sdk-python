@@ -2,7 +2,7 @@ from datetime import datetime
 from kagglesdk.benchmarks.types.benchmark_enums import BenchmarkTaskRunState, BenchmarkTaskVersionCreationState, BenchmarkTaskVersionSource
 from kagglesdk.benchmarks.types.benchmark_task_run_service import BatchScheduleBenchmarkModelVersionResult
 from kagglesdk.benchmarks.types.benchmark_task_service import EnvVariable, UserSecret
-from kagglesdk.benchmarks.types.benchmark_types import BenchmarkTaskOptions
+from kagglesdk.benchmarks.types.benchmark_types import BenchmarkTaskKaggleDatasetsDefinition, BenchmarkTaskOptions
 from kagglesdk.kaggle_object import *
 from typing import List, Optional
 
@@ -1213,12 +1213,14 @@ class BenchmarkTaskDefinition(KaggleObject):
     notebook (BenchmarkTaskNotebookDefinition)
     docker_image (BenchmarkTaskDockerImageDefinition)
     harbor_git (BenchmarkTaskGitDefinition)
+    harbor_kaggle_datasets (BenchmarkTaskKaggleDatasetsDefinition)
   """
 
   def __init__(self):
     self._notebook = None
     self._docker_image = None
     self._harbor_git = None
+    self._harbor_kaggle_datasets = None
     self._freeze()
 
   @property
@@ -1234,6 +1236,7 @@ class BenchmarkTaskDefinition(KaggleObject):
       raise TypeError('notebook must be of type BenchmarkTaskNotebookDefinition')
     del self.docker_image
     del self.harbor_git
+    del self.harbor_kaggle_datasets
     self._notebook = notebook
 
   @property
@@ -1249,6 +1252,7 @@ class BenchmarkTaskDefinition(KaggleObject):
       raise TypeError('docker_image must be of type BenchmarkTaskDockerImageDefinition')
     del self.notebook
     del self.harbor_git
+    del self.harbor_kaggle_datasets
     self._docker_image = docker_image
 
   @property
@@ -1264,7 +1268,24 @@ class BenchmarkTaskDefinition(KaggleObject):
       raise TypeError('harbor_git must be of type BenchmarkTaskGitDefinition')
     del self.notebook
     del self.docker_image
+    del self.harbor_kaggle_datasets
     self._harbor_git = harbor_git
+
+  @property
+  def harbor_kaggle_datasets(self) -> Optional['BenchmarkTaskKaggleDatasetsDefinition']:
+    return self._harbor_kaggle_datasets or None
+
+  @harbor_kaggle_datasets.setter
+  def harbor_kaggle_datasets(self, harbor_kaggle_datasets: Optional['BenchmarkTaskKaggleDatasetsDefinition']):
+    if harbor_kaggle_datasets is None:
+      del self.harbor_kaggle_datasets
+      return
+    if not isinstance(harbor_kaggle_datasets, BenchmarkTaskKaggleDatasetsDefinition):
+      raise TypeError('harbor_kaggle_datasets must be of type BenchmarkTaskKaggleDatasetsDefinition')
+    del self.notebook
+    del self.docker_image
+    del self.harbor_git
+    self._harbor_kaggle_datasets = harbor_kaggle_datasets
 
 
 class BenchmarkTaskDockerImageDefinition(KaggleObject):
@@ -1632,6 +1653,7 @@ BenchmarkTaskDefinition._fields = [
   FieldMetadata("notebook", "notebook", "_notebook", BenchmarkTaskNotebookDefinition, None, KaggleObjectSerializer(), optional=True),
   FieldMetadata("dockerImage", "docker_image", "_docker_image", BenchmarkTaskDockerImageDefinition, None, KaggleObjectSerializer(), optional=True),
   FieldMetadata("harborGit", "harbor_git", "_harbor_git", BenchmarkTaskGitDefinition, None, KaggleObjectSerializer(), optional=True),
+  FieldMetadata("harborKaggleDatasets", "harbor_kaggle_datasets", "_harbor_kaggle_datasets", BenchmarkTaskKaggleDatasetsDefinition, None, KaggleObjectSerializer(), optional=True),
 ]
 
 BenchmarkTaskDockerImageDefinition._fields = [

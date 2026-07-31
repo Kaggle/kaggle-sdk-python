@@ -169,6 +169,15 @@ class WriteUpItemInfo(KaggleObject):
       Id of the WriteUp
     hackathon_track_ids (int)
       The track ids of the Hackathon
+    awarded_hackathon_track_prize_ids (int)
+      Hackathon track prize ids this WriteUp has been awarded
+    team_leader_user_id (int)
+      User id of the team leader
+    template (bool)
+      True if this WriteUp is a sample/template project
+    hackathon_write_up_id (int)
+      Id of the underlying HackathonWriteUp (distinct from `id`, which is the
+      WriteUp id).
   """
 
   def __init__(self):
@@ -180,6 +189,10 @@ class WriteUpItemInfo(KaggleObject):
     self._team_name = None
     self._id = 0
     self._hackathon_track_ids = []
+    self._awarded_hackathon_track_prize_ids = []
+    self._team_leader_user_id = None
+    self._template = False
+    self._hackathon_write_up_id = None
     self._freeze()
 
   @property
@@ -298,6 +311,67 @@ class WriteUpItemInfo(KaggleObject):
       raise TypeError('hackathon_track_ids must contain only items of type int')
     self._hackathon_track_ids = hackathon_track_ids
 
+  @property
+  def awarded_hackathon_track_prize_ids(self) -> Optional[List[int]]:
+    """Hackathon track prize ids this WriteUp has been awarded"""
+    return self._awarded_hackathon_track_prize_ids
+
+  @awarded_hackathon_track_prize_ids.setter
+  def awarded_hackathon_track_prize_ids(self, awarded_hackathon_track_prize_ids: Optional[List[int]]):
+    if awarded_hackathon_track_prize_ids is None:
+      del self.awarded_hackathon_track_prize_ids
+      return
+    if not isinstance(awarded_hackathon_track_prize_ids, list):
+      raise TypeError('awarded_hackathon_track_prize_ids must be of type list')
+    if not all([isinstance(t, int) for t in awarded_hackathon_track_prize_ids]):
+      raise TypeError('awarded_hackathon_track_prize_ids must contain only items of type int')
+    self._awarded_hackathon_track_prize_ids = awarded_hackathon_track_prize_ids
+
+  @property
+  def team_leader_user_id(self) -> int:
+    """User id of the team leader"""
+    return self._team_leader_user_id or 0
+
+  @team_leader_user_id.setter
+  def team_leader_user_id(self, team_leader_user_id: Optional[int]):
+    if team_leader_user_id is None:
+      del self.team_leader_user_id
+      return
+    if not isinstance(team_leader_user_id, int):
+      raise TypeError('team_leader_user_id must be of type int')
+    self._team_leader_user_id = team_leader_user_id
+
+  @property
+  def template(self) -> bool:
+    """True if this WriteUp is a sample/template project"""
+    return self._template
+
+  @template.setter
+  def template(self, template: bool):
+    if template is None:
+      del self.template
+      return
+    if not isinstance(template, bool):
+      raise TypeError('template must be of type bool')
+    self._template = template
+
+  @property
+  def hackathon_write_up_id(self) -> int:
+    r"""
+    Id of the underlying HackathonWriteUp (distinct from `id`, which is the
+    WriteUp id).
+    """
+    return self._hackathon_write_up_id or 0
+
+  @hackathon_write_up_id.setter
+  def hackathon_write_up_id(self, hackathon_write_up_id: Optional[int]):
+    if hackathon_write_up_id is None:
+      del self.hackathon_write_up_id
+      return
+    if not isinstance(hackathon_write_up_id, int):
+      raise TypeError('hackathon_write_up_id must be of type int')
+    self._hackathon_write_up_id = hackathon_write_up_id
+
 
 WriteUpCompetitionInfo._fields = [
   FieldMetadata("competitionTitle", "competition_title", "_competition_title", str, "", PredefinedSerializer()),
@@ -319,5 +393,9 @@ WriteUpItemInfo._fields = [
   FieldMetadata("teamName", "team_name", "_team_name", str, None, PredefinedSerializer(), optional=True),
   FieldMetadata("id", "id", "_id", int, 0, PredefinedSerializer()),
   FieldMetadata("hackathonTrackIds", "hackathon_track_ids", "_hackathon_track_ids", int, [], ListSerializer(PredefinedSerializer())),
+  FieldMetadata("awardedHackathonTrackPrizeIds", "awarded_hackathon_track_prize_ids", "_awarded_hackathon_track_prize_ids", int, [], ListSerializer(PredefinedSerializer())),
+  FieldMetadata("teamLeaderUserId", "team_leader_user_id", "_team_leader_user_id", int, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("template", "template", "_template", bool, False, PredefinedSerializer()),
+  FieldMetadata("hackathonWriteUpId", "hackathon_write_up_id", "_hackathon_write_up_id", int, None, PredefinedSerializer(), optional=True),
 ]
 
