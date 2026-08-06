@@ -49,6 +49,12 @@ class ModelInstanceType(enum.Enum):
   MODEL_INSTANCE_TYPE_KAGGLE_VARIANT = 2
   MODEL_INSTANCE_TYPE_EXTERNAL_VARIANT = 3
 
+class ModelProxyQuotaRefillPeriod(enum.Enum):
+  """How often a quota is refilled."""
+  REFILL_PERIOD_UNSPECIFIED = 0
+  DAILY = 1
+  MONTHLY = 2
+
 class ModelVersionLinkType(enum.Enum):
   MODEL_VERSION_LINK_TYPE_UNSPECIFIED = 0
   MODEL_VERSION_LINK_TYPE_VERTEX_OPEN = 1

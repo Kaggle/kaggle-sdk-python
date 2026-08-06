@@ -9,6 +9,118 @@ from kagglesdk.discussions.types.discussions_enums import CommentListSortBy, Top
 from kagglesdk.kaggle_object import *
 from typing import Optional, List, Dict
 
+class ApiAddCompetitionHostRequest(KaggleObject):
+  r"""
+  Attributes:
+    competition_name (str)
+    user_name (str)
+      Kaggle user name (URL slug, e.g. 'kerneler') of the user to add as a host.
+  """
+
+  def __init__(self):
+    self._competition_name = ""
+    self._user_name = ""
+    self._freeze()
+
+  @property
+  def competition_name(self) -> str:
+    return self._competition_name
+
+  @competition_name.setter
+  def competition_name(self, competition_name: str):
+    if competition_name is None:
+      del self.competition_name
+      return
+    if not isinstance(competition_name, str):
+      raise TypeError('competition_name must be of type str')
+    self._competition_name = competition_name
+
+  @property
+  def user_name(self) -> str:
+    """Kaggle user name (URL slug, e.g. 'kerneler') of the user to add as a host."""
+    return self._user_name
+
+  @user_name.setter
+  def user_name(self, user_name: str):
+    if user_name is None:
+      del self.user_name
+      return
+    if not isinstance(user_name, str):
+      raise TypeError('user_name must be of type str')
+    self._user_name = user_name
+
+  def endpoint(self):
+    path = '/api/v1/competitions/{competition_name}/hosts'
+    return path.format_map(self.to_field_map(self))
+
+
+  @staticmethod
+  def method():
+    return 'POST'
+
+  @staticmethod
+  def body_fields():
+    return '*'
+
+
+class ApiAddCompetitionJudgeRequest(KaggleObject):
+  r"""
+  Attributes:
+    competition_name (str)
+    user_name (str)
+      Kaggle user name (URL slug, e.g. 'fickleone') of the user to add as a
+      judge.
+  """
+
+  def __init__(self):
+    self._competition_name = ""
+    self._user_name = ""
+    self._freeze()
+
+  @property
+  def competition_name(self) -> str:
+    return self._competition_name
+
+  @competition_name.setter
+  def competition_name(self, competition_name: str):
+    if competition_name is None:
+      del self.competition_name
+      return
+    if not isinstance(competition_name, str):
+      raise TypeError('competition_name must be of type str')
+    self._competition_name = competition_name
+
+  @property
+  def user_name(self) -> str:
+    r"""
+    Kaggle user name (URL slug, e.g. 'fickleone') of the user to add as a
+    judge.
+    """
+    return self._user_name
+
+  @user_name.setter
+  def user_name(self, user_name: str):
+    if user_name is None:
+      del self.user_name
+      return
+    if not isinstance(user_name, str):
+      raise TypeError('user_name must be of type str')
+    self._user_name = user_name
+
+  def endpoint(self):
+    path = '/api/v1/competitions/{competition_name}/judges'
+    return path.format_map(self.to_field_map(self))
+
+
+  @staticmethod
+  def method():
+    return 'POST'
+
+  @staticmethod
+  def body_fields():
+    return '*'
+
+
 class ApiCategory(KaggleObject):
   r"""
   TODO(erdalsivri): Consider reusing with Kaggle.Sdk.Datasets.ApiCategory.
@@ -3171,6 +3283,64 @@ class ApiListCompetitionHostsResponse(KaggleObject):
     self._hosts = hosts
 
 
+class ApiListCompetitionJudgesRequest(KaggleObject):
+  r"""
+  Attributes:
+    competition_name (str)
+  """
+
+  def __init__(self):
+    self._competition_name = ""
+    self._freeze()
+
+  @property
+  def competition_name(self) -> str:
+    return self._competition_name
+
+  @competition_name.setter
+  def competition_name(self, competition_name: str):
+    if competition_name is None:
+      del self.competition_name
+      return
+    if not isinstance(competition_name, str):
+      raise TypeError('competition_name must be of type str')
+    self._competition_name = competition_name
+
+  def endpoint(self):
+    path = '/api/v1/competitions/{competition_name}/judges'
+    return path.format_map(self.to_field_map(self))
+
+  @staticmethod
+  def endpoint_path():
+    return '/api/v1/competitions/{competition_name}/judges'
+
+
+class ApiListCompetitionJudgesResponse(KaggleObject):
+  r"""
+  Attributes:
+    judges (ApiCompetitionHost)
+  """
+
+  def __init__(self):
+    self._judges = []
+    self._freeze()
+
+  @property
+  def judges(self) -> Optional[List[Optional['ApiCompetitionHost']]]:
+    return self._judges
+
+  @judges.setter
+  def judges(self, judges: Optional[List[Optional['ApiCompetitionHost']]]):
+    if judges is None:
+      del self.judges
+      return
+    if not isinstance(judges, list):
+      raise TypeError('judges must be of type list')
+    if not all([isinstance(t, ApiCompetitionHost) for t in judges]):
+      raise TypeError('judges must contain only items of type ApiCompetitionHost')
+    self._judges = judges
+
+
 class ApiListCompetitionPagesRequest(KaggleObject):
   r"""
   Attributes:
@@ -5081,6 +5251,16 @@ class ApiUpdateCompetitionSettingsRequest(KaggleObject):
     return '*'
 
 
+ApiAddCompetitionHostRequest._fields = [
+  FieldMetadata("competitionName", "competition_name", "_competition_name", str, "", PredefinedSerializer()),
+  FieldMetadata("userName", "user_name", "_user_name", str, "", PredefinedSerializer()),
+]
+
+ApiAddCompetitionJudgeRequest._fields = [
+  FieldMetadata("competitionName", "competition_name", "_competition_name", str, "", PredefinedSerializer()),
+  FieldMetadata("userName", "user_name", "_user_name", str, "", PredefinedSerializer()),
+]
+
 ApiCategory._fields = [
   FieldMetadata("ref", "ref", "_ref", str, "", PredefinedSerializer()),
   FieldMetadata("name", "name", "_name", str, None, PredefinedSerializer(), optional=True),
@@ -5354,6 +5534,14 @@ ApiListCompetitionHostsRequest._fields = [
 
 ApiListCompetitionHostsResponse._fields = [
   FieldMetadata("hosts", "hosts", "_hosts", ApiCompetitionHost, [], ListSerializer(KaggleObjectSerializer())),
+]
+
+ApiListCompetitionJudgesRequest._fields = [
+  FieldMetadata("competitionName", "competition_name", "_competition_name", str, "", PredefinedSerializer()),
+]
+
+ApiListCompetitionJudgesResponse._fields = [
+  FieldMetadata("judges", "judges", "_judges", ApiCompetitionHost, [], ListSerializer(KaggleObjectSerializer())),
 ]
 
 ApiListCompetitionPagesRequest._fields = [

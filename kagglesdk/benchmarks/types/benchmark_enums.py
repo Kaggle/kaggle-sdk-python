@@ -68,3 +68,8 @@ class BenchmarkTaskRunState(enum.Enum):
   score from the competitions scoring system.
   """
 
+class BenchmarkVersionAgentMappingType(enum.Enum):
+  """Saved to the DB. Do not modify existing values."""
+  BENCHMARK_VERSION_AGENT_MAPPING_TYPE_UNSPECIFIED = 0
+  BENCHMARK_VERSION_AGENT_MAPPING_TYPE_PRINCIPAL = 1
+
