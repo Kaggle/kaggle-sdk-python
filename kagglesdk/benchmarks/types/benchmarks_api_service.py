@@ -1,4 +1,6 @@
 from google.protobuf.field_mask_pb2 import FieldMask
+from kagglesdk.benchmarks.types.benchmark_enums import BenchmarkVersionAgentMappingType
+from kagglesdk.benchmarks.types.benchmark_service import ListBenchmarkVersionAgentMappingsFilter
 from kagglesdk.benchmarks.types.benchmark_types import BenchmarkModel, BenchmarkResult
 from kagglesdk.kaggle_object import *
 from typing import List, Optional
@@ -170,16 +172,6 @@ class ApiBenchmarkModelVersionConfig(KaggleObject):
     slug (str)
       ex: 'claude-opus-4.8-high-reasoning-effort'.
     reasoning_effort (str)
-    temperature (float)
-    top_p (float)
-    max_output_tokens (int)
-    top_k (int)
-      Only supported by some providers (e.g. Anthropic, Google).
-    seed (int)
-      Only supported by some providers.
-    thinking_budget (int)
-      Alternative to reasoning_effort for providers that expose a token budget
-      directly.
   """
 
   def __init__(self):
@@ -188,12 +180,6 @@ class ApiBenchmarkModelVersionConfig(KaggleObject):
     self._display_name = ""
     self._slug = ""
     self._reasoning_effort = ""
-    self._temperature = 0.0
-    self._top_p = 0.0
-    self._max_output_tokens = 0
-    self._top_k = None
-    self._seed = None
-    self._thinking_budget = None
     self._freeze()
 
   @property
@@ -265,89 +251,84 @@ class ApiBenchmarkModelVersionConfig(KaggleObject):
       raise TypeError('reasoning_effort must be of type str')
     self._reasoning_effort = reasoning_effort
 
-  @property
-  def temperature(self) -> float:
-    return self._temperature
 
-  @temperature.setter
-  def temperature(self, temperature: float):
-    if temperature is None:
-      del self.temperature
-      return
-    if not isinstance(temperature, float):
-      raise TypeError('temperature must be of type float')
-    self._temperature = temperature
+class ApiBenchmarkVersionAgentMapping(KaggleObject):
+  r"""
+  API equivalent of BenchmarkVersionAgentMapping from benchmark_types.proto.
 
-  @property
-  def top_p(self) -> float:
-    return self._top_p
+  Attributes:
+    id (int)
+      Output-only on create.
+    parent_benchmark_version_id (int)
+      The parent benchmark version to map to.
+    child_agent_id (int)
+      The agent to map.
+    type (BenchmarkVersionAgentMappingType)
+      The mapping type.
+  """
 
-  @top_p.setter
-  def top_p(self, top_p: float):
-    if top_p is None:
-      del self.top_p
-      return
-    if not isinstance(top_p, float):
-      raise TypeError('top_p must be of type float')
-    self._top_p = top_p
+  def __init__(self):
+    self._id = 0
+    self._parent_benchmark_version_id = 0
+    self._child_agent_id = 0
+    self._type = BenchmarkVersionAgentMappingType.BENCHMARK_VERSION_AGENT_MAPPING_TYPE_UNSPECIFIED
+    self._freeze()
 
   @property
-  def max_output_tokens(self) -> int:
-    return self._max_output_tokens
+  def id(self) -> int:
+    """Output-only on create."""
+    return self._id
 
-  @max_output_tokens.setter
-  def max_output_tokens(self, max_output_tokens: int):
-    if max_output_tokens is None:
-      del self.max_output_tokens
+  @id.setter
+  def id(self, id: int):
+    if id is None:
+      del self.id
       return
-    if not isinstance(max_output_tokens, int):
-      raise TypeError('max_output_tokens must be of type int')
-    self._max_output_tokens = max_output_tokens
+    if not isinstance(id, int):
+      raise TypeError('id must be of type int')
+    self._id = id
 
   @property
-  def top_k(self) -> int:
-    """Only supported by some providers (e.g. Anthropic, Google)."""
-    return self._top_k or 0
+  def parent_benchmark_version_id(self) -> int:
+    """The parent benchmark version to map to."""
+    return self._parent_benchmark_version_id
 
-  @top_k.setter
-  def top_k(self, top_k: Optional[int]):
-    if top_k is None:
-      del self.top_k
+  @parent_benchmark_version_id.setter
+  def parent_benchmark_version_id(self, parent_benchmark_version_id: int):
+    if parent_benchmark_version_id is None:
+      del self.parent_benchmark_version_id
       return
-    if not isinstance(top_k, int):
-      raise TypeError('top_k must be of type int')
-    self._top_k = top_k
+    if not isinstance(parent_benchmark_version_id, int):
+      raise TypeError('parent_benchmark_version_id must be of type int')
+    self._parent_benchmark_version_id = parent_benchmark_version_id
 
   @property
-  def seed(self) -> int:
-    """Only supported by some providers."""
-    return self._seed or 0
+  def child_agent_id(self) -> int:
+    """The agent to map."""
+    return self._child_agent_id
 
-  @seed.setter
-  def seed(self, seed: Optional[int]):
-    if seed is None:
-      del self.seed
+  @child_agent_id.setter
+  def child_agent_id(self, child_agent_id: int):
+    if child_agent_id is None:
+      del self.child_agent_id
       return
-    if not isinstance(seed, int):
-      raise TypeError('seed must be of type int')
-    self._seed = seed
+    if not isinstance(child_agent_id, int):
+      raise TypeError('child_agent_id must be of type int')
+    self._child_agent_id = child_agent_id
 
   @property
-  def thinking_budget(self) -> int:
-    r"""
-    Alternative to reasoning_effort for providers that expose a token budget
-    directly.
-    """
-    return self._thinking_budget or 0
+  def type(self) -> 'BenchmarkVersionAgentMappingType':
+    """The mapping type."""
+    return self._type
 
-  @thinking_budget.setter
-  def thinking_budget(self, thinking_budget: Optional[int]):
-    if thinking_budget is None:
-      del self.thinking_budget
+  @type.setter
+  def type(self, type: 'BenchmarkVersionAgentMappingType'):
+    if type is None:
+      del self.type
       return
-    if not isinstance(thinking_budget, int):
-      raise TypeError('thinking_budget must be of type int')
-    self._thinking_budget = thinking_budget
+    if not isinstance(type, BenchmarkVersionAgentMappingType):
+      raise TypeError('type must be of type BenchmarkVersionAgentMappingType')
+    self._type = type
 
 
 class ApiCreateBenchmarkModelVersionConfigRequest(KaggleObject):
@@ -387,6 +368,150 @@ class ApiCreateBenchmarkModelVersionConfigRequest(KaggleObject):
   @staticmethod
   def body_fields():
     return '*'
+
+
+class ApiCreateBenchmarkVersionAgentMappingsRequest(KaggleObject):
+  r"""
+  Attributes:
+    mappings (ApiBenchmarkVersionAgentMapping)
+      Mappings to create. Must be non-empty.
+  """
+
+  def __init__(self):
+    self._mappings = []
+    self._freeze()
+
+  @property
+  def mappings(self) -> Optional[List[Optional['ApiBenchmarkVersionAgentMapping']]]:
+    """Mappings to create. Must be non-empty."""
+    return self._mappings
+
+  @mappings.setter
+  def mappings(self, mappings: Optional[List[Optional['ApiBenchmarkVersionAgentMapping']]]):
+    if mappings is None:
+      del self.mappings
+      return
+    if not isinstance(mappings, list):
+      raise TypeError('mappings must be of type list')
+    if not all([isinstance(t, ApiBenchmarkVersionAgentMapping) for t in mappings]):
+      raise TypeError('mappings must contain only items of type ApiBenchmarkVersionAgentMapping')
+    self._mappings = mappings
+
+  def endpoint(self):
+    path = '/api/v1/benchmarks/versions/agent-mappings/create'
+    return path.format_map(self.to_field_map(self))
+
+
+  @staticmethod
+  def method():
+    return 'POST'
+
+  @staticmethod
+  def body_fields():
+    return '*'
+
+
+class ApiCreateBenchmarkVersionAgentMappingsResponse(KaggleObject):
+  r"""
+  Attributes:
+    mappings (ApiBenchmarkVersionAgentMapping)
+      The created (or revived) mappings, in request order.
+  """
+
+  def __init__(self):
+    self._mappings = []
+    self._freeze()
+
+  @property
+  def mappings(self) -> Optional[List[Optional['ApiBenchmarkVersionAgentMapping']]]:
+    """The created (or revived) mappings, in request order."""
+    return self._mappings
+
+  @mappings.setter
+  def mappings(self, mappings: Optional[List[Optional['ApiBenchmarkVersionAgentMapping']]]):
+    if mappings is None:
+      del self.mappings
+      return
+    if not isinstance(mappings, list):
+      raise TypeError('mappings must be of type list')
+    if not all([isinstance(t, ApiBenchmarkVersionAgentMapping) for t in mappings]):
+      raise TypeError('mappings must contain only items of type ApiBenchmarkVersionAgentMapping')
+    self._mappings = mappings
+
+
+class ApiDeleteBenchmarkVersionAgentMappingsRequest(KaggleObject):
+  r"""
+  Attributes:
+    mappings (ApiBenchmarkVersionAgentMapping)
+      Mappings to soft-delete, identified by the
+      (parent_benchmark_version_id, child_agent_id) pair; other fields are
+      ignored. Must be non-empty.
+  """
+
+  def __init__(self):
+    self._mappings = []
+    self._freeze()
+
+  @property
+  def mappings(self) -> Optional[List[Optional['ApiBenchmarkVersionAgentMapping']]]:
+    r"""
+    Mappings to soft-delete, identified by the
+    (parent_benchmark_version_id, child_agent_id) pair; other fields are
+    ignored. Must be non-empty.
+    """
+    return self._mappings
+
+  @mappings.setter
+  def mappings(self, mappings: Optional[List[Optional['ApiBenchmarkVersionAgentMapping']]]):
+    if mappings is None:
+      del self.mappings
+      return
+    if not isinstance(mappings, list):
+      raise TypeError('mappings must be of type list')
+    if not all([isinstance(t, ApiBenchmarkVersionAgentMapping) for t in mappings]):
+      raise TypeError('mappings must contain only items of type ApiBenchmarkVersionAgentMapping')
+    self._mappings = mappings
+
+  def endpoint(self):
+    path = '/api/v1/benchmarks/versions/agent-mappings/delete'
+    return path.format_map(self.to_field_map(self))
+
+
+  @staticmethod
+  def method():
+    return 'POST'
+
+  @staticmethod
+  def body_fields():
+    return '*'
+
+
+class ApiDeleteBenchmarkVersionAgentMappingsResponse(KaggleObject):
+  r"""
+  Attributes:
+    deleted_mappings_count (int)
+  """
+
+  def __init__(self):
+    self._deleted_mappings_count = 0
+    self._freeze()
+
+  @property
+  def deleted_mappings_count(self) -> int:
+    return self._deleted_mappings_count
+
+  @deleted_mappings_count.setter
+  def deleted_mappings_count(self, deleted_mappings_count: int):
+    if deleted_mappings_count is None:
+      del self.deleted_mappings_count
+      return
+    if not isinstance(deleted_mappings_count, int):
+      raise TypeError('deleted_mappings_count must be of type int')
+    self._deleted_mappings_count = deleted_mappings_count
+
+  @property
+  def deletedMappingsCount(self):
+    return self.deleted_mappings_count
 
 
 class ApiGetBenchmarkLeaderboardRequest(KaggleObject):
@@ -712,6 +837,109 @@ class ApiListBenchmarkModelVersionConfigsResponse(KaggleObject):
     return self.next_page_token
 
 
+class ApiListBenchmarkVersionAgentMappingsRequest(KaggleObject):
+  r"""
+  Attributes:
+    filter (ListBenchmarkVersionAgentMappingsFilter)
+    page_size (int)
+    page_token (str)
+  """
+
+  def __init__(self):
+    self._filter = None
+    self._page_size = 0
+    self._page_token = ""
+    self._freeze()
+
+  @property
+  def filter(self) -> Optional['ListBenchmarkVersionAgentMappingsFilter']:
+    return self._filter
+
+  @filter.setter
+  def filter(self, filter: Optional['ListBenchmarkVersionAgentMappingsFilter']):
+    if filter is None:
+      del self.filter
+      return
+    if not isinstance(filter, ListBenchmarkVersionAgentMappingsFilter):
+      raise TypeError('filter must be of type ListBenchmarkVersionAgentMappingsFilter')
+    self._filter = filter
+
+  @property
+  def page_size(self) -> int:
+    return self._page_size
+
+  @page_size.setter
+  def page_size(self, page_size: int):
+    if page_size is None:
+      del self.page_size
+      return
+    if not isinstance(page_size, int):
+      raise TypeError('page_size must be of type int')
+    self._page_size = page_size
+
+  @property
+  def page_token(self) -> str:
+    return self._page_token
+
+  @page_token.setter
+  def page_token(self, page_token: str):
+    if page_token is None:
+      del self.page_token
+      return
+    if not isinstance(page_token, str):
+      raise TypeError('page_token must be of type str')
+    self._page_token = page_token
+
+  def endpoint(self):
+    path = '/api/v1/benchmarks/versions/agent-mappings/list'
+    return path.format_map(self.to_field_map(self))
+
+
+class ApiListBenchmarkVersionAgentMappingsResponse(KaggleObject):
+  r"""
+  Attributes:
+    mappings (ApiBenchmarkVersionAgentMapping)
+    next_page_token (str)
+  """
+
+  def __init__(self):
+    self._mappings = []
+    self._next_page_token = None
+    self._freeze()
+
+  @property
+  def mappings(self) -> Optional[List[Optional['ApiBenchmarkVersionAgentMapping']]]:
+    return self._mappings
+
+  @mappings.setter
+  def mappings(self, mappings: Optional[List[Optional['ApiBenchmarkVersionAgentMapping']]]):
+    if mappings is None:
+      del self.mappings
+      return
+    if not isinstance(mappings, list):
+      raise TypeError('mappings must be of type list')
+    if not all([isinstance(t, ApiBenchmarkVersionAgentMapping) for t in mappings]):
+      raise TypeError('mappings must contain only items of type ApiBenchmarkVersionAgentMapping')
+    self._mappings = mappings
+
+  @property
+  def next_page_token(self) -> str:
+    return self._next_page_token or ""
+
+  @next_page_token.setter
+  def next_page_token(self, next_page_token: Optional[str]):
+    if next_page_token is None:
+      del self.next_page_token
+      return
+    if not isinstance(next_page_token, str):
+      raise TypeError('next_page_token must be of type str')
+    self._next_page_token = next_page_token
+
+  @property
+  def nextPageToken(self):
+    return self.next_page_token
+
+
 ApiBenchmarkLeaderboard.LeaderboardRow._fields = [
   FieldMetadata("modelVersionName", "model_version_name", "_model_version_name", str, "", PredefinedSerializer()),
   FieldMetadata("modelVersionSlug", "model_version_slug", "_model_version_slug", str, "", PredefinedSerializer()),
@@ -735,16 +963,33 @@ ApiBenchmarkModelVersionConfig._fields = [
   FieldMetadata("displayName", "display_name", "_display_name", str, "", PredefinedSerializer()),
   FieldMetadata("slug", "slug", "_slug", str, "", PredefinedSerializer()),
   FieldMetadata("reasoningEffort", "reasoning_effort", "_reasoning_effort", str, "", PredefinedSerializer()),
-  FieldMetadata("temperature", "temperature", "_temperature", float, 0.0, PredefinedSerializer()),
-  FieldMetadata("topP", "top_p", "_top_p", float, 0.0, PredefinedSerializer()),
-  FieldMetadata("maxOutputTokens", "max_output_tokens", "_max_output_tokens", int, 0, PredefinedSerializer()),
-  FieldMetadata("topK", "top_k", "_top_k", int, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("seed", "seed", "_seed", int, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("thinkingBudget", "thinking_budget", "_thinking_budget", int, None, PredefinedSerializer(), optional=True),
+]
+
+ApiBenchmarkVersionAgentMapping._fields = [
+  FieldMetadata("id", "id", "_id", int, 0, PredefinedSerializer()),
+  FieldMetadata("parentBenchmarkVersionId", "parent_benchmark_version_id", "_parent_benchmark_version_id", int, 0, PredefinedSerializer()),
+  FieldMetadata("childAgentId", "child_agent_id", "_child_agent_id", int, 0, PredefinedSerializer()),
+  FieldMetadata("type", "type", "_type", BenchmarkVersionAgentMappingType, BenchmarkVersionAgentMappingType.BENCHMARK_VERSION_AGENT_MAPPING_TYPE_UNSPECIFIED, EnumSerializer()),
 ]
 
 ApiCreateBenchmarkModelVersionConfigRequest._fields = [
   FieldMetadata("config", "config", "_config", ApiBenchmarkModelVersionConfig, None, KaggleObjectSerializer()),
+]
+
+ApiCreateBenchmarkVersionAgentMappingsRequest._fields = [
+  FieldMetadata("mappings", "mappings", "_mappings", ApiBenchmarkVersionAgentMapping, [], ListSerializer(KaggleObjectSerializer())),
+]
+
+ApiCreateBenchmarkVersionAgentMappingsResponse._fields = [
+  FieldMetadata("mappings", "mappings", "_mappings", ApiBenchmarkVersionAgentMapping, [], ListSerializer(KaggleObjectSerializer())),
+]
+
+ApiDeleteBenchmarkVersionAgentMappingsRequest._fields = [
+  FieldMetadata("mappings", "mappings", "_mappings", ApiBenchmarkVersionAgentMapping, [], ListSerializer(KaggleObjectSerializer())),
+]
+
+ApiDeleteBenchmarkVersionAgentMappingsResponse._fields = [
+  FieldMetadata("deletedMappingsCount", "deleted_mappings_count", "_deleted_mappings_count", int, 0, PredefinedSerializer()),
 ]
 
 ApiGetBenchmarkLeaderboardRequest._fields = [
@@ -776,6 +1021,17 @@ ApiListBenchmarkModelVersionConfigsRequest._fields = [
 
 ApiListBenchmarkModelVersionConfigsResponse._fields = [
   FieldMetadata("configs", "configs", "_configs", ApiBenchmarkModelVersionConfig, [], ListSerializer(KaggleObjectSerializer())),
+  FieldMetadata("nextPageToken", "next_page_token", "_next_page_token", str, None, PredefinedSerializer(), optional=True),
+]
+
+ApiListBenchmarkVersionAgentMappingsRequest._fields = [
+  FieldMetadata("filter", "filter", "_filter", ListBenchmarkVersionAgentMappingsFilter, None, KaggleObjectSerializer()),
+  FieldMetadata("pageSize", "page_size", "_page_size", int, 0, PredefinedSerializer()),
+  FieldMetadata("pageToken", "page_token", "_page_token", str, "", PredefinedSerializer()),
+]
+
+ApiListBenchmarkVersionAgentMappingsResponse._fields = [
+  FieldMetadata("mappings", "mappings", "_mappings", ApiBenchmarkVersionAgentMapping, [], ListSerializer(KaggleObjectSerializer())),
   FieldMetadata("nextPageToken", "next_page_token", "_next_page_token", str, None, PredefinedSerializer(), optional=True),
 ]
 

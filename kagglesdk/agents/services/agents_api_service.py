@@ -1,4 +1,4 @@
-from kagglesdk.agents.types.agents_api_service import ApiCreateHarnessRequest, ApiCreateHarnessVersionRequest, ApiGetHarnessRequest, ApiGetHarnessVersionRequest, ApiHarness, ApiHarnessVersion
+from kagglesdk.agents.types.agents_api_service import ApiAgent, ApiCreateAgentRequest, ApiCreateHarnessRequest, ApiCreateHarnessVersionRequest, ApiGetAgentRequest, ApiGetHarnessRequest, ApiGetHarnessVersionRequest, ApiHarness, ApiHarnessVersion, ApiListAgentsRequest, ApiListAgentsResponse, ApiListHarnessesRequest, ApiListHarnessesResponse
 from kagglesdk.kaggle_http_client import KaggleHttpClient
 
 class AgentsApiClient(object):
@@ -110,3 +110,91 @@ class AgentsApiClient(object):
       request = ApiGetHarnessVersionRequest()
 
     return self._client.call("agents.AgentsApiService", "GetHarnessVersion", request, ApiHarnessVersion)
+
+  def list_harnesses(self, request: ApiListHarnessesRequest = None) -> ApiListHarnessesResponse:
+    r"""
+    List Harnesses. Returns one row per HarnessVersion visible to the caller
+    (a Harness with N versions appears N times, each row with version
+    populated for that version). Admin-only.
+
+    Example:
+      curl -sSL -u andrewmingwang:local_api_token -G \
+        http://localhost/api/v1/agents/harnesses \
+        --data-urlencode 'pageSize=50'
+
+    Args:
+      request (ApiListHarnessesRequest):
+        The request object; initialized to empty instance if not specified.
+    """
+
+    if request is None:
+      request = ApiListHarnessesRequest()
+
+    return self._client.call("agents.AgentsApiService", "ListHarnesses", request, ApiListHarnessesResponse)
+
+  def create_agent(self, request: ApiCreateAgentRequest = None) -> ApiAgent:
+    r"""
+    Create an Agent (pairing of BenchmarkModelVersionConfig + HarnessVersion).
+    Admin-only, plus the caller must be able to read the referenced
+    BenchmarkModelVersionConfig and HarnessVersion.
+
+    Example:
+      curl -sSL -u andrewmingwang:local_api_token \
+        -X POST http://localhost/api/v1/agents/create \
+        -H 'Content-Type: application/json' \
+        -d '{
+          'agent': {
+            'displayName': 'Claude Code v2.1.216 (Claude Opus 4.8 high)',
+            'slug': 'claude-code-2.1.216-opus-4.8-high',
+            'isPublic': false,
+            'benchmarkModelVersionConfigId': 1,
+            'harnessVersionId': 1
+          }
+        }'
+
+    Args:
+      request (ApiCreateAgentRequest):
+        The request object; initialized to empty instance if not specified.
+    """
+
+    if request is None:
+      request = ApiCreateAgentRequest()
+
+    return self._client.call("agents.AgentsApiService", "CreateAgent", request, ApiAgent)
+
+  def get_agent(self, request: ApiGetAgentRequest = None) -> ApiAgent:
+    r"""
+    Get an Agent by id. Admin-only.
+
+    Example:
+      curl -sSL -u andrewmingwang:local_api_token \
+        http://localhost/api/v1/agents/1
+
+    Args:
+      request (ApiGetAgentRequest):
+        The request object; initialized to empty instance if not specified.
+    """
+
+    if request is None:
+      request = ApiGetAgentRequest()
+
+    return self._client.call("agents.AgentsApiService", "GetAgent", request, ApiAgent)
+
+  def list_agents(self, request: ApiListAgentsRequest = None) -> ApiListAgentsResponse:
+    r"""
+    List Agents visible to the caller. Admin-only.
+
+    Example:
+      curl -sSL -u andrewmingwang:local_api_token -G \
+        http://localhost/api/v1/agents \
+        --data-urlencode 'pageSize=50'
+
+    Args:
+      request (ApiListAgentsRequest):
+        The request object; initialized to empty instance if not specified.
+    """
+
+    if request is None:
+      request = ApiListAgentsRequest()
+
+    return self._client.call("agents.AgentsApiService", "ListAgents", request, ApiListAgentsResponse)

@@ -1,4 +1,4 @@
-from kagglesdk.benchmarks.types.benchmarks_api_service import ApiBenchmarkLeaderboard, ApiBenchmarkModelVersionConfig, ApiCreateBenchmarkModelVersionConfigRequest, ApiGetBenchmarkLeaderboardRequest, ApiGetBenchmarkModelVersionConfigRequest, ApiListBenchmarkModelsRequest, ApiListBenchmarkModelsResponse, ApiListBenchmarkModelVersionConfigsRequest, ApiListBenchmarkModelVersionConfigsResponse
+from kagglesdk.benchmarks.types.benchmarks_api_service import ApiBenchmarkLeaderboard, ApiBenchmarkModelVersionConfig, ApiCreateBenchmarkModelVersionConfigRequest, ApiCreateBenchmarkVersionAgentMappingsRequest, ApiCreateBenchmarkVersionAgentMappingsResponse, ApiDeleteBenchmarkVersionAgentMappingsRequest, ApiDeleteBenchmarkVersionAgentMappingsResponse, ApiGetBenchmarkLeaderboardRequest, ApiGetBenchmarkModelVersionConfigRequest, ApiListBenchmarkModelsRequest, ApiListBenchmarkModelsResponse, ApiListBenchmarkModelVersionConfigsRequest, ApiListBenchmarkModelVersionConfigsResponse, ApiListBenchmarkVersionAgentMappingsRequest, ApiListBenchmarkVersionAgentMappingsResponse
 from kagglesdk.kaggle_http_client import KaggleHttpClient
 
 class BenchmarksApiClient(object):
@@ -9,8 +9,8 @@ class BenchmarksApiClient(object):
   def create_benchmark_model_version_config(self, request: ApiCreateBenchmarkModelVersionConfigRequest = None) -> ApiBenchmarkModelVersionConfig:
     r"""
     Create a fully-configured, runnable BenchmarkModelVersion: pins the
-    exact sampling/decoding parameters (temperature, top-p, reasoning effort,
-    etc.) used when invoking the parent BenchmarkModelVersion.
+    exact sampling/decoding parameters (reasoning effort, etc.) used when
+    invoking the parent BenchmarkModelVersion.
 
     Example:
       curl -sSL -u andrewmingwang:local_api_token \
@@ -22,10 +22,7 @@ class BenchmarksApiClient(object):
             'benchmarkModelVersionId': 1,
             'displayName': 'Claude Opus 4.8 High Reasoning Effort',
             'slug': 'claude-opus-4.8-high-reasoning-effort',
-            'reasoningEffort': 'high',
-            'temperature': 1.0,
-            'topP': 1.0,
-            'maxOutputTokens': 8192
+            'reasoningEffort': 'high'
           }
         }'
 
@@ -101,3 +98,89 @@ class BenchmarksApiClient(object):
       request = ApiListBenchmarkModelsRequest()
 
     return self._client.call("benchmarks.BenchmarksApiService", "ListBenchmarkModels", request, ApiListBenchmarkModelsResponse)
+
+  def create_benchmark_version_agent_mappings(self, request: ApiCreateBenchmarkVersionAgentMappingsRequest = None) -> ApiCreateBenchmarkVersionAgentMappingsResponse:
+    r"""
+    Map one or more Agents into a BenchmarkVersion, making them participants
+    on that version's leaderboard. Requires update access to the parent
+    BenchmarkVersion and read access to each Agent. Remapping an agent whose
+    mapping was previously soft-deleted revives the existing row.
+
+    Example:
+      curl -sSL -u andrewmingwang:local_api_token \
+        -X POST \
+        http://localhost/api/v1/benchmarks/versions/agent-mappings/create \
+        -H 'Content-Type: application/json' \
+        -d '{
+          'mappings': [
+            {
+              'parentBenchmarkVersionId': 1,
+              'childAgentId': 1,
+              'type': 'BENCHMARK_VERSION_AGENT_MAPPING_TYPE_PRINCIPAL'
+            }
+          ]
+        }'
+
+    Args:
+      request (ApiCreateBenchmarkVersionAgentMappingsRequest):
+        The request object; initialized to empty instance if not specified.
+    """
+
+    if request is None:
+      request = ApiCreateBenchmarkVersionAgentMappingsRequest()
+
+    return self._client.call("benchmarks.BenchmarksApiService", "CreateBenchmarkVersionAgentMappings", request, ApiCreateBenchmarkVersionAgentMappingsResponse)
+
+  def delete_benchmark_version_agent_mappings(self, request: ApiDeleteBenchmarkVersionAgentMappingsRequest = None) -> ApiDeleteBenchmarkVersionAgentMappingsResponse:
+    r"""
+    Soft-delete Agent mappings from a BenchmarkVersion, removing those agents
+    from the version's leaderboard. Does NOT affect the Agents themselves or
+    any BenchmarkRuns they already produced. Requires update access to the
+    parent BenchmarkVersion. Uses POST rather than DELETE because the
+    mappings to remove are supplied in the body.
+
+    Example:
+      curl -sSL -u andrewmingwang:local_api_token \
+        -X POST \
+        http://localhost/api/v1/benchmarks/versions/agent-mappings/delete \
+        -H 'Content-Type: application/json' \
+        -d '{
+          'mappings': [
+            {
+              'parentBenchmarkVersionId': 1,
+              'childAgentId': 1
+            }
+          ]
+        }'
+
+    Args:
+      request (ApiDeleteBenchmarkVersionAgentMappingsRequest):
+        The request object; initialized to empty instance if not specified.
+    """
+
+    if request is None:
+      request = ApiDeleteBenchmarkVersionAgentMappingsRequest()
+
+    return self._client.call("benchmarks.BenchmarksApiService", "DeleteBenchmarkVersionAgentMappings", request, ApiDeleteBenchmarkVersionAgentMappingsResponse)
+
+  def list_benchmark_version_agent_mappings(self, request: ApiListBenchmarkVersionAgentMappingsRequest = None) -> ApiListBenchmarkVersionAgentMappingsResponse:
+    r"""
+    List the Agent mappings of BenchmarkVersions, optionally filtered by
+    parent BenchmarkVersion id(s) and/or child Agent id(s). Soft-deleted
+    mappings are excluded. Paginated.
+
+    Example:
+      curl -sSL -u andrewmingwang:local_api_token \
+        -G http://localhost/api/v1/benchmarks/versions/agent-mappings/list \
+        --data-urlencode 'filter.parentBenchmarkVersionIds=1' \
+        --data-urlencode 'pageSize=20'
+
+    Args:
+      request (ApiListBenchmarkVersionAgentMappingsRequest):
+        The request object; initialized to empty instance if not specified.
+    """
+
+    if request is None:
+      request = ApiListBenchmarkVersionAgentMappingsRequest()
+
+    return self._client.call("benchmarks.BenchmarksApiService", "ListBenchmarkVersionAgentMappings", request, ApiListBenchmarkVersionAgentMappingsResponse)

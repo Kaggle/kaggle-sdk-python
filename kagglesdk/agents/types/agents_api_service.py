@@ -1,7 +1,180 @@
 from kagglesdk.agents.types.agent_enums import HarnessType
+from kagglesdk.agents.types.agent_service import ListAgentsFilter, ListHarnessesFilter
 from kagglesdk.kaggle_object import *
 from kagglesdk.users.types.legacy_organizations_service import OrganizationCard
-from typing import Optional
+from typing import Optional, List
+
+class ApiAgent(KaggleObject):
+  r"""
+  API equivalent of Agent from agent_types.proto.
+
+  Attributes:
+    id (int)
+      Output-only on create.
+    display_name (str)
+    slug (str)
+    is_public (bool)
+    organization_id (int)
+    benchmark_model_version_config_id (int)
+    harness_version_id (int)
+    organization (OrganizationCard)
+      The associated Organization, if any. Ignored on create and update.
+  """
+
+  def __init__(self):
+    self._id = 0
+    self._display_name = ""
+    self._slug = ""
+    self._is_public = False
+    self._organization_id = None
+    self._benchmark_model_version_config_id = 0
+    self._harness_version_id = 0
+    self._organization = None
+    self._freeze()
+
+  @property
+  def id(self) -> int:
+    """Output-only on create."""
+    return self._id
+
+  @id.setter
+  def id(self, id: int):
+    if id is None:
+      del self.id
+      return
+    if not isinstance(id, int):
+      raise TypeError('id must be of type int')
+    self._id = id
+
+  @property
+  def display_name(self) -> str:
+    return self._display_name
+
+  @display_name.setter
+  def display_name(self, display_name: str):
+    if display_name is None:
+      del self.display_name
+      return
+    if not isinstance(display_name, str):
+      raise TypeError('display_name must be of type str')
+    self._display_name = display_name
+
+  @property
+  def slug(self) -> str:
+    return self._slug
+
+  @slug.setter
+  def slug(self, slug: str):
+    if slug is None:
+      del self.slug
+      return
+    if not isinstance(slug, str):
+      raise TypeError('slug must be of type str')
+    self._slug = slug
+
+  @property
+  def is_public(self) -> bool:
+    return self._is_public
+
+  @is_public.setter
+  def is_public(self, is_public: bool):
+    if is_public is None:
+      del self.is_public
+      return
+    if not isinstance(is_public, bool):
+      raise TypeError('is_public must be of type bool')
+    self._is_public = is_public
+
+  @property
+  def organization_id(self) -> int:
+    return self._organization_id or 0
+
+  @organization_id.setter
+  def organization_id(self, organization_id: Optional[int]):
+    if organization_id is None:
+      del self.organization_id
+      return
+    if not isinstance(organization_id, int):
+      raise TypeError('organization_id must be of type int')
+    self._organization_id = organization_id
+
+  @property
+  def benchmark_model_version_config_id(self) -> int:
+    return self._benchmark_model_version_config_id
+
+  @benchmark_model_version_config_id.setter
+  def benchmark_model_version_config_id(self, benchmark_model_version_config_id: int):
+    if benchmark_model_version_config_id is None:
+      del self.benchmark_model_version_config_id
+      return
+    if not isinstance(benchmark_model_version_config_id, int):
+      raise TypeError('benchmark_model_version_config_id must be of type int')
+    self._benchmark_model_version_config_id = benchmark_model_version_config_id
+
+  @property
+  def harness_version_id(self) -> int:
+    return self._harness_version_id
+
+  @harness_version_id.setter
+  def harness_version_id(self, harness_version_id: int):
+    if harness_version_id is None:
+      del self.harness_version_id
+      return
+    if not isinstance(harness_version_id, int):
+      raise TypeError('harness_version_id must be of type int')
+    self._harness_version_id = harness_version_id
+
+  @property
+  def organization(self) -> Optional['OrganizationCard']:
+    """The associated Organization, if any. Ignored on create and update."""
+    return self._organization or None
+
+  @organization.setter
+  def organization(self, organization: Optional[Optional['OrganizationCard']]):
+    if organization is None:
+      del self.organization
+      return
+    if not isinstance(organization, OrganizationCard):
+      raise TypeError('organization must be of type OrganizationCard')
+    self._organization = organization
+
+
+class ApiCreateAgentRequest(KaggleObject):
+  r"""
+  Attributes:
+    agent (ApiAgent)
+  """
+
+  def __init__(self):
+    self._agent = None
+    self._freeze()
+
+  @property
+  def agent(self) -> Optional['ApiAgent']:
+    return self._agent
+
+  @agent.setter
+  def agent(self, agent: Optional['ApiAgent']):
+    if agent is None:
+      del self.agent
+      return
+    if not isinstance(agent, ApiAgent):
+      raise TypeError('agent must be of type ApiAgent')
+    self._agent = agent
+
+  def endpoint(self):
+    path = '/api/v1/agents/create'
+    return path.format_map(self.to_field_map(self))
+
+
+  @staticmethod
+  def method():
+    return 'POST'
+
+  @staticmethod
+  def body_fields():
+    return '*'
+
 
 class ApiCreateHarnessRequest(KaggleObject):
   r"""
@@ -77,6 +250,40 @@ class ApiCreateHarnessVersionRequest(KaggleObject):
   @staticmethod
   def body_fields():
     return '*'
+
+
+class ApiGetAgentRequest(KaggleObject):
+  r"""
+  Attributes:
+    id (int)
+      Id of the Agent to fetch.
+  """
+
+  def __init__(self):
+    self._id = 0
+    self._freeze()
+
+  @property
+  def id(self) -> int:
+    """Id of the Agent to fetch."""
+    return self._id
+
+  @id.setter
+  def id(self, id: int):
+    if id is None:
+      del self.id
+      return
+    if not isinstance(id, int):
+      raise TypeError('id must be of type int')
+    self._id = id
+
+  def endpoint(self):
+    path = '/api/v1/agents/{id}'
+    return path.format_map(self.to_field_map(self))
+
+  @staticmethod
+  def endpoint_path():
+    return '/api/v1/agents/{id}'
 
 
 class ApiGetHarnessRequest(KaggleObject):
@@ -562,12 +769,245 @@ class ApiKernelGameArenaHarnessVersion(KaggleObject):
     self._kernel_session_id = kernel_session_id
 
 
+class ApiListAgentsRequest(KaggleObject):
+  r"""
+  Attributes:
+    page_size (int)
+    page_token (str)
+    filter (ListAgentsFilter)
+  """
+
+  def __init__(self):
+    self._page_size = 0
+    self._page_token = ""
+    self._filter = None
+    self._freeze()
+
+  @property
+  def page_size(self) -> int:
+    return self._page_size
+
+  @page_size.setter
+  def page_size(self, page_size: int):
+    if page_size is None:
+      del self.page_size
+      return
+    if not isinstance(page_size, int):
+      raise TypeError('page_size must be of type int')
+    self._page_size = page_size
+
+  @property
+  def page_token(self) -> str:
+    return self._page_token
+
+  @page_token.setter
+  def page_token(self, page_token: str):
+    if page_token is None:
+      del self.page_token
+      return
+    if not isinstance(page_token, str):
+      raise TypeError('page_token must be of type str')
+    self._page_token = page_token
+
+  @property
+  def filter(self) -> Optional['ListAgentsFilter']:
+    return self._filter
+
+  @filter.setter
+  def filter(self, filter: Optional['ListAgentsFilter']):
+    if filter is None:
+      del self.filter
+      return
+    if not isinstance(filter, ListAgentsFilter):
+      raise TypeError('filter must be of type ListAgentsFilter')
+    self._filter = filter
+
+  def endpoint(self):
+    path = '/api/v1/agents'
+    return path.format_map(self.to_field_map(self))
+
+
+class ApiListAgentsResponse(KaggleObject):
+  r"""
+  Attributes:
+    agents (ApiAgent)
+    next_page_token (str)
+  """
+
+  def __init__(self):
+    self._agents = []
+    self._next_page_token = None
+    self._freeze()
+
+  @property
+  def agents(self) -> Optional[List[Optional['ApiAgent']]]:
+    return self._agents
+
+  @agents.setter
+  def agents(self, agents: Optional[List[Optional['ApiAgent']]]):
+    if agents is None:
+      del self.agents
+      return
+    if not isinstance(agents, list):
+      raise TypeError('agents must be of type list')
+    if not all([isinstance(t, ApiAgent) for t in agents]):
+      raise TypeError('agents must contain only items of type ApiAgent')
+    self._agents = agents
+
+  @property
+  def next_page_token(self) -> str:
+    return self._next_page_token or ""
+
+  @next_page_token.setter
+  def next_page_token(self, next_page_token: Optional[str]):
+    if next_page_token is None:
+      del self.next_page_token
+      return
+    if not isinstance(next_page_token, str):
+      raise TypeError('next_page_token must be of type str')
+    self._next_page_token = next_page_token
+
+  @property
+  def nextPageToken(self):
+    return self.next_page_token
+
+
+class ApiListHarnessesRequest(KaggleObject):
+  r"""
+  Attributes:
+    page_size (int)
+    page_token (str)
+    filter (ListHarnessesFilter)
+  """
+
+  def __init__(self):
+    self._page_size = 0
+    self._page_token = ""
+    self._filter = None
+    self._freeze()
+
+  @property
+  def page_size(self) -> int:
+    return self._page_size
+
+  @page_size.setter
+  def page_size(self, page_size: int):
+    if page_size is None:
+      del self.page_size
+      return
+    if not isinstance(page_size, int):
+      raise TypeError('page_size must be of type int')
+    self._page_size = page_size
+
+  @property
+  def page_token(self) -> str:
+    return self._page_token
+
+  @page_token.setter
+  def page_token(self, page_token: str):
+    if page_token is None:
+      del self.page_token
+      return
+    if not isinstance(page_token, str):
+      raise TypeError('page_token must be of type str')
+    self._page_token = page_token
+
+  @property
+  def filter(self) -> Optional['ListHarnessesFilter']:
+    return self._filter
+
+  @filter.setter
+  def filter(self, filter: Optional['ListHarnessesFilter']):
+    if filter is None:
+      del self.filter
+      return
+    if not isinstance(filter, ListHarnessesFilter):
+      raise TypeError('filter must be of type ListHarnessesFilter')
+    self._filter = filter
+
+  def endpoint(self):
+    path = '/api/v1/agents/harnesses'
+    return path.format_map(self.to_field_map(self))
+
+
+class ApiListHarnessesResponse(KaggleObject):
+  r"""
+  Attributes:
+    harnesses (ApiHarness)
+      One row per HarnessVersion. Each row's outer ApiHarness fields describe
+      the parent Harness; ApiHarness.version is the specific version for this
+      row.
+    next_page_token (str)
+  """
+
+  def __init__(self):
+    self._harnesses = []
+    self._next_page_token = None
+    self._freeze()
+
+  @property
+  def harnesses(self) -> Optional[List[Optional['ApiHarness']]]:
+    r"""
+    One row per HarnessVersion. Each row's outer ApiHarness fields describe
+    the parent Harness; ApiHarness.version is the specific version for this
+    row.
+    """
+    return self._harnesses
+
+  @harnesses.setter
+  def harnesses(self, harnesses: Optional[List[Optional['ApiHarness']]]):
+    if harnesses is None:
+      del self.harnesses
+      return
+    if not isinstance(harnesses, list):
+      raise TypeError('harnesses must be of type list')
+    if not all([isinstance(t, ApiHarness) for t in harnesses]):
+      raise TypeError('harnesses must contain only items of type ApiHarness')
+    self._harnesses = harnesses
+
+  @property
+  def next_page_token(self) -> str:
+    return self._next_page_token or ""
+
+  @next_page_token.setter
+  def next_page_token(self, next_page_token: Optional[str]):
+    if next_page_token is None:
+      del self.next_page_token
+      return
+    if not isinstance(next_page_token, str):
+      raise TypeError('next_page_token must be of type str')
+    self._next_page_token = next_page_token
+
+  @property
+  def nextPageToken(self):
+    return self.next_page_token
+
+
+ApiAgent._fields = [
+  FieldMetadata("id", "id", "_id", int, 0, PredefinedSerializer()),
+  FieldMetadata("displayName", "display_name", "_display_name", str, "", PredefinedSerializer()),
+  FieldMetadata("slug", "slug", "_slug", str, "", PredefinedSerializer()),
+  FieldMetadata("isPublic", "is_public", "_is_public", bool, False, PredefinedSerializer()),
+  FieldMetadata("organizationId", "organization_id", "_organization_id", int, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("benchmarkModelVersionConfigId", "benchmark_model_version_config_id", "_benchmark_model_version_config_id", int, 0, PredefinedSerializer()),
+  FieldMetadata("harnessVersionId", "harness_version_id", "_harness_version_id", int, 0, PredefinedSerializer()),
+  FieldMetadata("organization", "organization", "_organization", OrganizationCard, None, KaggleObjectSerializer(), optional=True),
+]
+
+ApiCreateAgentRequest._fields = [
+  FieldMetadata("agent", "agent", "_agent", ApiAgent, None, KaggleObjectSerializer()),
+]
+
 ApiCreateHarnessRequest._fields = [
   FieldMetadata("harness", "harness", "_harness", ApiHarness, None, KaggleObjectSerializer()),
 ]
 
 ApiCreateHarnessVersionRequest._fields = [
   FieldMetadata("harnessVersion", "harness_version", "_harness_version", ApiHarnessVersion, None, KaggleObjectSerializer()),
+]
+
+ApiGetAgentRequest._fields = [
+  FieldMetadata("id", "id", "_id", int, 0, PredefinedSerializer()),
 ]
 
 ApiGetHarnessRequest._fields = [
@@ -613,5 +1053,27 @@ ApiKernelCompsBenchHarnessVersion._fields = [
 
 ApiKernelGameArenaHarnessVersion._fields = [
   FieldMetadata("kernelSessionId", "kernel_session_id", "_kernel_session_id", int, 0, PredefinedSerializer()),
+]
+
+ApiListAgentsRequest._fields = [
+  FieldMetadata("pageSize", "page_size", "_page_size", int, 0, PredefinedSerializer()),
+  FieldMetadata("pageToken", "page_token", "_page_token", str, "", PredefinedSerializer()),
+  FieldMetadata("filter", "filter", "_filter", ListAgentsFilter, None, KaggleObjectSerializer()),
+]
+
+ApiListAgentsResponse._fields = [
+  FieldMetadata("agents", "agents", "_agents", ApiAgent, [], ListSerializer(KaggleObjectSerializer())),
+  FieldMetadata("nextPageToken", "next_page_token", "_next_page_token", str, None, PredefinedSerializer(), optional=True),
+]
+
+ApiListHarnessesRequest._fields = [
+  FieldMetadata("pageSize", "page_size", "_page_size", int, 0, PredefinedSerializer()),
+  FieldMetadata("pageToken", "page_token", "_page_token", str, "", PredefinedSerializer()),
+  FieldMetadata("filter", "filter", "_filter", ListHarnessesFilter, None, KaggleObjectSerializer()),
+]
+
+ApiListHarnessesResponse._fields = [
+  FieldMetadata("harnesses", "harnesses", "_harnesses", ApiHarness, [], ListSerializer(KaggleObjectSerializer())),
+  FieldMetadata("nextPageToken", "next_page_token", "_next_page_token", str, None, PredefinedSerializer(), optional=True),
 ]
 

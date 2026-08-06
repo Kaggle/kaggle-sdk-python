@@ -1,8 +1,7 @@
 from datetime import datetime
 from kagglesdk.benchmarks.types.benchmark_enums import BenchmarkTaskRunState, BenchmarkTaskVersionCreationState, BenchmarkTaskVersionSource
 from kagglesdk.benchmarks.types.benchmark_task_run_service import BatchScheduleBenchmarkModelVersionResult
-from kagglesdk.benchmarks.types.benchmark_task_service import EnvVariable, UserSecret
-from kagglesdk.benchmarks.types.benchmark_types import BenchmarkTaskKaggleDatasetsDefinition, BenchmarkTaskOptions
+from kagglesdk.benchmarks.types.benchmark_types import BenchmarkTaskKaggleDatasetsDefinition, BenchmarkTaskOptions, EnvVariable, UserSecret
 from kagglesdk.kaggle_object import *
 from typing import List, Optional
 
