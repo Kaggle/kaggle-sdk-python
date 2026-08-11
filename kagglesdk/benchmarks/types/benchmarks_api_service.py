@@ -1,9 +1,159 @@
 from google.protobuf.field_mask_pb2 import FieldMask
 from kagglesdk.benchmarks.types.benchmark_enums import BenchmarkVersionAgentMappingType
 from kagglesdk.benchmarks.types.benchmark_service import ListBenchmarkVersionAgentMappingsFilter
+from kagglesdk.benchmarks.types.benchmark_tasks_api_service import ApiBenchmarkTaskSlug
 from kagglesdk.benchmarks.types.benchmark_types import BenchmarkModel, BenchmarkResult
 from kagglesdk.kaggle_object import *
-from typing import List, Optional
+from typing import Optional, List
+
+class ApiAddTasksToBenchmarkRequest(KaggleObject):
+  r"""
+  Attributes:
+    benchmark_slug (str)
+      Slug of the benchmark to add to. Always resolved under the current user;
+      benchmarks owned by anyone else are not addressable here.
+    version_number (int)
+      Targets the benchmark's current published version, or its draft when
+      there is no published version, if omitted.
+    task_slugs (ApiBenchmarkTaskSlug)
+      Tasks to map in; must be non-empty. Any task the caller can read may be
+      mapped, including one owned by another user. Duplicates are collapsed.
+  """
+
+  def __init__(self):
+    self._benchmark_slug = ""
+    self._version_number = None
+    self._task_slugs = []
+    self._freeze()
+
+  @property
+  def benchmark_slug(self) -> str:
+    r"""
+    Slug of the benchmark to add to. Always resolved under the current user;
+    benchmarks owned by anyone else are not addressable here.
+    """
+    return self._benchmark_slug
+
+  @benchmark_slug.setter
+  def benchmark_slug(self, benchmark_slug: str):
+    if benchmark_slug is None:
+      del self.benchmark_slug
+      return
+    if not isinstance(benchmark_slug, str):
+      raise TypeError('benchmark_slug must be of type str')
+    self._benchmark_slug = benchmark_slug
+
+  @property
+  def version_number(self) -> int:
+    r"""
+    Targets the benchmark's current published version, or its draft when
+    there is no published version, if omitted.
+    """
+    return self._version_number or 0
+
+  @version_number.setter
+  def version_number(self, version_number: Optional[int]):
+    if version_number is None:
+      del self.version_number
+      return
+    if not isinstance(version_number, int):
+      raise TypeError('version_number must be of type int')
+    self._version_number = version_number
+
+  @property
+  def task_slugs(self) -> Optional[List[Optional['ApiBenchmarkTaskSlug']]]:
+    r"""
+    Tasks to map in; must be non-empty. Any task the caller can read may be
+    mapped, including one owned by another user. Duplicates are collapsed.
+    """
+    return self._task_slugs
+
+  @task_slugs.setter
+  def task_slugs(self, task_slugs: Optional[List[Optional['ApiBenchmarkTaskSlug']]]):
+    if task_slugs is None:
+      del self.task_slugs
+      return
+    if not isinstance(task_slugs, list):
+      raise TypeError('task_slugs must be of type list')
+    if not all([isinstance(t, ApiBenchmarkTaskSlug) for t in task_slugs]):
+      raise TypeError('task_slugs must contain only items of type ApiBenchmarkTaskSlug')
+    self._task_slugs = task_slugs
+
+  def endpoint(self):
+    if self.version_number:
+      path = '/api/v1/benchmarks/{benchmark_slug}/versions/{version_number}/tasks/add'
+    else:
+      path = '/api/v1/benchmarks/{benchmark_slug}/tasks/add'
+    return path.format_map(self.to_field_map(self))
+
+
+  @staticmethod
+  def method():
+    return 'POST'
+
+  @staticmethod
+  def body_fields():
+    return '*'
+
+
+class ApiAddTasksToBenchmarkResponse(KaggleObject):
+  r"""
+  Attributes:
+    added_tasks (ApiBenchmarkTaskSlug)
+      Tasks newly mapped by this call, with the resolved owner and version
+      number filled in.
+    skipped_tasks (ApiBenchmarkTaskSlug)
+      Tasks that were already mapped to this benchmark and were left alone.
+  """
+
+  def __init__(self):
+    self._added_tasks = []
+    self._skipped_tasks = []
+    self._freeze()
+
+  @property
+  def added_tasks(self) -> Optional[List[Optional['ApiBenchmarkTaskSlug']]]:
+    r"""
+    Tasks newly mapped by this call, with the resolved owner and version
+    number filled in.
+    """
+    return self._added_tasks
+
+  @added_tasks.setter
+  def added_tasks(self, added_tasks: Optional[List[Optional['ApiBenchmarkTaskSlug']]]):
+    if added_tasks is None:
+      del self.added_tasks
+      return
+    if not isinstance(added_tasks, list):
+      raise TypeError('added_tasks must be of type list')
+    if not all([isinstance(t, ApiBenchmarkTaskSlug) for t in added_tasks]):
+      raise TypeError('added_tasks must contain only items of type ApiBenchmarkTaskSlug')
+    self._added_tasks = added_tasks
+
+  @property
+  def skipped_tasks(self) -> Optional[List[Optional['ApiBenchmarkTaskSlug']]]:
+    """Tasks that were already mapped to this benchmark and were left alone."""
+    return self._skipped_tasks
+
+  @skipped_tasks.setter
+  def skipped_tasks(self, skipped_tasks: Optional[List[Optional['ApiBenchmarkTaskSlug']]]):
+    if skipped_tasks is None:
+      del self.skipped_tasks
+      return
+    if not isinstance(skipped_tasks, list):
+      raise TypeError('skipped_tasks must be of type list')
+    if not all([isinstance(t, ApiBenchmarkTaskSlug) for t in skipped_tasks]):
+      raise TypeError('skipped_tasks must contain only items of type ApiBenchmarkTaskSlug')
+    self._skipped_tasks = skipped_tasks
+
+  @property
+  def addedTasks(self):
+    return self.added_tasks
+
+  @property
+  def skippedTasks(self):
+    return self.skipped_tasks
+
 
 class ApiBenchmarkLeaderboard(KaggleObject):
   r"""
@@ -939,6 +1089,17 @@ class ApiListBenchmarkVersionAgentMappingsResponse(KaggleObject):
   def nextPageToken(self):
     return self.next_page_token
 
+
+ApiAddTasksToBenchmarkRequest._fields = [
+  FieldMetadata("benchmarkSlug", "benchmark_slug", "_benchmark_slug", str, "", PredefinedSerializer()),
+  FieldMetadata("versionNumber", "version_number", "_version_number", int, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("taskSlugs", "task_slugs", "_task_slugs", ApiBenchmarkTaskSlug, [], ListSerializer(KaggleObjectSerializer())),
+]
+
+ApiAddTasksToBenchmarkResponse._fields = [
+  FieldMetadata("addedTasks", "added_tasks", "_added_tasks", ApiBenchmarkTaskSlug, [], ListSerializer(KaggleObjectSerializer())),
+  FieldMetadata("skippedTasks", "skipped_tasks", "_skipped_tasks", ApiBenchmarkTaskSlug, [], ListSerializer(KaggleObjectSerializer())),
+]
 
 ApiBenchmarkLeaderboard.LeaderboardRow._fields = [
   FieldMetadata("modelVersionName", "model_version_name", "_model_version_name", str, "", PredefinedSerializer()),

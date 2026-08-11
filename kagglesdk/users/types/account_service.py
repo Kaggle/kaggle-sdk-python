@@ -133,6 +133,19 @@ class GenerateAccessTokenRequest(KaggleObject):
       Set of scopes to further restrict the token. If 'refresh_token' is
       specified, these should be a subset of the scopes allowed by the
       'refresh_token'.
+    resource_filter_scope_id (int)
+      Id of a ResourceFilterScopes row (go/kaggle-agent-augmented-identities).
+      Confines the minted token to that scope: a caller presenting the token only
+      sees rows filed under it, and every scoped row it writes is stamped with
+      it. Owner-only, enforced by the RESOURCE_FILTER_SCOPES_USE checker rather
+      than by the handler, and additionally gated on the
+      ENABLE_RESOURCE_FILTER_SCOPES flag.
+
+      Only valid for short-lived access tokens minted from the caller's own
+      credentials. Combining it with 'refresh_token' is rejected: scopes are
+      burned into the access token rather than persisted on the refresh token, so
+      there would be nothing to inherit and the caller minting the token need not
+      be the refresh token's owner.
   """
 
   def __init__(self):
@@ -141,6 +154,7 @@ class GenerateAccessTokenRequest(KaggleObject):
     self._expiration_duration = None
     self._authorization_context = None
     self._authorization_scopes = []
+    self._resource_filter_scope_id = None
     self._freeze()
 
   @property
@@ -222,6 +236,33 @@ class GenerateAccessTokenRequest(KaggleObject):
     if not all([isinstance(t, AuthorizationScope) for t in authorization_scopes]):
       raise TypeError('authorization_scopes must contain only items of type AuthorizationScope')
     self._authorization_scopes = authorization_scopes
+
+  @property
+  def resource_filter_scope_id(self) -> int:
+    r"""
+    Id of a ResourceFilterScopes row (go/kaggle-agent-augmented-identities).
+    Confines the minted token to that scope: a caller presenting the token only
+    sees rows filed under it, and every scoped row it writes is stamped with
+    it. Owner-only, enforced by the RESOURCE_FILTER_SCOPES_USE checker rather
+    than by the handler, and additionally gated on the
+    ENABLE_RESOURCE_FILTER_SCOPES flag.
+
+    Only valid for short-lived access tokens minted from the caller's own
+    credentials. Combining it with 'refresh_token' is rejected: scopes are
+    burned into the access token rather than persisted on the refresh token, so
+    there would be nothing to inherit and the caller minting the token need not
+    be the refresh token's owner.
+    """
+    return self._resource_filter_scope_id or 0
+
+  @resource_filter_scope_id.setter
+  def resource_filter_scope_id(self, resource_filter_scope_id: Optional[int]):
+    if resource_filter_scope_id is None:
+      del self.resource_filter_scope_id
+      return
+    if not isinstance(resource_filter_scope_id, int):
+      raise TypeError('resource_filter_scope_id must be of type int')
+    self._resource_filter_scope_id = resource_filter_scope_id
 
   def endpoint(self):
     path = '/api/v1/access-tokens/generate'
@@ -334,6 +375,7 @@ GenerateAccessTokenRequest._fields = [
   FieldMetadata("expirationDuration", "expiration_duration", "_expiration_duration", timedelta, None, TimeDeltaSerializer()),
   FieldMetadata("authorizationContext", "authorization_context", "_authorization_context", AuthorizationContext, None, KaggleObjectSerializer()),
   FieldMetadata("authorizationScopes", "authorization_scopes", "_authorization_scopes", AuthorizationScope, [], ListSerializer(KaggleObjectSerializer())),
+  FieldMetadata("resourceFilterScopeId", "resource_filter_scope_id", "_resource_filter_scope_id", int, None, PredefinedSerializer(), optional=True),
 ]
 
 GenerateAccessTokenResponse._fields = [

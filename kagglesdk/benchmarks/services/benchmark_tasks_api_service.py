@@ -1,4 +1,4 @@
-from kagglesdk.benchmarks.types.benchmark_tasks_api_service import ApiBatchScheduleBenchmarkTaskRunsRequest, ApiBatchScheduleBenchmarkTaskRunsResponse, ApiBenchmarkTask, ApiCreateBenchmarkTaskRequest, ApiDownloadBenchmarkTaskRunOutputRequest, ApiGetBenchmarkTaskQuotaRequest, ApiGetBenchmarkTaskQuotaResponse, ApiGetBenchmarkTaskRequest, ApiGetBenchmarkTaskRunLogsRequest, ApiListBenchmarkTaskRunsRequest, ApiListBenchmarkTaskRunsResponse, ApiListBenchmarkTasksRequest, ApiListBenchmarkTasksResponse, ApiPublishBenchmarkTaskRequest
+from kagglesdk.benchmarks.types.benchmark_tasks_api_service import ApiBatchScheduleBenchmarkTaskRunsRequest, ApiBatchScheduleBenchmarkTaskRunsResponse, ApiBenchmarkTask, ApiCreateBenchmarkTaskRequest, ApiDownloadBenchmarkTaskRunOutputRequest, ApiGetBenchmarkTaskQuotaRequest, ApiGetBenchmarkTaskQuotaResponse, ApiGetBenchmarkTaskRequest, ApiGetBenchmarkTaskRunLogsRequest, ApiListBenchmarkTaskRunsRequest, ApiListBenchmarkTaskRunsResponse, ApiListBenchmarkTasksRequest, ApiListBenchmarkTasksResponse, ApiPublishBenchmarkTaskRequest, ApiUpdateBenchmarkTaskRequest, ApiUpdateBenchmarkTaskResponse, ApiUpdateBenchmarkTaskVersionRequest
 from kagglesdk.common.types.file_download import FileDownload
 from kagglesdk.kaggle_http_client import KaggleHttpClient
 
@@ -141,3 +141,35 @@ class BenchmarkTasksApiClient(object):
       request = ApiPublishBenchmarkTaskRequest()
 
     return self._client.call("benchmarks.BenchmarkTasksApiService", "PublishBenchmarkTask", request, ApiBenchmarkTask)
+
+  def update_benchmark_task(self, request: ApiUpdateBenchmarkTaskRequest = None) -> ApiUpdateBenchmarkTaskResponse:
+    r"""
+    Update editable metadata (description, tags, provenance, citations) on a
+    task. Only the fields named in `update_mask` are written. Everything but
+    `tags` is written to the task's *current* version; to target an older
+    version, use UpdateBenchmarkTaskVersion.
+
+    Args:
+      request (ApiUpdateBenchmarkTaskRequest):
+        The request object; initialized to empty instance if not specified.
+    """
+
+    if request is None:
+      request = ApiUpdateBenchmarkTaskRequest()
+
+    return self._client.call("benchmarks.BenchmarkTasksApiService", "UpdateBenchmarkTask", request, ApiUpdateBenchmarkTaskResponse)
+
+  def update_benchmark_task_version(self, request: ApiUpdateBenchmarkTaskVersionRequest = None) -> ApiBenchmarkTask:
+    r"""
+    Update editable metadata on one specific version of a task. Unlike
+    UpdateBenchmarkTask, the version named by the slug is the version written.
+
+    Args:
+      request (ApiUpdateBenchmarkTaskVersionRequest):
+        The request object; initialized to empty instance if not specified.
+    """
+
+    if request is None:
+      request = ApiUpdateBenchmarkTaskVersionRequest()
+
+    return self._client.call("benchmarks.BenchmarkTasksApiService", "UpdateBenchmarkTaskVersion", request, ApiBenchmarkTask)

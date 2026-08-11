@@ -1,4 +1,5 @@
 from datetime import datetime
+from google.protobuf.field_mask_pb2 import FieldMask
 from kagglesdk.benchmarks.types.benchmark_enums import BenchmarkTaskRunState, BenchmarkTaskVersionCreationState, BenchmarkTaskVersionSource
 from kagglesdk.benchmarks.types.benchmark_task_run_service import BatchScheduleBenchmarkModelVersionResult
 from kagglesdk.benchmarks.types.benchmark_types import BenchmarkTaskKaggleDatasetsDefinition, BenchmarkTaskOptions, EnvVariable, UserSecret
@@ -12,11 +13,16 @@ class ApiBatchScheduleBenchmarkTaskRunsRequest(KaggleObject):
     model_version_slugs (str)
       Canonical BenchmarkModelVersion.Slug values (e.g.
       'claude-sonnet-4-6-default').
+    agent_slugs (str)
+      Canonical Agent.Slug values (e.g.
+      'claude-code-2.1.216-opus-4.8-high'). Agents are backed by model versions
+      and follow the same validation checks.
   """
 
   def __init__(self):
     self._task_slugs = []
     self._model_version_slugs = []
+    self._agent_slugs = []
     self._freeze()
 
   @property
@@ -52,6 +58,26 @@ class ApiBatchScheduleBenchmarkTaskRunsRequest(KaggleObject):
     if not all([isinstance(t, str) for t in model_version_slugs]):
       raise TypeError('model_version_slugs must contain only items of type str')
     self._model_version_slugs = model_version_slugs
+
+  @property
+  def agent_slugs(self) -> Optional[List[str]]:
+    r"""
+    Canonical Agent.Slug values (e.g.
+    'claude-code-2.1.216-opus-4.8-high'). Agents are backed by model versions
+    and follow the same validation checks.
+    """
+    return self._agent_slugs
+
+  @agent_slugs.setter
+  def agent_slugs(self, agent_slugs: Optional[List[str]]):
+    if agent_slugs is None:
+      del self.agent_slugs
+      return
+    if not isinstance(agent_slugs, list):
+      raise TypeError('agent_slugs must be of type list')
+    if not all([isinstance(t, str) for t in agent_slugs]):
+      raise TypeError('agent_slugs must contain only items of type str')
+    self._agent_slugs = agent_slugs
 
   def endpoint(self):
     path = '/api/v1/benchmarks/tasks/schedule'
@@ -129,6 +155,16 @@ class ApiBenchmarkTask(KaggleObject):
       editor, etc.). Mirrors BenchmarkTaskVersion.source from the internal
       proto; carried through so API consumers can label sandbox-origin
       tasks distinctly from manually authored ones.
+    description (str)
+      Markdown details shown on the task page, from the task's current version.
+    tags (str)
+      Tag names on the task, in their canonical stored form (lowercase).
+    provenance_sources (str)
+      Free-text provenance for the data/code behind the task, from the task's
+      current version. Stored as at most 4000 characters after sanitization;
+      longer values are rejected with InvalidArgument on update.
+    citations (ApiBenchmarkTaskCitation)
+      Citations on the task's current version.
   """
 
   def __init__(self):
@@ -143,6 +179,10 @@ class ApiBenchmarkTask(KaggleObject):
     self._is_backing_notebook_published = None
     self._options = None
     self._source = BenchmarkTaskVersionSource.BENCHMARK_TASK_VERSION_SOURCE_UNSPECIFIED
+    self._description = None
+    self._tags = []
+    self._provenance_sources = None
+    self._citations = []
     self._freeze()
 
   @property
@@ -314,6 +354,119 @@ class ApiBenchmarkTask(KaggleObject):
     if not isinstance(source, BenchmarkTaskVersionSource):
       raise TypeError('source must be of type BenchmarkTaskVersionSource')
     self._source = source
+
+  @property
+  def description(self) -> str:
+    """Markdown details shown on the task page, from the task's current version."""
+    return self._description or ""
+
+  @description.setter
+  def description(self, description: Optional[str]):
+    if description is None:
+      del self.description
+      return
+    if not isinstance(description, str):
+      raise TypeError('description must be of type str')
+    self._description = description
+
+  @property
+  def tags(self) -> Optional[List[str]]:
+    """Tag names on the task, in their canonical stored form (lowercase)."""
+    return self._tags
+
+  @tags.setter
+  def tags(self, tags: Optional[List[str]]):
+    if tags is None:
+      del self.tags
+      return
+    if not isinstance(tags, list):
+      raise TypeError('tags must be of type list')
+    if not all([isinstance(t, str) for t in tags]):
+      raise TypeError('tags must contain only items of type str')
+    self._tags = tags
+
+  @property
+  def provenance_sources(self) -> str:
+    r"""
+    Free-text provenance for the data/code behind the task, from the task's
+    current version. Stored as at most 4000 characters after sanitization;
+    longer values are rejected with InvalidArgument on update.
+    """
+    return self._provenance_sources or ""
+
+  @provenance_sources.setter
+  def provenance_sources(self, provenance_sources: Optional[str]):
+    if provenance_sources is None:
+      del self.provenance_sources
+      return
+    if not isinstance(provenance_sources, str):
+      raise TypeError('provenance_sources must be of type str')
+    self._provenance_sources = provenance_sources
+
+  @property
+  def citations(self) -> Optional[List[Optional['ApiBenchmarkTaskCitation']]]:
+    """Citations on the task's current version."""
+    return self._citations
+
+  @citations.setter
+  def citations(self, citations: Optional[List[Optional['ApiBenchmarkTaskCitation']]]):
+    if citations is None:
+      del self.citations
+      return
+    if not isinstance(citations, list):
+      raise TypeError('citations must be of type list')
+    if not all([isinstance(t, ApiBenchmarkTaskCitation) for t in citations]):
+      raise TypeError('citations must contain only items of type ApiBenchmarkTaskCitation')
+    self._citations = citations
+
+
+class ApiBenchmarkTaskCitation(KaggleObject):
+  r"""
+  A reference supporting the data or code behind a benchmark task.
+
+  Attributes:
+    title (str)
+      Display text for the reference. Free-form; not validated.
+    url (str)
+      Link to the reference, normalized to an absolute http(s) URL. A value with
+      no scheme is stored as http://, so this may differ from what was sent.
+  """
+
+  def __init__(self):
+    self._title = ""
+    self._url = ""
+    self._freeze()
+
+  @property
+  def title(self) -> str:
+    """Display text for the reference. Free-form; not validated."""
+    return self._title
+
+  @title.setter
+  def title(self, title: str):
+    if title is None:
+      del self.title
+      return
+    if not isinstance(title, str):
+      raise TypeError('title must be of type str')
+    self._title = title
+
+  @property
+  def url(self) -> str:
+    r"""
+    Link to the reference, normalized to an absolute http(s) URL. A value with
+    no scheme is stored as http://, so this may differ from what was sent.
+    """
+    return self._url
+
+  @url.setter
+  def url(self, url: str):
+    if url is None:
+      del self.url
+      return
+    if not isinstance(url, str):
+      raise TypeError('url must be of type str')
+    self._url = url
 
 
 class ApiBenchmarkTaskRun(KaggleObject):
@@ -1206,6 +1359,352 @@ class ApiPublishBenchmarkTaskRequest(KaggleObject):
     return '*'
 
 
+class ApiUpdateBenchmarkTaskRequest(KaggleObject):
+  r"""
+  Attributes:
+    slug (ApiBenchmarkTaskSlug)
+      The task to update. `owner_slug` is optional and defaults to the
+      authenticated user. `version_number` is rejected here: the fields below
+      always write the task's current version. Use UpdateBenchmarkTaskVersion to
+      target a specific version.
+    description (str)
+      Markdown details shown on the task page. HTML is sanitized before storage,
+      so the value read back may differ from what was sent.
+    tags (str)
+      Human-readable tag names (e.g. 'computer vision'). Replaces the task's
+      current tags. Matching is case-insensitive and ignores surrounding
+      whitespace; names are echoed back in their canonical stored form, which
+      may differ in case from what was sent. Names that don't match a known tag
+      are skipped and returned in `invalid_tags`.
+    provenance_sources (str)
+      Free-text provenance for the data/code behind the task. Values longer than
+      4000 characters after sanitization are rejected with InvalidArgument.
+    citations (ApiBenchmarkTaskCitation)
+      Replaces the full citation list for the current version. A citation whose
+      `url` can't be parsed as an http(s) URL is dropped rather than failing the
+      request; the rest are still applied.
+    update_mask (FieldMask)
+      Which of the above to write. Only fields named here are read.
+  """
+
+  def __init__(self):
+    self._slug = None
+    self._description = None
+    self._tags = []
+    self._provenance_sources = None
+    self._citations = []
+    self._update_mask = None
+    self._freeze()
+
+  @property
+  def slug(self) -> Optional['ApiBenchmarkTaskSlug']:
+    r"""
+    The task to update. `owner_slug` is optional and defaults to the
+    authenticated user. `version_number` is rejected here: the fields below
+    always write the task's current version. Use UpdateBenchmarkTaskVersion to
+    target a specific version.
+    """
+    return self._slug
+
+  @slug.setter
+  def slug(self, slug: Optional['ApiBenchmarkTaskSlug']):
+    if slug is None:
+      del self.slug
+      return
+    if not isinstance(slug, ApiBenchmarkTaskSlug):
+      raise TypeError('slug must be of type ApiBenchmarkTaskSlug')
+    self._slug = slug
+
+  @property
+  def description(self) -> str:
+    r"""
+    Markdown details shown on the task page. HTML is sanitized before storage,
+    so the value read back may differ from what was sent.
+    """
+    return self._description or ""
+
+  @description.setter
+  def description(self, description: Optional[str]):
+    if description is None:
+      del self.description
+      return
+    if not isinstance(description, str):
+      raise TypeError('description must be of type str')
+    self._description = description
+
+  @property
+  def tags(self) -> Optional[List[str]]:
+    r"""
+    Human-readable tag names (e.g. 'computer vision'). Replaces the task's
+    current tags. Matching is case-insensitive and ignores surrounding
+    whitespace; names are echoed back in their canonical stored form, which
+    may differ in case from what was sent. Names that don't match a known tag
+    are skipped and returned in `invalid_tags`.
+    """
+    return self._tags
+
+  @tags.setter
+  def tags(self, tags: Optional[List[str]]):
+    if tags is None:
+      del self.tags
+      return
+    if not isinstance(tags, list):
+      raise TypeError('tags must be of type list')
+    if not all([isinstance(t, str) for t in tags]):
+      raise TypeError('tags must contain only items of type str')
+    self._tags = tags
+
+  @property
+  def provenance_sources(self) -> str:
+    r"""
+    Free-text provenance for the data/code behind the task. Values longer than
+    4000 characters after sanitization are rejected with InvalidArgument.
+    """
+    return self._provenance_sources or ""
+
+  @provenance_sources.setter
+  def provenance_sources(self, provenance_sources: Optional[str]):
+    if provenance_sources is None:
+      del self.provenance_sources
+      return
+    if not isinstance(provenance_sources, str):
+      raise TypeError('provenance_sources must be of type str')
+    self._provenance_sources = provenance_sources
+
+  @property
+  def citations(self) -> Optional[List[Optional['ApiBenchmarkTaskCitation']]]:
+    r"""
+    Replaces the full citation list for the current version. A citation whose
+    `url` can't be parsed as an http(s) URL is dropped rather than failing the
+    request; the rest are still applied.
+    """
+    return self._citations
+
+  @citations.setter
+  def citations(self, citations: Optional[List[Optional['ApiBenchmarkTaskCitation']]]):
+    if citations is None:
+      del self.citations
+      return
+    if not isinstance(citations, list):
+      raise TypeError('citations must be of type list')
+    if not all([isinstance(t, ApiBenchmarkTaskCitation) for t in citations]):
+      raise TypeError('citations must contain only items of type ApiBenchmarkTaskCitation')
+    self._citations = citations
+
+  @property
+  def update_mask(self) -> FieldMask:
+    """Which of the above to write. Only fields named here are read."""
+    return self._update_mask
+
+  @update_mask.setter
+  def update_mask(self, update_mask: FieldMask):
+    if update_mask is None:
+      del self.update_mask
+      return
+    if not isinstance(update_mask, FieldMask):
+      raise TypeError('update_mask must be of type FieldMask')
+    self._update_mask = update_mask
+
+  def endpoint(self):
+    path = '/api/v1/benchmarks/tasks/{slug.owner_slug}/{slug.task_slug}/update'
+    return path.format_map(self.to_field_map(self))
+
+
+  @staticmethod
+  def method():
+    return 'POST'
+
+  @staticmethod
+  def body_fields():
+    return '*'
+
+
+class ApiUpdateBenchmarkTaskResponse(KaggleObject):
+  r"""
+  Attributes:
+    task (ApiBenchmarkTask)
+      The task as it stands after the update.
+    invalid_tags (str)
+      Tag names from the request that didn't match a known tag. These were
+      skipped; the remaining tags were applied.
+  """
+
+  def __init__(self):
+    self._task = None
+    self._invalid_tags = []
+    self._freeze()
+
+  @property
+  def task(self) -> Optional['ApiBenchmarkTask']:
+    """The task as it stands after the update."""
+    return self._task
+
+  @task.setter
+  def task(self, task: Optional['ApiBenchmarkTask']):
+    if task is None:
+      del self.task
+      return
+    if not isinstance(task, ApiBenchmarkTask):
+      raise TypeError('task must be of type ApiBenchmarkTask')
+    self._task = task
+
+  @property
+  def invalid_tags(self) -> Optional[List[str]]:
+    r"""
+    Tag names from the request that didn't match a known tag. These were
+    skipped; the remaining tags were applied.
+    """
+    return self._invalid_tags
+
+  @invalid_tags.setter
+  def invalid_tags(self, invalid_tags: Optional[List[str]]):
+    if invalid_tags is None:
+      del self.invalid_tags
+      return
+    if not isinstance(invalid_tags, list):
+      raise TypeError('invalid_tags must be of type list')
+    if not all([isinstance(t, str) for t in invalid_tags]):
+      raise TypeError('invalid_tags must contain only items of type str')
+    self._invalid_tags = invalid_tags
+
+  @property
+  def invalidTags(self):
+    return self.invalid_tags
+
+
+class ApiUpdateBenchmarkTaskVersionRequest(KaggleObject):
+  r"""
+  Attributes:
+    slug (ApiBenchmarkTaskSlug)
+      The task version to update. `owner_slug` is optional and defaults to the
+      authenticated user. `version_number` names the version written, and over
+      HTTP it is a required path segment.
+    description (str)
+      Markdown details shown on the task page. HTML is sanitized before storage,
+      so the value read back may differ from what was sent.
+    provenance_sources (str)
+      Free-text provenance for the data/code behind the task. Values longer than
+      4000 characters after sanitization are rejected with InvalidArgument.
+    citations (ApiBenchmarkTaskCitation)
+      Replaces the full citation list for this version. A citation whose `url`
+      can't be parsed as an http(s) URL is dropped rather than failing the
+      request; the rest are still applied.
+    update_mask (FieldMask)
+      Which of the above to write. Only fields named here are read. `tags` is
+      not writable here: tags are task-scoped, so use UpdateBenchmarkTask.
+  """
+
+  def __init__(self):
+    self._slug = None
+    self._description = None
+    self._provenance_sources = None
+    self._citations = []
+    self._update_mask = None
+    self._freeze()
+
+  @property
+  def slug(self) -> Optional['ApiBenchmarkTaskSlug']:
+    r"""
+    The task version to update. `owner_slug` is optional and defaults to the
+    authenticated user. `version_number` names the version written, and over
+    HTTP it is a required path segment.
+    """
+    return self._slug
+
+  @slug.setter
+  def slug(self, slug: Optional['ApiBenchmarkTaskSlug']):
+    if slug is None:
+      del self.slug
+      return
+    if not isinstance(slug, ApiBenchmarkTaskSlug):
+      raise TypeError('slug must be of type ApiBenchmarkTaskSlug')
+    self._slug = slug
+
+  @property
+  def description(self) -> str:
+    r"""
+    Markdown details shown on the task page. HTML is sanitized before storage,
+    so the value read back may differ from what was sent.
+    """
+    return self._description or ""
+
+  @description.setter
+  def description(self, description: Optional[str]):
+    if description is None:
+      del self.description
+      return
+    if not isinstance(description, str):
+      raise TypeError('description must be of type str')
+    self._description = description
+
+  @property
+  def provenance_sources(self) -> str:
+    r"""
+    Free-text provenance for the data/code behind the task. Values longer than
+    4000 characters after sanitization are rejected with InvalidArgument.
+    """
+    return self._provenance_sources or ""
+
+  @provenance_sources.setter
+  def provenance_sources(self, provenance_sources: Optional[str]):
+    if provenance_sources is None:
+      del self.provenance_sources
+      return
+    if not isinstance(provenance_sources, str):
+      raise TypeError('provenance_sources must be of type str')
+    self._provenance_sources = provenance_sources
+
+  @property
+  def citations(self) -> Optional[List[Optional['ApiBenchmarkTaskCitation']]]:
+    r"""
+    Replaces the full citation list for this version. A citation whose `url`
+    can't be parsed as an http(s) URL is dropped rather than failing the
+    request; the rest are still applied.
+    """
+    return self._citations
+
+  @citations.setter
+  def citations(self, citations: Optional[List[Optional['ApiBenchmarkTaskCitation']]]):
+    if citations is None:
+      del self.citations
+      return
+    if not isinstance(citations, list):
+      raise TypeError('citations must be of type list')
+    if not all([isinstance(t, ApiBenchmarkTaskCitation) for t in citations]):
+      raise TypeError('citations must contain only items of type ApiBenchmarkTaskCitation')
+    self._citations = citations
+
+  @property
+  def update_mask(self) -> FieldMask:
+    r"""
+    Which of the above to write. Only fields named here are read. `tags` is
+    not writable here: tags are task-scoped, so use UpdateBenchmarkTask.
+    """
+    return self._update_mask
+
+  @update_mask.setter
+  def update_mask(self, update_mask: FieldMask):
+    if update_mask is None:
+      del self.update_mask
+      return
+    if not isinstance(update_mask, FieldMask):
+      raise TypeError('update_mask must be of type FieldMask')
+    self._update_mask = update_mask
+
+  def endpoint(self):
+    path = '/api/v1/benchmarks/tasks/{slug.owner_slug}/{slug.task_slug}/versions/{slug.version_number}/update'
+    return path.format_map(self.to_field_map(self))
+
+
+  @staticmethod
+  def method():
+    return 'POST'
+
+  @staticmethod
+  def body_fields():
+    return '*'
+
+
 class BenchmarkTaskDefinition(KaggleObject):
   r"""
   Attributes:
@@ -1552,6 +2051,7 @@ class BenchmarkTaskNotebookDefinition(KaggleObject):
 ApiBatchScheduleBenchmarkTaskRunsRequest._fields = [
   FieldMetadata("taskSlugs", "task_slugs", "_task_slugs", ApiBenchmarkTaskSlug, [], ListSerializer(KaggleObjectSerializer())),
   FieldMetadata("modelVersionSlugs", "model_version_slugs", "_model_version_slugs", str, [], ListSerializer(PredefinedSerializer())),
+  FieldMetadata("agentSlugs", "agent_slugs", "_agent_slugs", str, [], ListSerializer(PredefinedSerializer())),
 ]
 
 ApiBatchScheduleBenchmarkTaskRunsResponse._fields = [
@@ -1570,6 +2070,15 @@ ApiBenchmarkTask._fields = [
   FieldMetadata("isBackingNotebookPublished", "is_backing_notebook_published", "_is_backing_notebook_published", bool, None, PredefinedSerializer(), optional=True),
   FieldMetadata("options", "options", "_options", BenchmarkTaskOptions, None, KaggleObjectSerializer(), optional=True),
   FieldMetadata("source", "source", "_source", BenchmarkTaskVersionSource, BenchmarkTaskVersionSource.BENCHMARK_TASK_VERSION_SOURCE_UNSPECIFIED, EnumSerializer()),
+  FieldMetadata("description", "description", "_description", str, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("tags", "tags", "_tags", str, [], ListSerializer(PredefinedSerializer())),
+  FieldMetadata("provenanceSources", "provenance_sources", "_provenance_sources", str, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("citations", "citations", "_citations", ApiBenchmarkTaskCitation, [], ListSerializer(KaggleObjectSerializer())),
+]
+
+ApiBenchmarkTaskCitation._fields = [
+  FieldMetadata("title", "title", "_title", str, "", PredefinedSerializer()),
+  FieldMetadata("url", "url", "_url", str, "", PredefinedSerializer()),
 ]
 
 ApiBenchmarkTaskRun._fields = [
@@ -1646,6 +2155,28 @@ ApiListBenchmarkTasksResponse._fields = [
 ApiPublishBenchmarkTaskRequest._fields = [
   FieldMetadata("slug", "slug", "_slug", ApiBenchmarkTaskSlug, None, KaggleObjectSerializer()),
   FieldMetadata("publishBackingNotebook", "publish_backing_notebook", "_publish_backing_notebook", bool, False, PredefinedSerializer()),
+]
+
+ApiUpdateBenchmarkTaskRequest._fields = [
+  FieldMetadata("slug", "slug", "_slug", ApiBenchmarkTaskSlug, None, KaggleObjectSerializer()),
+  FieldMetadata("description", "description", "_description", str, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("tags", "tags", "_tags", str, [], ListSerializer(PredefinedSerializer())),
+  FieldMetadata("provenanceSources", "provenance_sources", "_provenance_sources", str, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("citations", "citations", "_citations", ApiBenchmarkTaskCitation, [], ListSerializer(KaggleObjectSerializer())),
+  FieldMetadata("updateMask", "update_mask", "_update_mask", FieldMask, None, FieldMaskSerializer()),
+]
+
+ApiUpdateBenchmarkTaskResponse._fields = [
+  FieldMetadata("task", "task", "_task", ApiBenchmarkTask, None, KaggleObjectSerializer()),
+  FieldMetadata("invalidTags", "invalid_tags", "_invalid_tags", str, [], ListSerializer(PredefinedSerializer())),
+]
+
+ApiUpdateBenchmarkTaskVersionRequest._fields = [
+  FieldMetadata("slug", "slug", "_slug", ApiBenchmarkTaskSlug, None, KaggleObjectSerializer()),
+  FieldMetadata("description", "description", "_description", str, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("provenanceSources", "provenance_sources", "_provenance_sources", str, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("citations", "citations", "_citations", ApiBenchmarkTaskCitation, [], ListSerializer(KaggleObjectSerializer())),
+  FieldMetadata("updateMask", "update_mask", "_update_mask", FieldMask, None, FieldMaskSerializer()),
 ]
 
 BenchmarkTaskDefinition._fields = [

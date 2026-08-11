@@ -1,3 +1,4 @@
+from kagglesdk.benchmarks.types.benchmark_enums import BenchmarkCandidateType
 from kagglesdk.kaggle_object import *
 from typing import Optional
 
@@ -6,20 +7,25 @@ class BatchScheduleBenchmarkModelVersionResult(KaggleObject):
   Attributes:
     benchmark_model_version_id (int)
       One of the values provided in
-      BatchScheduleBenchmarkTaskRunsRequest.benchmark_model_versions
+      BatchScheduleBenchmarkTaskRunsRequest.benchmark_model_version_ids
     run_scheduled (bool)
-      Whether the run was scheduled for the provided (benchmark_task_version,
-      benchmark_model_version) pair
+      Whether the run was scheduled for the provided (TaskVersion, Candidate)
+      pair.
     run_skipped_reason (str)
-      If run_scheduled was false, the reason the provided
-      (benchmark_task_version, benchmark_model_version) pair was skipped
+      If run_scheduled was false, the reason the (TaskVersion, Candidate) pair
+      was skipped
     benchmark_task_version_id (int)
       One of the values provided in
-      BatchScheduleBenchmarkTaskRunsRequest.benchmark_task_versions
+      BatchScheduleBenchmarkTaskRunsRequest.benchmark_task_version_ids
     parent_task_version_id (int)
       When the requested benchmark_task_version_id is a child of another task
       version, scheduling is redirected to the parent and this field reports the
       parent's id. Unset when the requested task version was executed directly.
+    agent_id (int)
+      One of the values provided in
+      BatchScheduleBenchmarkTaskRunsRequest.benchmark_agent_ids
+    candidate_type (BenchmarkCandidateType)
+      Specifies the candidate type that was scheduled (ModelVersion vs. Agent)
   """
 
   def __init__(self):
@@ -28,13 +34,15 @@ class BatchScheduleBenchmarkModelVersionResult(KaggleObject):
     self._run_skipped_reason = None
     self._benchmark_task_version_id = 0
     self._parent_task_version_id = None
+    self._agent_id = 0
+    self._candidate_type = BenchmarkCandidateType.BENCHMARK_CANDIDATE_TYPE_UNSPECIFIED
     self._freeze()
 
   @property
   def benchmark_task_version_id(self) -> int:
     r"""
     One of the values provided in
-    BatchScheduleBenchmarkTaskRunsRequest.benchmark_task_versions
+    BatchScheduleBenchmarkTaskRunsRequest.benchmark_task_version_ids
     """
     return self._benchmark_task_version_id
 
@@ -51,7 +59,7 @@ class BatchScheduleBenchmarkModelVersionResult(KaggleObject):
   def benchmark_model_version_id(self) -> int:
     r"""
     One of the values provided in
-    BatchScheduleBenchmarkTaskRunsRequest.benchmark_model_versions
+    BatchScheduleBenchmarkTaskRunsRequest.benchmark_model_version_ids
     """
     return self._benchmark_model_version_id
 
@@ -65,10 +73,41 @@ class BatchScheduleBenchmarkModelVersionResult(KaggleObject):
     self._benchmark_model_version_id = benchmark_model_version_id
 
   @property
+  def agent_id(self) -> int:
+    r"""
+    One of the values provided in
+    BatchScheduleBenchmarkTaskRunsRequest.benchmark_agent_ids
+    """
+    return self._agent_id
+
+  @agent_id.setter
+  def agent_id(self, agent_id: int):
+    if agent_id is None:
+      del self.agent_id
+      return
+    if not isinstance(agent_id, int):
+      raise TypeError('agent_id must be of type int')
+    self._agent_id = agent_id
+
+  @property
+  def candidate_type(self) -> 'BenchmarkCandidateType':
+    """Specifies the candidate type that was scheduled (ModelVersion vs. Agent)"""
+    return self._candidate_type
+
+  @candidate_type.setter
+  def candidate_type(self, candidate_type: 'BenchmarkCandidateType'):
+    if candidate_type is None:
+      del self.candidate_type
+      return
+    if not isinstance(candidate_type, BenchmarkCandidateType):
+      raise TypeError('candidate_type must be of type BenchmarkCandidateType')
+    self._candidate_type = candidate_type
+
+  @property
   def run_scheduled(self) -> bool:
     r"""
-    Whether the run was scheduled for the provided (benchmark_task_version,
-    benchmark_model_version) pair
+    Whether the run was scheduled for the provided (TaskVersion, Candidate)
+    pair.
     """
     return self._run_scheduled
 
@@ -84,8 +123,8 @@ class BatchScheduleBenchmarkModelVersionResult(KaggleObject):
   @property
   def run_skipped_reason(self) -> str:
     r"""
-    If run_scheduled was false, the reason the provided
-    (benchmark_task_version, benchmark_model_version) pair was skipped
+    If run_scheduled was false, the reason the (TaskVersion, Candidate) pair
+    was skipped
     """
     return self._run_skipped_reason or ""
 
@@ -123,5 +162,7 @@ BatchScheduleBenchmarkModelVersionResult._fields = [
   FieldMetadata("runSkippedReason", "run_skipped_reason", "_run_skipped_reason", str, None, PredefinedSerializer(), optional=True),
   FieldMetadata("benchmarkTaskVersionId", "benchmark_task_version_id", "_benchmark_task_version_id", int, 0, PredefinedSerializer()),
   FieldMetadata("parentTaskVersionId", "parent_task_version_id", "_parent_task_version_id", int, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("agentId", "agent_id", "_agent_id", int, 0, PredefinedSerializer()),
+  FieldMetadata("candidateType", "candidate_type", "_candidate_type", BenchmarkCandidateType, BenchmarkCandidateType.BENCHMARK_CANDIDATE_TYPE_UNSPECIFIED, EnumSerializer()),
 ]
 

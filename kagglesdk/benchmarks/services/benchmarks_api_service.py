@@ -1,4 +1,4 @@
-from kagglesdk.benchmarks.types.benchmarks_api_service import ApiBenchmarkLeaderboard, ApiBenchmarkModelVersionConfig, ApiCreateBenchmarkModelVersionConfigRequest, ApiCreateBenchmarkVersionAgentMappingsRequest, ApiCreateBenchmarkVersionAgentMappingsResponse, ApiDeleteBenchmarkVersionAgentMappingsRequest, ApiDeleteBenchmarkVersionAgentMappingsResponse, ApiGetBenchmarkLeaderboardRequest, ApiGetBenchmarkModelVersionConfigRequest, ApiListBenchmarkModelsRequest, ApiListBenchmarkModelsResponse, ApiListBenchmarkModelVersionConfigsRequest, ApiListBenchmarkModelVersionConfigsResponse, ApiListBenchmarkVersionAgentMappingsRequest, ApiListBenchmarkVersionAgentMappingsResponse
+from kagglesdk.benchmarks.types.benchmarks_api_service import ApiAddTasksToBenchmarkRequest, ApiAddTasksToBenchmarkResponse, ApiBenchmarkLeaderboard, ApiBenchmarkModelVersionConfig, ApiCreateBenchmarkModelVersionConfigRequest, ApiCreateBenchmarkVersionAgentMappingsRequest, ApiCreateBenchmarkVersionAgentMappingsResponse, ApiDeleteBenchmarkVersionAgentMappingsRequest, ApiDeleteBenchmarkVersionAgentMappingsResponse, ApiGetBenchmarkLeaderboardRequest, ApiGetBenchmarkModelVersionConfigRequest, ApiListBenchmarkModelsRequest, ApiListBenchmarkModelsResponse, ApiListBenchmarkModelVersionConfigsRequest, ApiListBenchmarkModelVersionConfigsResponse, ApiListBenchmarkVersionAgentMappingsRequest, ApiListBenchmarkVersionAgentMappingsResponse
 from kagglesdk.kaggle_http_client import KaggleHttpClient
 
 class BenchmarksApiClient(object):
@@ -184,3 +184,35 @@ class BenchmarksApiClient(object):
       request = ApiListBenchmarkVersionAgentMappingsRequest()
 
     return self._client.call("benchmarks.BenchmarksApiService", "ListBenchmarkVersionAgentMappings", request, ApiListBenchmarkVersionAgentMappingsResponse)
+
+  def add_tasks_to_benchmark(self, request: ApiAddTasksToBenchmarkRequest = None) -> ApiAddTasksToBenchmarkResponse:
+    r"""
+    Map one or more BenchmarkTasks into one of the current user's own
+    benchmarks, making them part of that benchmark's task tree and
+    leaderboard. Only supported for benchmarks of type Personal. Requires
+    update access to the benchmark version and read access to each task. Tasks
+    already mapped to the benchmark are skipped and echoed back in
+    `skipped_tasks` rather than failing the request, so a partially-applied
+    bulk import can be safely re-run.
+
+    Example:
+      curl -sSL -u fickleone:local_api_token \
+        -X POST \
+        http://localhost/api/v1/benchmarks/my-benchmark/tasks/add \
+        -H 'Content-Type: application/json' \
+        -d '{
+          'taskSlugs': [
+            {'taskSlug': 'count-letters'},
+            {'ownerSlug': 'bob', 'taskSlug': 'sort-list', 'versionNumber': 2}
+          ]
+        }'
+
+    Args:
+      request (ApiAddTasksToBenchmarkRequest):
+        The request object; initialized to empty instance if not specified.
+    """
+
+    if request is None:
+      request = ApiAddTasksToBenchmarkRequest()
+
+    return self._client.call("benchmarks.BenchmarksApiService", "AddTasksToBenchmark", request, ApiAddTasksToBenchmarkResponse)

@@ -1,5 +1,14 @@
 import enum
 
+class BenchmarkCandidateType(enum.Enum):
+  r"""
+  Saved to the DB. Do not modify existing values.
+  The kind of candidate a BenchmarkTaskVersion evaluates.
+  """
+  BENCHMARK_CANDIDATE_TYPE_UNSPECIFIED = 0
+  BENCHMARK_CANDIDATE_TYPE_MODEL_VERSIONS = 1
+  BENCHMARK_CANDIDATE_TYPE_AGENTS = 2
+
 class BenchmarkModelImportanceLevel(enum.Enum):
   r"""
   Determines whether the model will be run on

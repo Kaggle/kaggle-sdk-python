@@ -46,6 +46,9 @@ class CompetitionSettings(KaggleObject):
     deadline (datetime)
       KEY DATES SETTINGS GROUP (field numbers 40-59)
       'Competition Deadline' in the UI.
+    private_leaderboard_release_date (datetime)
+      'Private Leaderboard Release Date' in the UI. When set, must fall between
+      the deadline and 7 days after it.
     team_merger_explicit_deadline (datetime)
       KEY DATES SETTINGS GROUP: ADMIN ONLY
       'Team Merger Deadline' in the UI.
@@ -117,6 +120,7 @@ class CompetitionSettings(KaggleObject):
     self._enable_team_files = False
     self._team_file_deadline = None
     self._deadline = None
+    self._private_leaderboard_release_date = None
     self._team_merger_explicit_deadline = None
     self._prohibit_new_entrants_explicit_deadline = None
     self._kernels_publishing_disabled_deadline = None
@@ -319,6 +323,23 @@ class CompetitionSettings(KaggleObject):
     if not isinstance(deadline, datetime):
       raise TypeError('deadline must be of type datetime')
     self._deadline = deadline
+
+  @property
+  def private_leaderboard_release_date(self) -> datetime:
+    r"""
+    'Private Leaderboard Release Date' in the UI. When set, must fall between
+    the deadline and 7 days after it.
+    """
+    return self._private_leaderboard_release_date
+
+  @private_leaderboard_release_date.setter
+  def private_leaderboard_release_date(self, private_leaderboard_release_date: datetime):
+    if private_leaderboard_release_date is None:
+      del self.private_leaderboard_release_date
+      return
+    if not isinstance(private_leaderboard_release_date, datetime):
+      raise TypeError('private_leaderboard_release_date must be of type datetime')
+    self._private_leaderboard_release_date = private_leaderboard_release_date
 
   @property
   def team_merger_explicit_deadline(self) -> datetime:
@@ -626,6 +647,7 @@ CompetitionSettings._fields = [
   FieldMetadata("enableTeamFiles", "enable_team_files", "_enable_team_files", bool, False, PredefinedSerializer()),
   FieldMetadata("teamFileDeadline", "team_file_deadline", "_team_file_deadline", datetime, None, DateTimeSerializer()),
   FieldMetadata("deadline", "deadline", "_deadline", datetime, None, DateTimeSerializer()),
+  FieldMetadata("privateLeaderboardReleaseDate", "private_leaderboard_release_date", "_private_leaderboard_release_date", datetime, None, DateTimeSerializer()),
   FieldMetadata("teamMergerExplicitDeadline", "team_merger_explicit_deadline", "_team_merger_explicit_deadline", datetime, None, DateTimeSerializer()),
   FieldMetadata("prohibitNewEntrantsExplicitDeadline", "prohibit_new_entrants_explicit_deadline", "_prohibit_new_entrants_explicit_deadline", datetime, None, DateTimeSerializer()),
   FieldMetadata("kernelsPublishingDisabledDeadline", "kernels_publishing_disabled_deadline", "_kernels_publishing_disabled_deadline", datetime, None, DateTimeSerializer()),
