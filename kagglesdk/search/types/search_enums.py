@@ -24,6 +24,7 @@ class DocumentType(enum.Enum):
   RESOURCEREFERENCE = 13
   BENCHMARKTASK = 14
   BENCHMARK = 15
+  BENCHMARKMODELCARD = 16
 
 class OwnerType(enum.Enum):
   OWNER_TYPE_UNSPECIFIED = 0

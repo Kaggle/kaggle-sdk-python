@@ -1,4 +1,5 @@
-from kagglesdk.benchmarks.types.benchmarks_api_service import ApiAddTasksToBenchmarkRequest, ApiAddTasksToBenchmarkResponse, ApiBenchmarkLeaderboard, ApiBenchmarkModelVersionConfig, ApiCreateBenchmarkModelVersionConfigRequest, ApiCreateBenchmarkVersionAgentMappingsRequest, ApiCreateBenchmarkVersionAgentMappingsResponse, ApiDeleteBenchmarkVersionAgentMappingsRequest, ApiDeleteBenchmarkVersionAgentMappingsResponse, ApiGetBenchmarkLeaderboardRequest, ApiGetBenchmarkModelVersionConfigRequest, ApiListBenchmarkModelsRequest, ApiListBenchmarkModelsResponse, ApiListBenchmarkModelVersionConfigsRequest, ApiListBenchmarkModelVersionConfigsResponse, ApiListBenchmarkVersionAgentMappingsRequest, ApiListBenchmarkVersionAgentMappingsResponse
+from kagglesdk.benchmarks.types.benchmark_types import BenchmarkArenaSettings
+from kagglesdk.benchmarks.types.benchmarks_api_service import ApiAddTasksToBenchmarkRequest, ApiAddTasksToBenchmarkResponse, ApiBenchmarkLeaderboard, ApiBenchmarkModelVersionConfig, ApiCreateBenchmarkArenaSettingsRequest, ApiCreateBenchmarkModelVersionConfigRequest, ApiCreateBenchmarkVersionAgentMappingsRequest, ApiCreateBenchmarkVersionAgentMappingsResponse, ApiDeleteBenchmarkVersionAgentMappingsRequest, ApiDeleteBenchmarkVersionAgentMappingsResponse, ApiGetBenchmarkArenaSettingsRequest, ApiGetBenchmarkLeaderboardRequest, ApiGetBenchmarkModelVersionConfigRequest, ApiListBenchmarkArenaCombinationsRequest, ApiListBenchmarkArenaCombinationsResponse, ApiListBenchmarkModelsRequest, ApiListBenchmarkModelsResponse, ApiListBenchmarkModelVersionConfigsRequest, ApiListBenchmarkModelVersionConfigsResponse, ApiListBenchmarkVersionAgentMappingsRequest, ApiListBenchmarkVersionAgentMappingsResponse, ApiRegisterAuxiliaryModelVersionConfigsRequest, ApiRemoveTasksFromBenchmarkRequest, ApiRemoveTasksFromBenchmarkResponse, ApiUnregisterAuxiliaryModelVersionConfigsRequest, ApiUpdateBenchmarkArenaCombinationsRequest, ApiUpdateBenchmarkArenaSettingsRequest
 from kagglesdk.kaggle_http_client import KaggleHttpClient
 
 class BenchmarksApiClient(object):
@@ -189,11 +190,10 @@ class BenchmarksApiClient(object):
     r"""
     Map one or more BenchmarkTasks into one of the current user's own
     benchmarks, making them part of that benchmark's task tree and
-    leaderboard. Only supported for benchmarks of type Personal. Requires
-    update access to the benchmark version and read access to each task. Tasks
-    already mapped to the benchmark are skipped and echoed back in
-    `skipped_tasks` rather than failing the request, so a partially-applied
-    bulk import can be safely re-run.
+    leaderboard. Requires update access to the benchmark version and read
+    access to each task. Tasks already mapped to the benchmark are skipped and
+    echoed back in `skipped_tasks` rather than failing the request, so a
+    partially-applied bulk import can be safely re-run.
 
     Example:
       curl -sSL -u fickleone:local_api_token \
@@ -216,3 +216,190 @@ class BenchmarksApiClient(object):
       request = ApiAddTasksToBenchmarkRequest()
 
     return self._client.call("benchmarks.BenchmarksApiService", "AddTasksToBenchmark", request, ApiAddTasksToBenchmarkResponse)
+
+  def remove_tasks_from_benchmark(self, request: ApiRemoveTasksFromBenchmarkRequest = None) -> ApiRemoveTasksFromBenchmarkResponse:
+    r"""
+    Unmap one or more BenchmarkTasks from one of the current user's own
+    benchmarks, removing them from that benchmark's task tree and leaderboard.
+    Requires update access to the benchmark version and read access to each
+    task. Tasks not currently mapped to the benchmark are skipped and echoed
+    back in `skipped_tasks` rather than failing the request, so a
+    partially-applied bulk removal can be safely re-run.
+
+    Example:
+      curl -sSL -u fickleone:local_api_token \
+        -X POST \
+        http://localhost/api/v1/benchmarks/my-benchmark/tasks/remove \
+        -H 'Content-Type: application/json' \
+        -d '{
+          'taskSlugs': [
+            {'taskSlug': 'count-letters'},
+            {'ownerSlug': 'bob', 'taskSlug': 'sort-list', 'versionNumber': 2}
+          ]
+        }'
+
+    Args:
+      request (ApiRemoveTasksFromBenchmarkRequest):
+        The request object; initialized to empty instance if not specified.
+    """
+
+    if request is None:
+      request = ApiRemoveTasksFromBenchmarkRequest()
+
+    return self._client.call("benchmarks.BenchmarksApiService", "RemoveTasksFromBenchmark", request, ApiRemoveTasksFromBenchmarkResponse)
+
+  def register_auxiliary_model_version_configs(self, request: ApiRegisterAuxiliaryModelVersionConfigsRequest = None):
+    r"""
+    Retroactively records auxiliary BenchmarkModelVersionConfigs a task version
+    invokes beyond the candidate (e.g. LLM judges), for authors who did not
+    declare them at creation time. The task is resolved under the current user;
+    configs are addressed by slug. Additive and idempotent: configs already
+    registered on the version are skipped.
+
+    Args:
+      request (ApiRegisterAuxiliaryModelVersionConfigsRequest):
+        The request object; initialized to empty instance if not specified.
+    """
+
+    if request is None:
+      request = ApiRegisterAuxiliaryModelVersionConfigsRequest()
+
+    self._client.call("benchmarks.BenchmarksApiService", "RegisterAuxiliaryModelVersionConfigs", request, None)
+
+  def unregister_auxiliary_model_version_configs(self, request: ApiUnregisterAuxiliaryModelVersionConfigsRequest = None):
+    r"""
+    Removes previously-registered auxiliary BenchmarkModelVersionConfigs from a
+    task version. The task is resolved under the current user; configs are
+    addressed by slug. Idempotent: configs not currently registered are
+    ignored.
+
+    Args:
+      request (ApiUnregisterAuxiliaryModelVersionConfigsRequest):
+        The request object; initialized to empty instance if not specified.
+    """
+
+    if request is None:
+      request = ApiUnregisterAuxiliaryModelVersionConfigsRequest()
+
+    self._client.call("benchmarks.BenchmarksApiService", "UnregisterAuxiliaryModelVersionConfigs", request, None)
+
+  def get_benchmark_arena_settings(self, request: ApiGetBenchmarkArenaSettingsRequest = None) -> BenchmarkArenaSettings:
+    r"""
+    Get a benchmark version's arena settings. Requires update access to the
+    benchmark version. Returns NOT_FOUND if the version has no arena.
+
+    Example:
+      curl -sSL -u fickleone:local_api_token \
+        http://localhost/api/v1/benchmarks/fickleone/my-benchmark/arena/settings
+
+    Args:
+      request (ApiGetBenchmarkArenaSettingsRequest):
+        The request object; initialized to empty instance if not specified.
+    """
+
+    if request is None:
+      request = ApiGetBenchmarkArenaSettingsRequest()
+
+    return self._client.call("benchmarks.BenchmarksApiService", "GetBenchmarkArenaSettings", request, BenchmarkArenaSettings)
+
+  def create_benchmark_arena_settings(self, request: ApiCreateBenchmarkArenaSettingsRequest = None) -> BenchmarkArenaSettings:
+    r"""
+    Create a benchmark version's arena. Requires update access to the
+    benchmark version.
+
+    Example:
+      curl -sSL -u fickleone:local_api_token \
+        -X POST \
+        http://localhost/api/v1/benchmarks/fickleone/my-benchmark/arena/settings/create
+        \
+        -H 'Content-Type: application/json' \
+        -d '{
+          'settings': {
+            'artifactPath': '*.mp4',
+            'artifactType': 'BENCHMARK_ARENA_ARTIFACT_TYPE_VIDEO',
+            'revealCandidates': true
+          }
+        }'
+
+    Args:
+      request (ApiCreateBenchmarkArenaSettingsRequest):
+        The request object; initialized to empty instance if not specified.
+    """
+
+    if request is None:
+      request = ApiCreateBenchmarkArenaSettingsRequest()
+
+    return self._client.call("benchmarks.BenchmarksApiService", "CreateBenchmarkArenaSettings", request, BenchmarkArenaSettings)
+
+  def update_benchmark_arena_settings(self, request: ApiUpdateBenchmarkArenaSettingsRequest = None) -> BenchmarkArenaSettings:
+    r"""
+    Update a benchmark version's arena settings. Requires update access to the
+    benchmark version.
+
+    Example:
+      curl -sSL -u fickleone:local_api_token \
+        -X POST \
+        http://localhost/api/v1/benchmarks/fickleone/my-benchmark/arena/settings/update
+        \
+        -H 'Content-Type: application/json' \
+        -d '{
+          'settings': {'votingEnabled': true},
+          'updateMask': 'votingEnabled'
+        }'
+
+    Args:
+      request (ApiUpdateBenchmarkArenaSettingsRequest):
+        The request object; initialized to empty instance if not specified.
+    """
+
+    if request is None:
+      request = ApiUpdateBenchmarkArenaSettingsRequest()
+
+    return self._client.call("benchmarks.BenchmarksApiService", "UpdateBenchmarkArenaSettings", request, BenchmarkArenaSettings)
+
+  def list_benchmark_arena_combinations(self, request: ApiListBenchmarkArenaCombinationsRequest = None) -> ApiListBenchmarkArenaCombinationsResponse:
+    r"""
+    List the (task version, candidate) combinations opted into a benchmark
+    version's arena. Requires update access to the benchmark version.
+
+    Example:
+      curl -sSL -u fickleone:local_api_token \
+        http://localhost/api/v1/benchmarks/fickleone/my-benchmark/arena/combinations
+
+    Args:
+      request (ApiListBenchmarkArenaCombinationsRequest):
+        The request object; initialized to empty instance if not specified.
+    """
+
+    if request is None:
+      request = ApiListBenchmarkArenaCombinationsRequest()
+
+    return self._client.call("benchmarks.BenchmarksApiService", "ListBenchmarkArenaCombinations", request, ApiListBenchmarkArenaCombinationsResponse)
+
+  def update_benchmark_arena_combinations(self, request: ApiUpdateBenchmarkArenaCombinationsRequest = None):
+    r"""
+    Opt (task version, candidate) combinations into or out of a benchmark
+    version's arena. Requires update access to the benchmark version and read
+    access to each candidate added.
+
+    Example:
+      curl -sSL -u fickleone:local_api_token \
+        -X POST \
+        http://localhost/api/v1/benchmarks/fickleone/my-benchmark/arena/combinations/update
+        \
+        -H 'Content-Type: application/json' \
+        -d '{
+          'add': [
+            {'taskVersionId': 1, 'candidate': {'benchmarkModelVersionId': 2}}
+          ]
+        }'
+
+    Args:
+      request (ApiUpdateBenchmarkArenaCombinationsRequest):
+        The request object; initialized to empty instance if not specified.
+    """
+
+    if request is None:
+      request = ApiUpdateBenchmarkArenaCombinationsRequest()
+
+    self._client.call("benchmarks.BenchmarksApiService", "UpdateBenchmarkArenaCombinations", request, None)

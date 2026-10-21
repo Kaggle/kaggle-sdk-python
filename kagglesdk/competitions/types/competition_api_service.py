@@ -282,6 +282,8 @@ class ApiCompetition(KaggleObject):
     thumbnail_image_url (str)
     host_name (str)
     date_created (datetime)
+    license_name (str)
+      Display name of the data license, e.g. 'CC0: Public Domain'.
   """
 
   def __init__(self):
@@ -312,6 +314,7 @@ class ApiCompetition(KaggleObject):
     self._thumbnail_image_url = None
     self._host_name = ""
     self._date_created = None
+    self._license_name = None
     self._freeze()
 
   @property
@@ -666,6 +669,20 @@ class ApiCompetition(KaggleObject):
     if not isinstance(date_created, datetime):
       raise TypeError('date_created must be of type datetime')
     self._date_created = date_created
+
+  @property
+  def license_name(self) -> str:
+    """Display name of the data license, e.g. 'CC0: Public Domain'."""
+    return self._license_name or ""
+
+  @license_name.setter
+  def license_name(self, license_name: Optional[str]):
+    if license_name is None:
+      del self.license_name
+      return
+    if not isinstance(license_name, str):
+      raise TypeError('license_name must be of type str')
+    self._license_name = license_name
 
 
 class ApiCompetitionDataFile(KaggleObject):
@@ -1596,6 +1613,8 @@ class ApiCreateCompetitionRequest(KaggleObject):
       emails/domains.
     license_id (int)
       Optional. License ID for the competition data. See ListCompetitionLicenses.
+      Must not be set when clone_competition_id is set, since a clone reuses the
+      source competition's dataset and inherits its license.
     organization_id (int)
       Optional. Tie this competition to an organization (grants read-only access
       to all org members).
@@ -1610,6 +1629,10 @@ class ApiCreateCompetitionRequest(KaggleObject):
       Optional. Create as a hackathon competition.
     num_prizes (int)
       Optional. Number of leaderboard prize positions.
+    task_creation (bool)
+      Optional. Create as a task creation competition, with empty task creation
+      settings. Can't be combined with hackathon or clone_competition_id:
+      cloning a task creation competition copies its settings.
   """
 
   def __init__(self):
@@ -1627,6 +1650,7 @@ class ApiCreateCompetitionRequest(KaggleObject):
     self._reward = None
     self._hackathon = None
     self._num_prizes = None
+    self._task_creation = None
     self._freeze()
 
   @property
@@ -1738,7 +1762,11 @@ class ApiCreateCompetitionRequest(KaggleObject):
 
   @property
   def license_id(self) -> int:
-    """Optional. License ID for the competition data. See ListCompetitionLicenses."""
+    r"""
+    Optional. License ID for the competition data. See ListCompetitionLicenses.
+    Must not be set when clone_competition_id is set, since a clone reuses the
+    source competition's dataset and inherits its license.
+    """
     return self._license_id or 0
 
   @license_id.setter
@@ -1841,6 +1869,24 @@ class ApiCreateCompetitionRequest(KaggleObject):
     if not isinstance(num_prizes, int):
       raise TypeError('num_prizes must be of type int')
     self._num_prizes = num_prizes
+
+  @property
+  def task_creation(self) -> bool:
+    r"""
+    Optional. Create as a task creation competition, with empty task creation
+    settings. Can't be combined with hackathon or clone_competition_id:
+    cloning a task creation competition copies its settings.
+    """
+    return self._task_creation or False
+
+  @task_creation.setter
+  def task_creation(self, task_creation: Optional[bool]):
+    if task_creation is None:
+      del self.task_creation
+      return
+    if not isinstance(task_creation, bool):
+      raise TypeError('task_creation must be of type bool')
+    self._task_creation = task_creation
 
   def endpoint(self):
     path = '/api/v1/competitions'
@@ -5251,6 +5297,64 @@ class ApiUpdateCompetitionSettingsRequest(KaggleObject):
     return '*'
 
 
+class ApiUpdateSubmissionBenchmarkRequest(KaggleObject):
+  r"""
+  Attributes:
+    submission_id (int)
+    benchmark (bool)
+      True publishes the sandbox submission as a benchmark; false moves it back
+      to the sandbox. Required.
+  """
+
+  def __init__(self):
+    self._submission_id = 0
+    self._benchmark = None
+    self._freeze()
+
+  @property
+  def submission_id(self) -> int:
+    return self._submission_id
+
+  @submission_id.setter
+  def submission_id(self, submission_id: int):
+    if submission_id is None:
+      del self.submission_id
+      return
+    if not isinstance(submission_id, int):
+      raise TypeError('submission_id must be of type int')
+    self._submission_id = submission_id
+
+  @property
+  def benchmark(self) -> bool:
+    r"""
+    True publishes the sandbox submission as a benchmark; false moves it back
+    to the sandbox. Required.
+    """
+    return self._benchmark or False
+
+  @benchmark.setter
+  def benchmark(self, benchmark: Optional[bool]):
+    if benchmark is None:
+      del self.benchmark
+      return
+    if not isinstance(benchmark, bool):
+      raise TypeError('benchmark must be of type bool')
+    self._benchmark = benchmark
+
+  def endpoint(self):
+    path = '/api/v1/competitions/submissions/{submission_id}/benchmark'
+    return path.format_map(self.to_field_map(self))
+
+
+  @staticmethod
+  def method():
+    return 'POST'
+
+  @staticmethod
+  def body_fields():
+    return '*'
+
+
 ApiAddCompetitionHostRequest._fields = [
   FieldMetadata("competitionName", "competition_name", "_competition_name", str, "", PredefinedSerializer()),
   FieldMetadata("userName", "user_name", "_user_name", str, "", PredefinedSerializer()),
@@ -5300,6 +5404,7 @@ ApiCompetition._fields = [
   FieldMetadata("thumbnailImageUrl", "thumbnail_image_url", "_thumbnail_image_url", str, None, PredefinedSerializer(), optional=True),
   FieldMetadata("hostName", "host_name", "_host_name", str, "", PredefinedSerializer()),
   FieldMetadata("dateCreated", "date_created", "_date_created", datetime, None, DateTimeSerializer()),
+  FieldMetadata("licenseName", "license_name", "_license_name", str, None, PredefinedSerializer(), optional=True),
 ]
 
 ApiCompetitionDataFile._fields = [
@@ -5391,6 +5496,7 @@ ApiCreateCompetitionRequest._fields = [
   FieldMetadata("reward", "reward", "_reward", Reward, None, KaggleObjectSerializer(), optional=True),
   FieldMetadata("hackathon", "hackathon", "_hackathon", bool, None, PredefinedSerializer(), optional=True),
   FieldMetadata("numPrizes", "num_prizes", "_num_prizes", int, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("taskCreation", "task_creation", "_task_creation", bool, None, PredefinedSerializer(), optional=True),
 ]
 
 ApiCreateCompetitionResponse._fields = [
@@ -5717,5 +5823,10 @@ ApiUpdateCompetitionSettingsRequest._fields = [
   FieldMetadata("competitionName", "competition_name", "_competition_name", str, "", PredefinedSerializer()),
   FieldMetadata("settings", "settings", "_settings", CompetitionSettings, None, KaggleObjectSerializer()),
   FieldMetadata("updateMask", "update_mask", "_update_mask", FieldMask, None, FieldMaskSerializer()),
+]
+
+ApiUpdateSubmissionBenchmarkRequest._fields = [
+  FieldMetadata("submissionId", "submission_id", "_submission_id", int, 0, PredefinedSerializer()),
+  FieldMetadata("benchmark", "benchmark", "_benchmark", bool, None, PredefinedSerializer(), optional=True),
 ]
 

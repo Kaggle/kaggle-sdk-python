@@ -121,8 +121,9 @@ class GenerateAccessTokenRequest(KaggleObject):
   Attributes:
     refresh_token (str)
       Refresh token used to generate a short-lived restricted access token.
-      If not specified current user credentials will be used to generate an
-      unrestricted access token.
+      If not specified, the caller must be authenticated with a KGAT or legacy
+      API key; the token is tied to that key and can't outlive it or exceed its
+      scopes. Cookies and short-lived access tokens can't mint without one.
     api_version (ApiVersion)
       Version of the Kaggle API for which this token will be used.
     expiration_duration (timedelta)
@@ -161,8 +162,9 @@ class GenerateAccessTokenRequest(KaggleObject):
   def refresh_token(self) -> str:
     r"""
     Refresh token used to generate a short-lived restricted access token.
-    If not specified current user credentials will be used to generate an
-    unrestricted access token.
+    If not specified, the caller must be authenticated with a KGAT or legacy
+    API key; the token is tied to that key and can't outlive it or exceed its
+    scopes. Cookies and short-lived access tokens can't mint without one.
     """
     return self._refresh_token or ""
 
