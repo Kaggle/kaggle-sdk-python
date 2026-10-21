@@ -9,7 +9,7 @@ class AgentsApiClient(object):
   def create_harness(self, request: ApiCreateHarnessRequest = None) -> ApiHarness:
     r"""
     Create a Harness together with its (required) first HarnessVersion.
-    Admin-only.
+    Requires the agentic-candidates feature flag.
 
     Example:
       curl -sSL -u andrewmingwang:local_api_token \
@@ -45,7 +45,7 @@ class AgentsApiClient(object):
 
   def get_harness(self, request: ApiGetHarnessRequest = None) -> ApiHarness:
     r"""
-    Get a Harness by id. Admin-only.
+    Get a Harness by id. Requires the agentic-candidates feature flag.
 
     Example:
       curl -sSL -u andrewmingwang:local_api_token \
@@ -64,7 +64,7 @@ class AgentsApiClient(object):
   def create_harness_version(self, request: ApiCreateHarnessVersionRequest = None) -> ApiHarnessVersion:
     r"""
     Create an additional HarnessVersion under an existing Harness.
-    Admin-only.
+    Requires the agentic-candidates feature flag.
 
     Example:
       curl -sSL -u andrewmingwang:local_api_token \
@@ -95,7 +95,7 @@ class AgentsApiClient(object):
 
   def get_harness_version(self, request: ApiGetHarnessVersionRequest = None) -> ApiHarnessVersion:
     r"""
-    Get a HarnessVersion by id. Admin-only.
+    Get a HarnessVersion by id. Requires the agentic-candidates feature flag.
 
     Example:
       curl -sSL -u andrewmingwang:local_api_token \
@@ -115,7 +115,8 @@ class AgentsApiClient(object):
     r"""
     List Harnesses. Returns one row per HarnessVersion visible to the caller
     (a Harness with N versions appears N times, each row with version
-    populated for that version). Admin-only.
+    populated for that version). Requires the agentic-candidates feature
+    flag.
 
     Example:
       curl -sSL -u andrewmingwang:local_api_token -G \
@@ -135,7 +136,8 @@ class AgentsApiClient(object):
   def create_agent(self, request: ApiCreateAgentRequest = None) -> ApiAgent:
     r"""
     Create an Agent (pairing of BenchmarkModelVersionConfig + HarnessVersion).
-    Admin-only, plus the caller must be able to read the referenced
+    Requires the agentic-candidates feature flag, plus the caller must be
+    able to read the referenced
     BenchmarkModelVersionConfig and HarnessVersion.
 
     Example:
@@ -164,7 +166,7 @@ class AgentsApiClient(object):
 
   def get_agent(self, request: ApiGetAgentRequest = None) -> ApiAgent:
     r"""
-    Get an Agent by id. Admin-only.
+    Get an Agent by id. Requires the agentic-candidates feature flag.
 
     Example:
       curl -sSL -u andrewmingwang:local_api_token \
@@ -182,7 +184,8 @@ class AgentsApiClient(object):
 
   def list_agents(self, request: ApiListAgentsRequest = None) -> ApiListAgentsResponse:
     r"""
-    List Agents visible to the caller. Admin-only.
+    List Agents visible to the caller. Requires the agentic-candidates
+    feature flag.
 
     Example:
       curl -sSL -u andrewmingwang:local_api_token -G \

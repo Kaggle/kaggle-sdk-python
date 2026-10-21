@@ -10,12 +10,15 @@ class ListAgentsFilter(KaggleObject):
       Restrict to Agents whose BenchmarkModelVersionConfig has the given ids.
     harness_version_ids (int)
       Restrict to Agents whose HarnessVersion has the given ids.
+    slugs (str)
+      Restrict to Agents with the given slugs.
   """
 
   def __init__(self):
     self._agent_ids = []
     self._benchmark_model_version_config_ids = []
     self._harness_version_ids = []
+    self._slugs = []
     self._freeze()
 
   @property
@@ -65,6 +68,22 @@ class ListAgentsFilter(KaggleObject):
     if not all([isinstance(t, int) for t in harness_version_ids]):
       raise TypeError('harness_version_ids must contain only items of type int')
     self._harness_version_ids = harness_version_ids
+
+  @property
+  def slugs(self) -> Optional[List[str]]:
+    """Restrict to Agents with the given slugs."""
+    return self._slugs
+
+  @slugs.setter
+  def slugs(self, slugs: Optional[List[str]]):
+    if slugs is None:
+      del self.slugs
+      return
+    if not isinstance(slugs, list):
+      raise TypeError('slugs must be of type list')
+    if not all([isinstance(t, str) for t in slugs]):
+      raise TypeError('slugs must contain only items of type str')
+    self._slugs = slugs
 
 
 class ListHarnessesFilter(KaggleObject):
@@ -122,6 +141,7 @@ ListAgentsFilter._fields = [
   FieldMetadata("agentIds", "agent_ids", "_agent_ids", int, [], ListSerializer(PredefinedSerializer())),
   FieldMetadata("benchmarkModelVersionConfigIds", "benchmark_model_version_config_ids", "_benchmark_model_version_config_ids", int, [], ListSerializer(PredefinedSerializer())),
   FieldMetadata("harnessVersionIds", "harness_version_ids", "_harness_version_ids", int, [], ListSerializer(PredefinedSerializer())),
+  FieldMetadata("slugs", "slugs", "_slugs", str, [], ListSerializer(PredefinedSerializer())),
 ]
 
 ListHarnessesFilter._fields = [

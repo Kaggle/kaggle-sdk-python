@@ -1,8 +1,7 @@
 from google.protobuf.field_mask_pb2 import FieldMask
-from kagglesdk.benchmarks.types.benchmark_enums import BenchmarkVersionAgentMappingType
-from kagglesdk.benchmarks.types.benchmark_service import ListBenchmarkVersionAgentMappingsFilter
+from kagglesdk.benchmarks.types.benchmark_enums import BenchmarkCandidateClass, BenchmarkLeaderboardDisplayType, BenchmarkVersionAgentMappingType
 from kagglesdk.benchmarks.types.benchmark_tasks_api_service import ApiBenchmarkTaskSlug
-from kagglesdk.benchmarks.types.benchmark_types import BenchmarkModel, BenchmarkResult
+from kagglesdk.benchmarks.types.benchmark_types import BenchmarkArenaCombination, BenchmarkArenaSettings, BenchmarkModel, BenchmarkResult
 from kagglesdk.kaggle_object import *
 from typing import Optional, List
 
@@ -163,20 +162,45 @@ class ApiBenchmarkLeaderboard(KaggleObject):
 
   class LeaderboardRow(KaggleObject):
     r"""
+    One contestant and its scores. Which facets are populated follows from
+    `candidate_class`.
+
     Attributes:
       model_version_name (str)
+        Always set, but does not identify the row on its own: sibling configs,
+        and the agents running them, share one model version.
       model_version_slug (str)
       task_results (ApiBenchmarkLeaderboard.TaskResult)
+      candidate_class (BenchmarkCandidateClass)
+      model_version_config_name (str)
+        Set for MODEL_VERSION_CONFIG and AGENT rows; an agent pins a config too.
+      model_version_config_slug (str)
+      agent_name (str)
+        Set for AGENT rows.
+      agent_slug (str)
+      harness_name (str)
+      harness_slug (str)
     """
 
     def __init__(self):
       self._model_version_name = ""
       self._model_version_slug = ""
       self._task_results = []
+      self._candidate_class = BenchmarkCandidateClass.BENCHMARK_CANDIDATE_CLASS_UNSPECIFIED
+      self._model_version_config_name = None
+      self._model_version_config_slug = None
+      self._agent_name = None
+      self._agent_slug = None
+      self._harness_name = None
+      self._harness_slug = None
       self._freeze()
 
     @property
     def model_version_name(self) -> str:
+      r"""
+      Always set, but does not identify the row on its own: sibling configs,
+      and the agents running them, share one model version.
+      """
       return self._model_version_name
 
     @model_version_name.setter
@@ -216,6 +240,99 @@ class ApiBenchmarkLeaderboard(KaggleObject):
         raise TypeError('task_results must contain only items of type ApiBenchmarkLeaderboard.TaskResult')
       self._task_results = task_results
 
+    @property
+    def candidate_class(self) -> 'BenchmarkCandidateClass':
+      return self._candidate_class
+
+    @candidate_class.setter
+    def candidate_class(self, candidate_class: 'BenchmarkCandidateClass'):
+      if candidate_class is None:
+        del self.candidate_class
+        return
+      if not isinstance(candidate_class, BenchmarkCandidateClass):
+        raise TypeError('candidate_class must be of type BenchmarkCandidateClass')
+      self._candidate_class = candidate_class
+
+    @property
+    def model_version_config_name(self) -> str:
+      """Set for MODEL_VERSION_CONFIG and AGENT rows; an agent pins a config too."""
+      return self._model_version_config_name or ""
+
+    @model_version_config_name.setter
+    def model_version_config_name(self, model_version_config_name: Optional[str]):
+      if model_version_config_name is None:
+        del self.model_version_config_name
+        return
+      if not isinstance(model_version_config_name, str):
+        raise TypeError('model_version_config_name must be of type str')
+      self._model_version_config_name = model_version_config_name
+
+    @property
+    def model_version_config_slug(self) -> str:
+      return self._model_version_config_slug or ""
+
+    @model_version_config_slug.setter
+    def model_version_config_slug(self, model_version_config_slug: Optional[str]):
+      if model_version_config_slug is None:
+        del self.model_version_config_slug
+        return
+      if not isinstance(model_version_config_slug, str):
+        raise TypeError('model_version_config_slug must be of type str')
+      self._model_version_config_slug = model_version_config_slug
+
+    @property
+    def agent_name(self) -> str:
+      """Set for AGENT rows."""
+      return self._agent_name or ""
+
+    @agent_name.setter
+    def agent_name(self, agent_name: Optional[str]):
+      if agent_name is None:
+        del self.agent_name
+        return
+      if not isinstance(agent_name, str):
+        raise TypeError('agent_name must be of type str')
+      self._agent_name = agent_name
+
+    @property
+    def agent_slug(self) -> str:
+      return self._agent_slug or ""
+
+    @agent_slug.setter
+    def agent_slug(self, agent_slug: Optional[str]):
+      if agent_slug is None:
+        del self.agent_slug
+        return
+      if not isinstance(agent_slug, str):
+        raise TypeError('agent_slug must be of type str')
+      self._agent_slug = agent_slug
+
+    @property
+    def harness_name(self) -> str:
+      return self._harness_name or ""
+
+    @harness_name.setter
+    def harness_name(self, harness_name: Optional[str]):
+      if harness_name is None:
+        del self.harness_name
+        return
+      if not isinstance(harness_name, str):
+        raise TypeError('harness_name must be of type str')
+      self._harness_name = harness_name
+
+    @property
+    def harness_slug(self) -> str:
+      return self._harness_slug or ""
+
+    @harness_slug.setter
+    def harness_slug(self, harness_slug: Optional[str]):
+      if harness_slug is None:
+        del self.harness_slug
+        return
+      if not isinstance(harness_slug, str):
+        raise TypeError('harness_slug must be of type str')
+      self._harness_slug = harness_slug
+
 
   class TaskResult(KaggleObject):
     r"""
@@ -224,6 +341,10 @@ class ApiBenchmarkLeaderboard(KaggleObject):
       benchmark_task_slug (str)
       task_version (int)
       result (BenchmarkResult)
+      display_type (BenchmarkLeaderboardDisplayType)
+        The scale `result`'s value is on: PERCENTAGES stores 0.85 for 85% while
+        RAW_PERCENTAGES stores 85. Columns of one board can differ, so read this
+        before comparing numbers across them.
     """
 
     def __init__(self):
@@ -231,6 +352,7 @@ class ApiBenchmarkLeaderboard(KaggleObject):
       self._benchmark_task_slug = ""
       self._task_version = 0
       self._result = None
+      self._display_type = BenchmarkLeaderboardDisplayType.BENCHMARK_LEADERBOARD_DISPLAY_TYPE_UNSPECIFIED
       self._freeze()
 
     @property
@@ -285,6 +407,24 @@ class ApiBenchmarkLeaderboard(KaggleObject):
         raise TypeError('result must be of type BenchmarkResult')
       self._result = result
 
+    @property
+    def display_type(self) -> 'BenchmarkLeaderboardDisplayType':
+      r"""
+      The scale `result`'s value is on: PERCENTAGES stores 0.85 for 85% while
+      RAW_PERCENTAGES stores 85. Columns of one board can differ, so read this
+      before comparing numbers across them.
+      """
+      return self._display_type
+
+    @display_type.setter
+    def display_type(self, display_type: 'BenchmarkLeaderboardDisplayType'):
+      if display_type is None:
+        del self.display_type
+        return
+      if not isinstance(display_type, BenchmarkLeaderboardDisplayType):
+        raise TypeError('display_type must be of type BenchmarkLeaderboardDisplayType')
+      self._display_type = display_type
+
 
   def __init__(self):
     self._rows = []
@@ -322,6 +462,8 @@ class ApiBenchmarkModelVersionConfig(KaggleObject):
     slug (str)
       ex: 'claude-opus-4.8-high-reasoning-effort'.
     reasoning_effort (str)
+      ex: 'high'. Unset when the config pins no effort, so the model runs at its
+      provider default.
   """
 
   def __init__(self):
@@ -329,7 +471,7 @@ class ApiBenchmarkModelVersionConfig(KaggleObject):
     self._benchmark_model_version_id = 0
     self._display_name = ""
     self._slug = ""
-    self._reasoning_effort = ""
+    self._reasoning_effort = None
     self._freeze()
 
   @property
@@ -390,10 +532,14 @@ class ApiBenchmarkModelVersionConfig(KaggleObject):
 
   @property
   def reasoning_effort(self) -> str:
-    return self._reasoning_effort
+    r"""
+    ex: 'high'. Unset when the config pins no effort, so the model runs at its
+    provider default.
+    """
+    return self._reasoning_effort or ""
 
   @reasoning_effort.setter
-  def reasoning_effort(self, reasoning_effort: str):
+  def reasoning_effort(self, reasoning_effort: Optional[str]):
     if reasoning_effort is None:
       del self.reasoning_effort
       return
@@ -479,6 +625,97 @@ class ApiBenchmarkVersionAgentMapping(KaggleObject):
     if not isinstance(type, BenchmarkVersionAgentMappingType):
       raise TypeError('type must be of type BenchmarkVersionAgentMappingType')
     self._type = type
+
+
+class ApiCreateBenchmarkArenaSettingsRequest(KaggleObject):
+  r"""
+  Attributes:
+    owner_slug (str)
+    benchmark_slug (str)
+    version_number (int)
+      Targets the benchmark's current published version, or its draft when
+      there is no published version, if omitted.
+    settings (BenchmarkArenaSettings)
+  """
+
+  def __init__(self):
+    self._owner_slug = ""
+    self._benchmark_slug = ""
+    self._version_number = None
+    self._settings = None
+    self._freeze()
+
+  @property
+  def owner_slug(self) -> str:
+    return self._owner_slug
+
+  @owner_slug.setter
+  def owner_slug(self, owner_slug: str):
+    if owner_slug is None:
+      del self.owner_slug
+      return
+    if not isinstance(owner_slug, str):
+      raise TypeError('owner_slug must be of type str')
+    self._owner_slug = owner_slug
+
+  @property
+  def benchmark_slug(self) -> str:
+    return self._benchmark_slug
+
+  @benchmark_slug.setter
+  def benchmark_slug(self, benchmark_slug: str):
+    if benchmark_slug is None:
+      del self.benchmark_slug
+      return
+    if not isinstance(benchmark_slug, str):
+      raise TypeError('benchmark_slug must be of type str')
+    self._benchmark_slug = benchmark_slug
+
+  @property
+  def version_number(self) -> int:
+    r"""
+    Targets the benchmark's current published version, or its draft when
+    there is no published version, if omitted.
+    """
+    return self._version_number or 0
+
+  @version_number.setter
+  def version_number(self, version_number: Optional[int]):
+    if version_number is None:
+      del self.version_number
+      return
+    if not isinstance(version_number, int):
+      raise TypeError('version_number must be of type int')
+    self._version_number = version_number
+
+  @property
+  def settings(self) -> Optional['BenchmarkArenaSettings']:
+    return self._settings
+
+  @settings.setter
+  def settings(self, settings: Optional['BenchmarkArenaSettings']):
+    if settings is None:
+      del self.settings
+      return
+    if not isinstance(settings, BenchmarkArenaSettings):
+      raise TypeError('settings must be of type BenchmarkArenaSettings')
+    self._settings = settings
+
+  def endpoint(self):
+    if self.version_number:
+      path = '/api/v1/benchmarks/{owner_slug}/{benchmark_slug}/versions/{version_number}/arena/settings/create'
+    else:
+      path = '/api/v1/benchmarks/{owner_slug}/{benchmark_slug}/arena/settings/create'
+    return path.format_map(self.to_field_map(self))
+
+
+  @staticmethod
+  def method():
+    return 'POST'
+
+  @staticmethod
+  def body_fields():
+    return '*'
 
 
 class ApiCreateBenchmarkModelVersionConfigRequest(KaggleObject):
@@ -664,6 +901,77 @@ class ApiDeleteBenchmarkVersionAgentMappingsResponse(KaggleObject):
     return self.deleted_mappings_count
 
 
+class ApiGetBenchmarkArenaSettingsRequest(KaggleObject):
+  r"""
+  Attributes:
+    owner_slug (str)
+    benchmark_slug (str)
+    version_number (int)
+      Targets the benchmark's current published version, or its draft when
+      there is no published version, if omitted.
+  """
+
+  def __init__(self):
+    self._owner_slug = ""
+    self._benchmark_slug = ""
+    self._version_number = None
+    self._freeze()
+
+  @property
+  def owner_slug(self) -> str:
+    return self._owner_slug
+
+  @owner_slug.setter
+  def owner_slug(self, owner_slug: str):
+    if owner_slug is None:
+      del self.owner_slug
+      return
+    if not isinstance(owner_slug, str):
+      raise TypeError('owner_slug must be of type str')
+    self._owner_slug = owner_slug
+
+  @property
+  def benchmark_slug(self) -> str:
+    return self._benchmark_slug
+
+  @benchmark_slug.setter
+  def benchmark_slug(self, benchmark_slug: str):
+    if benchmark_slug is None:
+      del self.benchmark_slug
+      return
+    if not isinstance(benchmark_slug, str):
+      raise TypeError('benchmark_slug must be of type str')
+    self._benchmark_slug = benchmark_slug
+
+  @property
+  def version_number(self) -> int:
+    r"""
+    Targets the benchmark's current published version, or its draft when
+    there is no published version, if omitted.
+    """
+    return self._version_number or 0
+
+  @version_number.setter
+  def version_number(self, version_number: Optional[int]):
+    if version_number is None:
+      del self.version_number
+      return
+    if not isinstance(version_number, int):
+      raise TypeError('version_number must be of type int')
+    self._version_number = version_number
+
+  def endpoint(self):
+    if self.version_number:
+      path = '/api/v1/benchmarks/{owner_slug}/{benchmark_slug}/versions/{version_number}/arena/settings'
+    else:
+      path = '/api/v1/benchmarks/{owner_slug}/{benchmark_slug}/arena/settings'
+    return path.format_map(self.to_field_map(self))
+
+  @staticmethod
+  def endpoint_path():
+    return '/api/v1/benchmarks/{owner_slug}/{benchmark_slug}/arena/settings'
+
+
 class ApiGetBenchmarkLeaderboardRequest(KaggleObject):
   r"""
   Attributes:
@@ -761,6 +1069,109 @@ class ApiGetBenchmarkModelVersionConfigRequest(KaggleObject):
   @staticmethod
   def endpoint_path():
     return '/api/v1/benchmarks/models/versions/configs/{id}'
+
+
+class ApiListBenchmarkArenaCombinationsRequest(KaggleObject):
+  r"""
+  Attributes:
+    owner_slug (str)
+    benchmark_slug (str)
+    version_number (int)
+      Targets the benchmark's current published version, or its draft when
+      there is no published version, if omitted.
+  """
+
+  def __init__(self):
+    self._owner_slug = ""
+    self._benchmark_slug = ""
+    self._version_number = None
+    self._freeze()
+
+  @property
+  def owner_slug(self) -> str:
+    return self._owner_slug
+
+  @owner_slug.setter
+  def owner_slug(self, owner_slug: str):
+    if owner_slug is None:
+      del self.owner_slug
+      return
+    if not isinstance(owner_slug, str):
+      raise TypeError('owner_slug must be of type str')
+    self._owner_slug = owner_slug
+
+  @property
+  def benchmark_slug(self) -> str:
+    return self._benchmark_slug
+
+  @benchmark_slug.setter
+  def benchmark_slug(self, benchmark_slug: str):
+    if benchmark_slug is None:
+      del self.benchmark_slug
+      return
+    if not isinstance(benchmark_slug, str):
+      raise TypeError('benchmark_slug must be of type str')
+    self._benchmark_slug = benchmark_slug
+
+  @property
+  def version_number(self) -> int:
+    r"""
+    Targets the benchmark's current published version, or its draft when
+    there is no published version, if omitted.
+    """
+    return self._version_number or 0
+
+  @version_number.setter
+  def version_number(self, version_number: Optional[int]):
+    if version_number is None:
+      del self.version_number
+      return
+    if not isinstance(version_number, int):
+      raise TypeError('version_number must be of type int')
+    self._version_number = version_number
+
+  def endpoint(self):
+    if self.version_number:
+      path = '/api/v1/benchmarks/{owner_slug}/{benchmark_slug}/versions/{version_number}/arena/combinations'
+    else:
+      path = '/api/v1/benchmarks/{owner_slug}/{benchmark_slug}/arena/combinations'
+    return path.format_map(self.to_field_map(self))
+
+  @staticmethod
+  def endpoint_path():
+    return '/api/v1/benchmarks/{owner_slug}/{benchmark_slug}/arena/combinations'
+
+
+class ApiListBenchmarkArenaCombinationsResponse(KaggleObject):
+  r"""
+  Attributes:
+    combinations (BenchmarkArenaCombination)
+      Only those whose task version and candidate are still in the benchmark
+      version and readable by the caller.
+  """
+
+  def __init__(self):
+    self._combinations = []
+    self._freeze()
+
+  @property
+  def combinations(self) -> Optional[List[Optional['BenchmarkArenaCombination']]]:
+    r"""
+    Only those whose task version and candidate are still in the benchmark
+    version and readable by the caller.
+    """
+    return self._combinations
+
+  @combinations.setter
+  def combinations(self, combinations: Optional[List[Optional['BenchmarkArenaCombination']]]):
+    if combinations is None:
+      del self.combinations
+      return
+    if not isinstance(combinations, list):
+      raise TypeError('combinations must be of type list')
+    if not all([isinstance(t, BenchmarkArenaCombination) for t in combinations]):
+      raise TypeError('combinations must contain only items of type BenchmarkArenaCombination')
+    self._combinations = combinations
 
 
 class ApiListBenchmarkModelsRequest(KaggleObject):
@@ -987,10 +1398,61 @@ class ApiListBenchmarkModelVersionConfigsResponse(KaggleObject):
     return self.next_page_token
 
 
+class ApiListBenchmarkVersionAgentMappingsFilter(KaggleObject):
+  r"""
+  Attributes:
+    parent_benchmark_version_ids (int)
+      If set, only return mappings whose parent BenchmarkVersionId is in this
+      list.
+    child_agent_ids (int)
+      If set, only return mappings whose child AgentId is in this list.
+  """
+
+  def __init__(self):
+    self._parent_benchmark_version_ids = []
+    self._child_agent_ids = []
+    self._freeze()
+
+  @property
+  def parent_benchmark_version_ids(self) -> Optional[List[int]]:
+    r"""
+    If set, only return mappings whose parent BenchmarkVersionId is in this
+    list.
+    """
+    return self._parent_benchmark_version_ids
+
+  @parent_benchmark_version_ids.setter
+  def parent_benchmark_version_ids(self, parent_benchmark_version_ids: Optional[List[int]]):
+    if parent_benchmark_version_ids is None:
+      del self.parent_benchmark_version_ids
+      return
+    if not isinstance(parent_benchmark_version_ids, list):
+      raise TypeError('parent_benchmark_version_ids must be of type list')
+    if not all([isinstance(t, int) for t in parent_benchmark_version_ids]):
+      raise TypeError('parent_benchmark_version_ids must contain only items of type int')
+    self._parent_benchmark_version_ids = parent_benchmark_version_ids
+
+  @property
+  def child_agent_ids(self) -> Optional[List[int]]:
+    """If set, only return mappings whose child AgentId is in this list."""
+    return self._child_agent_ids
+
+  @child_agent_ids.setter
+  def child_agent_ids(self, child_agent_ids: Optional[List[int]]):
+    if child_agent_ids is None:
+      del self.child_agent_ids
+      return
+    if not isinstance(child_agent_ids, list):
+      raise TypeError('child_agent_ids must be of type list')
+    if not all([isinstance(t, int) for t in child_agent_ids]):
+      raise TypeError('child_agent_ids must contain only items of type int')
+    self._child_agent_ids = child_agent_ids
+
+
 class ApiListBenchmarkVersionAgentMappingsRequest(KaggleObject):
   r"""
   Attributes:
-    filter (ListBenchmarkVersionAgentMappingsFilter)
+    filter (ApiListBenchmarkVersionAgentMappingsFilter)
     page_size (int)
     page_token (str)
   """
@@ -1002,16 +1464,16 @@ class ApiListBenchmarkVersionAgentMappingsRequest(KaggleObject):
     self._freeze()
 
   @property
-  def filter(self) -> Optional['ListBenchmarkVersionAgentMappingsFilter']:
+  def filter(self) -> Optional['ApiListBenchmarkVersionAgentMappingsFilter']:
     return self._filter
 
   @filter.setter
-  def filter(self, filter: Optional['ListBenchmarkVersionAgentMappingsFilter']):
+  def filter(self, filter: Optional['ApiListBenchmarkVersionAgentMappingsFilter']):
     if filter is None:
       del self.filter
       return
-    if not isinstance(filter, ListBenchmarkVersionAgentMappingsFilter):
-      raise TypeError('filter must be of type ListBenchmarkVersionAgentMappingsFilter')
+    if not isinstance(filter, ApiListBenchmarkVersionAgentMappingsFilter):
+      raise TypeError('filter must be of type ApiListBenchmarkVersionAgentMappingsFilter')
     self._filter = filter
 
   @property
@@ -1090,6 +1552,549 @@ class ApiListBenchmarkVersionAgentMappingsResponse(KaggleObject):
     return self.next_page_token
 
 
+class ApiRegisterAuxiliaryModelVersionConfigsRequest(KaggleObject):
+  r"""
+  Attributes:
+    task_slug (str)
+      Slug of the task to attach configs to. Always resolved under the current
+      user; tasks owned by anyone else are not addressable here.
+    version_number (int)
+      Targets the task's latest version if omitted.
+    config_slugs (str)
+      Slugs of the auxiliary BenchmarkModelVersionConfigs to attach. Duplicates
+      are collapsed; configs already registered on the version are skipped.
+  """
+
+  def __init__(self):
+    self._task_slug = ""
+    self._version_number = None
+    self._config_slugs = []
+    self._freeze()
+
+  @property
+  def task_slug(self) -> str:
+    r"""
+    Slug of the task to attach configs to. Always resolved under the current
+    user; tasks owned by anyone else are not addressable here.
+    """
+    return self._task_slug
+
+  @task_slug.setter
+  def task_slug(self, task_slug: str):
+    if task_slug is None:
+      del self.task_slug
+      return
+    if not isinstance(task_slug, str):
+      raise TypeError('task_slug must be of type str')
+    self._task_slug = task_slug
+
+  @property
+  def version_number(self) -> int:
+    """Targets the task's latest version if omitted."""
+    return self._version_number or 0
+
+  @version_number.setter
+  def version_number(self, version_number: Optional[int]):
+    if version_number is None:
+      del self.version_number
+      return
+    if not isinstance(version_number, int):
+      raise TypeError('version_number must be of type int')
+    self._version_number = version_number
+
+  @property
+  def config_slugs(self) -> Optional[List[str]]:
+    r"""
+    Slugs of the auxiliary BenchmarkModelVersionConfigs to attach. Duplicates
+    are collapsed; configs already registered on the version are skipped.
+    """
+    return self._config_slugs
+
+  @config_slugs.setter
+  def config_slugs(self, config_slugs: Optional[List[str]]):
+    if config_slugs is None:
+      del self.config_slugs
+      return
+    if not isinstance(config_slugs, list):
+      raise TypeError('config_slugs must be of type list')
+    if not all([isinstance(t, str) for t in config_slugs]):
+      raise TypeError('config_slugs must contain only items of type str')
+    self._config_slugs = config_slugs
+
+  def endpoint(self):
+    if self.version_number:
+      path = '/api/v1/benchmarks/tasks/{task_slug}/versions/{version_number}/auxiliary-configs/register'
+    else:
+      path = '/api/v1/benchmarks/tasks/{task_slug}/auxiliary-configs/register'
+    return path.format_map(self.to_field_map(self))
+
+
+  @staticmethod
+  def method():
+    return 'POST'
+
+  @staticmethod
+  def body_fields():
+    return '*'
+
+
+class ApiRemoveTasksFromBenchmarkRequest(KaggleObject):
+  r"""
+  Attributes:
+    benchmark_slug (str)
+      Slug of the benchmark to remove from. Always resolved under the current
+      user; benchmarks owned by anyone else are not addressable here.
+    version_number (int)
+      Targets the benchmark's current published version, or its draft when
+      there is no published version, if omitted.
+    task_slugs (ApiBenchmarkTaskSlug)
+      Tasks to unmap; must be non-empty. Duplicates are collapsed.
+  """
+
+  def __init__(self):
+    self._benchmark_slug = ""
+    self._version_number = None
+    self._task_slugs = []
+    self._freeze()
+
+  @property
+  def benchmark_slug(self) -> str:
+    r"""
+    Slug of the benchmark to remove from. Always resolved under the current
+    user; benchmarks owned by anyone else are not addressable here.
+    """
+    return self._benchmark_slug
+
+  @benchmark_slug.setter
+  def benchmark_slug(self, benchmark_slug: str):
+    if benchmark_slug is None:
+      del self.benchmark_slug
+      return
+    if not isinstance(benchmark_slug, str):
+      raise TypeError('benchmark_slug must be of type str')
+    self._benchmark_slug = benchmark_slug
+
+  @property
+  def version_number(self) -> int:
+    r"""
+    Targets the benchmark's current published version, or its draft when
+    there is no published version, if omitted.
+    """
+    return self._version_number or 0
+
+  @version_number.setter
+  def version_number(self, version_number: Optional[int]):
+    if version_number is None:
+      del self.version_number
+      return
+    if not isinstance(version_number, int):
+      raise TypeError('version_number must be of type int')
+    self._version_number = version_number
+
+  @property
+  def task_slugs(self) -> Optional[List[Optional['ApiBenchmarkTaskSlug']]]:
+    """Tasks to unmap; must be non-empty. Duplicates are collapsed."""
+    return self._task_slugs
+
+  @task_slugs.setter
+  def task_slugs(self, task_slugs: Optional[List[Optional['ApiBenchmarkTaskSlug']]]):
+    if task_slugs is None:
+      del self.task_slugs
+      return
+    if not isinstance(task_slugs, list):
+      raise TypeError('task_slugs must be of type list')
+    if not all([isinstance(t, ApiBenchmarkTaskSlug) for t in task_slugs]):
+      raise TypeError('task_slugs must contain only items of type ApiBenchmarkTaskSlug')
+    self._task_slugs = task_slugs
+
+  def endpoint(self):
+    if self.version_number:
+      path = '/api/v1/benchmarks/{benchmark_slug}/versions/{version_number}/tasks/remove'
+    else:
+      path = '/api/v1/benchmarks/{benchmark_slug}/tasks/remove'
+    return path.format_map(self.to_field_map(self))
+
+
+  @staticmethod
+  def method():
+    return 'POST'
+
+  @staticmethod
+  def body_fields():
+    return '*'
+
+
+class ApiRemoveTasksFromBenchmarkResponse(KaggleObject):
+  r"""
+  Attributes:
+    removed_tasks (ApiBenchmarkTaskSlug)
+      Tasks newly unmapped by this call, with the resolved owner and version
+      number filled in.
+    skipped_tasks (ApiBenchmarkTaskSlug)
+      Tasks that were not mapped to this benchmark and were left alone.
+  """
+
+  def __init__(self):
+    self._removed_tasks = []
+    self._skipped_tasks = []
+    self._freeze()
+
+  @property
+  def removed_tasks(self) -> Optional[List[Optional['ApiBenchmarkTaskSlug']]]:
+    r"""
+    Tasks newly unmapped by this call, with the resolved owner and version
+    number filled in.
+    """
+    return self._removed_tasks
+
+  @removed_tasks.setter
+  def removed_tasks(self, removed_tasks: Optional[List[Optional['ApiBenchmarkTaskSlug']]]):
+    if removed_tasks is None:
+      del self.removed_tasks
+      return
+    if not isinstance(removed_tasks, list):
+      raise TypeError('removed_tasks must be of type list')
+    if not all([isinstance(t, ApiBenchmarkTaskSlug) for t in removed_tasks]):
+      raise TypeError('removed_tasks must contain only items of type ApiBenchmarkTaskSlug')
+    self._removed_tasks = removed_tasks
+
+  @property
+  def skipped_tasks(self) -> Optional[List[Optional['ApiBenchmarkTaskSlug']]]:
+    """Tasks that were not mapped to this benchmark and were left alone."""
+    return self._skipped_tasks
+
+  @skipped_tasks.setter
+  def skipped_tasks(self, skipped_tasks: Optional[List[Optional['ApiBenchmarkTaskSlug']]]):
+    if skipped_tasks is None:
+      del self.skipped_tasks
+      return
+    if not isinstance(skipped_tasks, list):
+      raise TypeError('skipped_tasks must be of type list')
+    if not all([isinstance(t, ApiBenchmarkTaskSlug) for t in skipped_tasks]):
+      raise TypeError('skipped_tasks must contain only items of type ApiBenchmarkTaskSlug')
+    self._skipped_tasks = skipped_tasks
+
+  @property
+  def removedTasks(self):
+    return self.removed_tasks
+
+  @property
+  def skippedTasks(self):
+    return self.skipped_tasks
+
+
+class ApiUnregisterAuxiliaryModelVersionConfigsRequest(KaggleObject):
+  r"""
+  Attributes:
+    task_slug (str)
+      Slug of the task to detach configs from. Always resolved under the current
+      user; tasks owned by anyone else are not addressable here.
+    version_number (int)
+      Targets the task's latest version if omitted.
+    config_slugs (str)
+      Slugs of the auxiliary BenchmarkModelVersionConfigs to remove. Configs not
+      currently registered are ignored.
+  """
+
+  def __init__(self):
+    self._task_slug = ""
+    self._version_number = None
+    self._config_slugs = []
+    self._freeze()
+
+  @property
+  def task_slug(self) -> str:
+    r"""
+    Slug of the task to detach configs from. Always resolved under the current
+    user; tasks owned by anyone else are not addressable here.
+    """
+    return self._task_slug
+
+  @task_slug.setter
+  def task_slug(self, task_slug: str):
+    if task_slug is None:
+      del self.task_slug
+      return
+    if not isinstance(task_slug, str):
+      raise TypeError('task_slug must be of type str')
+    self._task_slug = task_slug
+
+  @property
+  def version_number(self) -> int:
+    """Targets the task's latest version if omitted."""
+    return self._version_number or 0
+
+  @version_number.setter
+  def version_number(self, version_number: Optional[int]):
+    if version_number is None:
+      del self.version_number
+      return
+    if not isinstance(version_number, int):
+      raise TypeError('version_number must be of type int')
+    self._version_number = version_number
+
+  @property
+  def config_slugs(self) -> Optional[List[str]]:
+    r"""
+    Slugs of the auxiliary BenchmarkModelVersionConfigs to remove. Configs not
+    currently registered are ignored.
+    """
+    return self._config_slugs
+
+  @config_slugs.setter
+  def config_slugs(self, config_slugs: Optional[List[str]]):
+    if config_slugs is None:
+      del self.config_slugs
+      return
+    if not isinstance(config_slugs, list):
+      raise TypeError('config_slugs must be of type list')
+    if not all([isinstance(t, str) for t in config_slugs]):
+      raise TypeError('config_slugs must contain only items of type str')
+    self._config_slugs = config_slugs
+
+  def endpoint(self):
+    if self.version_number:
+      path = '/api/v1/benchmarks/tasks/{task_slug}/versions/{version_number}/auxiliary-configs/unregister'
+    else:
+      path = '/api/v1/benchmarks/tasks/{task_slug}/auxiliary-configs/unregister'
+    return path.format_map(self.to_field_map(self))
+
+
+  @staticmethod
+  def method():
+    return 'POST'
+
+  @staticmethod
+  def body_fields():
+    return '*'
+
+
+class ApiUpdateBenchmarkArenaCombinationsRequest(KaggleObject):
+  r"""
+  Attributes:
+    owner_slug (str)
+    benchmark_slug (str)
+    version_number (int)
+      Targets the benchmark's current published version, or its draft when
+      there is no published version, if omitted.
+    add (BenchmarkArenaCombination)
+      Each must be a task version holding the benchmark version's runs and a
+      mapped candidate of that task version's candidate type. Already opted-in
+      combinations are ignored.
+    remove (BenchmarkArenaCombination)
+      Combinations not opted in are ignored.
+  """
+
+  def __init__(self):
+    self._owner_slug = ""
+    self._benchmark_slug = ""
+    self._version_number = None
+    self._add = []
+    self._remove = []
+    self._freeze()
+
+  @property
+  def owner_slug(self) -> str:
+    return self._owner_slug
+
+  @owner_slug.setter
+  def owner_slug(self, owner_slug: str):
+    if owner_slug is None:
+      del self.owner_slug
+      return
+    if not isinstance(owner_slug, str):
+      raise TypeError('owner_slug must be of type str')
+    self._owner_slug = owner_slug
+
+  @property
+  def benchmark_slug(self) -> str:
+    return self._benchmark_slug
+
+  @benchmark_slug.setter
+  def benchmark_slug(self, benchmark_slug: str):
+    if benchmark_slug is None:
+      del self.benchmark_slug
+      return
+    if not isinstance(benchmark_slug, str):
+      raise TypeError('benchmark_slug must be of type str')
+    self._benchmark_slug = benchmark_slug
+
+  @property
+  def version_number(self) -> int:
+    r"""
+    Targets the benchmark's current published version, or its draft when
+    there is no published version, if omitted.
+    """
+    return self._version_number or 0
+
+  @version_number.setter
+  def version_number(self, version_number: Optional[int]):
+    if version_number is None:
+      del self.version_number
+      return
+    if not isinstance(version_number, int):
+      raise TypeError('version_number must be of type int')
+    self._version_number = version_number
+
+  @property
+  def add(self) -> Optional[List[Optional['BenchmarkArenaCombination']]]:
+    r"""
+    Each must be a task version holding the benchmark version's runs and a
+    mapped candidate of that task version's candidate type. Already opted-in
+    combinations are ignored.
+    """
+    return self._add
+
+  @add.setter
+  def add(self, add: Optional[List[Optional['BenchmarkArenaCombination']]]):
+    if add is None:
+      del self.add
+      return
+    if not isinstance(add, list):
+      raise TypeError('add must be of type list')
+    if not all([isinstance(t, BenchmarkArenaCombination) for t in add]):
+      raise TypeError('add must contain only items of type BenchmarkArenaCombination')
+    self._add = add
+
+  @property
+  def remove(self) -> Optional[List[Optional['BenchmarkArenaCombination']]]:
+    """Combinations not opted in are ignored."""
+    return self._remove
+
+  @remove.setter
+  def remove(self, remove: Optional[List[Optional['BenchmarkArenaCombination']]]):
+    if remove is None:
+      del self.remove
+      return
+    if not isinstance(remove, list):
+      raise TypeError('remove must be of type list')
+    if not all([isinstance(t, BenchmarkArenaCombination) for t in remove]):
+      raise TypeError('remove must contain only items of type BenchmarkArenaCombination')
+    self._remove = remove
+
+  def endpoint(self):
+    if self.version_number:
+      path = '/api/v1/benchmarks/{owner_slug}/{benchmark_slug}/versions/{version_number}/arena/combinations/update'
+    else:
+      path = '/api/v1/benchmarks/{owner_slug}/{benchmark_slug}/arena/combinations/update'
+    return path.format_map(self.to_field_map(self))
+
+
+  @staticmethod
+  def method():
+    return 'POST'
+
+  @staticmethod
+  def body_fields():
+    return '*'
+
+
+class ApiUpdateBenchmarkArenaSettingsRequest(KaggleObject):
+  r"""
+  Attributes:
+    owner_slug (str)
+    benchmark_slug (str)
+    version_number (int)
+      Targets the benchmark's current published version, or its draft when
+      there is no published version, if omitted.
+    settings (BenchmarkArenaSettings)
+    update_mask (FieldMask)
+  """
+
+  def __init__(self):
+    self._owner_slug = ""
+    self._benchmark_slug = ""
+    self._version_number = None
+    self._settings = None
+    self._update_mask = None
+    self._freeze()
+
+  @property
+  def owner_slug(self) -> str:
+    return self._owner_slug
+
+  @owner_slug.setter
+  def owner_slug(self, owner_slug: str):
+    if owner_slug is None:
+      del self.owner_slug
+      return
+    if not isinstance(owner_slug, str):
+      raise TypeError('owner_slug must be of type str')
+    self._owner_slug = owner_slug
+
+  @property
+  def benchmark_slug(self) -> str:
+    return self._benchmark_slug
+
+  @benchmark_slug.setter
+  def benchmark_slug(self, benchmark_slug: str):
+    if benchmark_slug is None:
+      del self.benchmark_slug
+      return
+    if not isinstance(benchmark_slug, str):
+      raise TypeError('benchmark_slug must be of type str')
+    self._benchmark_slug = benchmark_slug
+
+  @property
+  def version_number(self) -> int:
+    r"""
+    Targets the benchmark's current published version, or its draft when
+    there is no published version, if omitted.
+    """
+    return self._version_number or 0
+
+  @version_number.setter
+  def version_number(self, version_number: Optional[int]):
+    if version_number is None:
+      del self.version_number
+      return
+    if not isinstance(version_number, int):
+      raise TypeError('version_number must be of type int')
+    self._version_number = version_number
+
+  @property
+  def settings(self) -> Optional['BenchmarkArenaSettings']:
+    return self._settings
+
+  @settings.setter
+  def settings(self, settings: Optional['BenchmarkArenaSettings']):
+    if settings is None:
+      del self.settings
+      return
+    if not isinstance(settings, BenchmarkArenaSettings):
+      raise TypeError('settings must be of type BenchmarkArenaSettings')
+    self._settings = settings
+
+  @property
+  def update_mask(self) -> FieldMask:
+    return self._update_mask
+
+  @update_mask.setter
+  def update_mask(self, update_mask: FieldMask):
+    if update_mask is None:
+      del self.update_mask
+      return
+    if not isinstance(update_mask, FieldMask):
+      raise TypeError('update_mask must be of type FieldMask')
+    self._update_mask = update_mask
+
+  def endpoint(self):
+    if self.version_number:
+      path = '/api/v1/benchmarks/{owner_slug}/{benchmark_slug}/versions/{version_number}/arena/settings/update'
+    else:
+      path = '/api/v1/benchmarks/{owner_slug}/{benchmark_slug}/arena/settings/update'
+    return path.format_map(self.to_field_map(self))
+
+
+  @staticmethod
+  def method():
+    return 'POST'
+
+  @staticmethod
+  def body_fields():
+    return '*'
+
+
 ApiAddTasksToBenchmarkRequest._fields = [
   FieldMetadata("benchmarkSlug", "benchmark_slug", "_benchmark_slug", str, "", PredefinedSerializer()),
   FieldMetadata("versionNumber", "version_number", "_version_number", int, None, PredefinedSerializer(), optional=True),
@@ -1105,6 +2110,13 @@ ApiBenchmarkLeaderboard.LeaderboardRow._fields = [
   FieldMetadata("modelVersionName", "model_version_name", "_model_version_name", str, "", PredefinedSerializer()),
   FieldMetadata("modelVersionSlug", "model_version_slug", "_model_version_slug", str, "", PredefinedSerializer()),
   FieldMetadata("taskResults", "task_results", "_task_results", ApiBenchmarkLeaderboard.TaskResult, [], ListSerializer(KaggleObjectSerializer())),
+  FieldMetadata("candidateClass", "candidate_class", "_candidate_class", BenchmarkCandidateClass, BenchmarkCandidateClass.BENCHMARK_CANDIDATE_CLASS_UNSPECIFIED, EnumSerializer()),
+  FieldMetadata("modelVersionConfigName", "model_version_config_name", "_model_version_config_name", str, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("modelVersionConfigSlug", "model_version_config_slug", "_model_version_config_slug", str, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("agentName", "agent_name", "_agent_name", str, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("agentSlug", "agent_slug", "_agent_slug", str, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("harnessName", "harness_name", "_harness_name", str, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("harnessSlug", "harness_slug", "_harness_slug", str, None, PredefinedSerializer(), optional=True),
 ]
 
 ApiBenchmarkLeaderboard.TaskResult._fields = [
@@ -1112,6 +2124,7 @@ ApiBenchmarkLeaderboard.TaskResult._fields = [
   FieldMetadata("benchmarkTaskSlug", "benchmark_task_slug", "_benchmark_task_slug", str, "", PredefinedSerializer()),
   FieldMetadata("taskVersion", "task_version", "_task_version", int, 0, PredefinedSerializer()),
   FieldMetadata("result", "result", "_result", BenchmarkResult, None, KaggleObjectSerializer()),
+  FieldMetadata("displayType", "display_type", "_display_type", BenchmarkLeaderboardDisplayType, BenchmarkLeaderboardDisplayType.BENCHMARK_LEADERBOARD_DISPLAY_TYPE_UNSPECIFIED, EnumSerializer()),
 ]
 
 ApiBenchmarkLeaderboard._fields = [
@@ -1123,7 +2136,7 @@ ApiBenchmarkModelVersionConfig._fields = [
   FieldMetadata("benchmarkModelVersionId", "benchmark_model_version_id", "_benchmark_model_version_id", int, 0, PredefinedSerializer()),
   FieldMetadata("displayName", "display_name", "_display_name", str, "", PredefinedSerializer()),
   FieldMetadata("slug", "slug", "_slug", str, "", PredefinedSerializer()),
-  FieldMetadata("reasoningEffort", "reasoning_effort", "_reasoning_effort", str, "", PredefinedSerializer()),
+  FieldMetadata("reasoningEffort", "reasoning_effort", "_reasoning_effort", str, None, PredefinedSerializer(), optional=True),
 ]
 
 ApiBenchmarkVersionAgentMapping._fields = [
@@ -1131,6 +2144,13 @@ ApiBenchmarkVersionAgentMapping._fields = [
   FieldMetadata("parentBenchmarkVersionId", "parent_benchmark_version_id", "_parent_benchmark_version_id", int, 0, PredefinedSerializer()),
   FieldMetadata("childAgentId", "child_agent_id", "_child_agent_id", int, 0, PredefinedSerializer()),
   FieldMetadata("type", "type", "_type", BenchmarkVersionAgentMappingType, BenchmarkVersionAgentMappingType.BENCHMARK_VERSION_AGENT_MAPPING_TYPE_UNSPECIFIED, EnumSerializer()),
+]
+
+ApiCreateBenchmarkArenaSettingsRequest._fields = [
+  FieldMetadata("ownerSlug", "owner_slug", "_owner_slug", str, "", PredefinedSerializer()),
+  FieldMetadata("benchmarkSlug", "benchmark_slug", "_benchmark_slug", str, "", PredefinedSerializer()),
+  FieldMetadata("versionNumber", "version_number", "_version_number", int, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("settings", "settings", "_settings", BenchmarkArenaSettings, None, KaggleObjectSerializer()),
 ]
 
 ApiCreateBenchmarkModelVersionConfigRequest._fields = [
@@ -1153,6 +2173,12 @@ ApiDeleteBenchmarkVersionAgentMappingsResponse._fields = [
   FieldMetadata("deletedMappingsCount", "deleted_mappings_count", "_deleted_mappings_count", int, 0, PredefinedSerializer()),
 ]
 
+ApiGetBenchmarkArenaSettingsRequest._fields = [
+  FieldMetadata("ownerSlug", "owner_slug", "_owner_slug", str, "", PredefinedSerializer()),
+  FieldMetadata("benchmarkSlug", "benchmark_slug", "_benchmark_slug", str, "", PredefinedSerializer()),
+  FieldMetadata("versionNumber", "version_number", "_version_number", int, None, PredefinedSerializer(), optional=True),
+]
+
 ApiGetBenchmarkLeaderboardRequest._fields = [
   FieldMetadata("ownerSlug", "owner_slug", "_owner_slug", str, "", PredefinedSerializer()),
   FieldMetadata("benchmarkSlug", "benchmark_slug", "_benchmark_slug", str, "", PredefinedSerializer()),
@@ -1161,6 +2187,16 @@ ApiGetBenchmarkLeaderboardRequest._fields = [
 
 ApiGetBenchmarkModelVersionConfigRequest._fields = [
   FieldMetadata("id", "id", "_id", int, 0, PredefinedSerializer()),
+]
+
+ApiListBenchmarkArenaCombinationsRequest._fields = [
+  FieldMetadata("ownerSlug", "owner_slug", "_owner_slug", str, "", PredefinedSerializer()),
+  FieldMetadata("benchmarkSlug", "benchmark_slug", "_benchmark_slug", str, "", PredefinedSerializer()),
+  FieldMetadata("versionNumber", "version_number", "_version_number", int, None, PredefinedSerializer(), optional=True),
+]
+
+ApiListBenchmarkArenaCombinationsResponse._fields = [
+  FieldMetadata("combinations", "combinations", "_combinations", BenchmarkArenaCombination, [], ListSerializer(KaggleObjectSerializer())),
 ]
 
 ApiListBenchmarkModelsRequest._fields = [
@@ -1185,8 +2221,13 @@ ApiListBenchmarkModelVersionConfigsResponse._fields = [
   FieldMetadata("nextPageToken", "next_page_token", "_next_page_token", str, None, PredefinedSerializer(), optional=True),
 ]
 
+ApiListBenchmarkVersionAgentMappingsFilter._fields = [
+  FieldMetadata("parentBenchmarkVersionIds", "parent_benchmark_version_ids", "_parent_benchmark_version_ids", int, [], ListSerializer(PredefinedSerializer())),
+  FieldMetadata("childAgentIds", "child_agent_ids", "_child_agent_ids", int, [], ListSerializer(PredefinedSerializer())),
+]
+
 ApiListBenchmarkVersionAgentMappingsRequest._fields = [
-  FieldMetadata("filter", "filter", "_filter", ListBenchmarkVersionAgentMappingsFilter, None, KaggleObjectSerializer()),
+  FieldMetadata("filter", "filter", "_filter", ApiListBenchmarkVersionAgentMappingsFilter, None, KaggleObjectSerializer()),
   FieldMetadata("pageSize", "page_size", "_page_size", int, 0, PredefinedSerializer()),
   FieldMetadata("pageToken", "page_token", "_page_token", str, "", PredefinedSerializer()),
 ]
@@ -1194,5 +2235,44 @@ ApiListBenchmarkVersionAgentMappingsRequest._fields = [
 ApiListBenchmarkVersionAgentMappingsResponse._fields = [
   FieldMetadata("mappings", "mappings", "_mappings", ApiBenchmarkVersionAgentMapping, [], ListSerializer(KaggleObjectSerializer())),
   FieldMetadata("nextPageToken", "next_page_token", "_next_page_token", str, None, PredefinedSerializer(), optional=True),
+]
+
+ApiRegisterAuxiliaryModelVersionConfigsRequest._fields = [
+  FieldMetadata("taskSlug", "task_slug", "_task_slug", str, "", PredefinedSerializer()),
+  FieldMetadata("versionNumber", "version_number", "_version_number", int, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("configSlugs", "config_slugs", "_config_slugs", str, [], ListSerializer(PredefinedSerializer())),
+]
+
+ApiRemoveTasksFromBenchmarkRequest._fields = [
+  FieldMetadata("benchmarkSlug", "benchmark_slug", "_benchmark_slug", str, "", PredefinedSerializer()),
+  FieldMetadata("versionNumber", "version_number", "_version_number", int, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("taskSlugs", "task_slugs", "_task_slugs", ApiBenchmarkTaskSlug, [], ListSerializer(KaggleObjectSerializer())),
+]
+
+ApiRemoveTasksFromBenchmarkResponse._fields = [
+  FieldMetadata("removedTasks", "removed_tasks", "_removed_tasks", ApiBenchmarkTaskSlug, [], ListSerializer(KaggleObjectSerializer())),
+  FieldMetadata("skippedTasks", "skipped_tasks", "_skipped_tasks", ApiBenchmarkTaskSlug, [], ListSerializer(KaggleObjectSerializer())),
+]
+
+ApiUnregisterAuxiliaryModelVersionConfigsRequest._fields = [
+  FieldMetadata("taskSlug", "task_slug", "_task_slug", str, "", PredefinedSerializer()),
+  FieldMetadata("versionNumber", "version_number", "_version_number", int, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("configSlugs", "config_slugs", "_config_slugs", str, [], ListSerializer(PredefinedSerializer())),
+]
+
+ApiUpdateBenchmarkArenaCombinationsRequest._fields = [
+  FieldMetadata("ownerSlug", "owner_slug", "_owner_slug", str, "", PredefinedSerializer()),
+  FieldMetadata("benchmarkSlug", "benchmark_slug", "_benchmark_slug", str, "", PredefinedSerializer()),
+  FieldMetadata("versionNumber", "version_number", "_version_number", int, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("add", "add", "_add", BenchmarkArenaCombination, [], ListSerializer(KaggleObjectSerializer())),
+  FieldMetadata("remove", "remove", "_remove", BenchmarkArenaCombination, [], ListSerializer(KaggleObjectSerializer())),
+]
+
+ApiUpdateBenchmarkArenaSettingsRequest._fields = [
+  FieldMetadata("ownerSlug", "owner_slug", "_owner_slug", str, "", PredefinedSerializer()),
+  FieldMetadata("benchmarkSlug", "benchmark_slug", "_benchmark_slug", str, "", PredefinedSerializer()),
+  FieldMetadata("versionNumber", "version_number", "_version_number", int, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("settings", "settings", "_settings", BenchmarkArenaSettings, None, KaggleObjectSerializer()),
+  FieldMetadata("updateMask", "update_mask", "_update_mask", FieldMask, None, FieldMaskSerializer()),
 ]
 

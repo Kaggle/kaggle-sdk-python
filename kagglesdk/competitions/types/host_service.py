@@ -80,6 +80,8 @@ class CompetitionSettings(KaggleObject):
       'Final Leaderboard Verified' in the UI.
     final_leaderboard_disclaimer_message (str)
       'Private Leaderboard Disclaimer' in the UI.
+    max_pending_submissions_per_team (int)
+      'Max Pending Submissions Per Team' in the UI. Unset or 0 means no cap.
     only_allow_kernel_submissions (bool)
       CODE COMPETITION SETTINGS GROUP (field numbers 100-119)
       'Code Competition' in the UI. Whether competitors must submit a Notebook.
@@ -90,9 +92,11 @@ class CompetitionSettings(KaggleObject):
     max_gpu_runtime_minutes (int)
       'Max GPU Runtime Minutes' in the UI.
     rerun_override_kernel_id (int)
-      Host-authored template Notebook the frontend wraps the user's artifact
-      (e.g. skill.md) into before submitting. Parallels
-      main_py_override_kernel_id.
+      Optional host-authored Notebook that is rerun in place of the user's, with
+      the user's Submission file mounted as a datasource in
+      /kaggle/input/competition_submission/. Intended for competitions where
+      users submit an artifact (like skill.md) rather than runnable code.
+      Requires uses_synchronous_reruns to be set.
     gateway_kernel_id (int)
       'Gateway Kernel Id' in the UI. Identifies the notebook whose latest
       version is used as the source for the parent (gateway) container in
@@ -101,6 +105,11 @@ class CompetitionSettings(KaggleObject):
       'Rerun Max Stagger Minutes' in the UI. Random delay added before a
       scoring run kicks off (sampled from 0..this value, clamped to 60). Used
       for sync-rerun / Hearth competitions to limit private dataset probing.
+    rerun_expected_output_filename (str)
+      Optional override for the rerun notebook output file which we pass to the
+      submission scoring metric. If unset and using rerun_override_kernel_id we
+      default to 'submission.parquet', otherwise default to the filename from the
+      user's original submission.
     directly_responsible_user_id (int)
       HOSTS SETTINGS GROUP: ADMIN ONLY (field numbers 120-139)
       'Directly Responsible User' in the UI. Kaggle admin responsible for the
@@ -131,6 +140,7 @@ class CompetitionSettings(KaggleObject):
     self._withold_final_leaderboard_until_it_has_been_verified = False
     self._final_leaderboard_has_been_verified = False
     self._final_leaderboard_disclaimer_message = ""
+    self._max_pending_submissions_per_team = None
     self._only_allow_kernel_submissions = False
     self._uses_synchronous_reruns = False
     self._max_cpu_runtime_minutes = None
@@ -138,6 +148,7 @@ class CompetitionSettings(KaggleObject):
     self._rerun_override_kernel_id = None
     self._gateway_kernel_id = None
     self._rerun_max_stagger_minutes = 0.0
+    self._rerun_expected_output_filename = None
     self._directly_responsible_user_id = None
     self._freeze()
 
@@ -503,6 +514,20 @@ class CompetitionSettings(KaggleObject):
     self._final_leaderboard_disclaimer_message = final_leaderboard_disclaimer_message
 
   @property
+  def max_pending_submissions_per_team(self) -> int:
+    """'Max Pending Submissions Per Team' in the UI. Unset or 0 means no cap."""
+    return self._max_pending_submissions_per_team or 0
+
+  @max_pending_submissions_per_team.setter
+  def max_pending_submissions_per_team(self, max_pending_submissions_per_team: Optional[int]):
+    if max_pending_submissions_per_team is None:
+      del self.max_pending_submissions_per_team
+      return
+    if not isinstance(max_pending_submissions_per_team, int):
+      raise TypeError('max_pending_submissions_per_team must be of type int')
+    self._max_pending_submissions_per_team = max_pending_submissions_per_team
+
+  @property
   def only_allow_kernel_submissions(self) -> bool:
     r"""
     CODE COMPETITION SETTINGS GROUP (field numbers 100-119)
@@ -564,9 +589,11 @@ class CompetitionSettings(KaggleObject):
   @property
   def rerun_override_kernel_id(self) -> int:
     r"""
-    Host-authored template Notebook the frontend wraps the user's artifact
-    (e.g. skill.md) into before submitting. Parallels
-    main_py_override_kernel_id.
+    Optional host-authored Notebook that is rerun in place of the user's, with
+    the user's Submission file mounted as a datasource in
+    /kaggle/input/competition_submission/. Intended for competitions where
+    users submit an artifact (like skill.md) rather than runnable code.
+    Requires uses_synchronous_reruns to be set.
     """
     return self._rerun_override_kernel_id or 0
 
@@ -616,6 +643,25 @@ class CompetitionSettings(KaggleObject):
     self._rerun_max_stagger_minutes = rerun_max_stagger_minutes
 
   @property
+  def rerun_expected_output_filename(self) -> str:
+    r"""
+    Optional override for the rerun notebook output file which we pass to the
+    submission scoring metric. If unset and using rerun_override_kernel_id we
+    default to 'submission.parquet', otherwise default to the filename from the
+    user's original submission.
+    """
+    return self._rerun_expected_output_filename or ""
+
+  @rerun_expected_output_filename.setter
+  def rerun_expected_output_filename(self, rerun_expected_output_filename: Optional[str]):
+    if rerun_expected_output_filename is None:
+      del self.rerun_expected_output_filename
+      return
+    if not isinstance(rerun_expected_output_filename, str):
+      raise TypeError('rerun_expected_output_filename must be of type str')
+    self._rerun_expected_output_filename = rerun_expected_output_filename
+
+  @property
   def directly_responsible_user_id(self) -> int:
     r"""
     HOSTS SETTINGS GROUP: ADMIN ONLY (field numbers 120-139)
@@ -658,6 +704,7 @@ CompetitionSettings._fields = [
   FieldMetadata("witholdFinalLeaderboardUntilItHasBeenVerified", "withold_final_leaderboard_until_it_has_been_verified", "_withold_final_leaderboard_until_it_has_been_verified", bool, False, PredefinedSerializer()),
   FieldMetadata("finalLeaderboardHasBeenVerified", "final_leaderboard_has_been_verified", "_final_leaderboard_has_been_verified", bool, False, PredefinedSerializer()),
   FieldMetadata("finalLeaderboardDisclaimerMessage", "final_leaderboard_disclaimer_message", "_final_leaderboard_disclaimer_message", str, "", PredefinedSerializer()),
+  FieldMetadata("maxPendingSubmissionsPerTeam", "max_pending_submissions_per_team", "_max_pending_submissions_per_team", int, None, PredefinedSerializer(), optional=True),
   FieldMetadata("onlyAllowKernelSubmissions", "only_allow_kernel_submissions", "_only_allow_kernel_submissions", bool, False, PredefinedSerializer()),
   FieldMetadata("usesSynchronousReruns", "uses_synchronous_reruns", "_uses_synchronous_reruns", bool, False, PredefinedSerializer()),
   FieldMetadata("maxCpuRuntimeMinutes", "max_cpu_runtime_minutes", "_max_cpu_runtime_minutes", int, None, PredefinedSerializer(), optional=True),
@@ -665,6 +712,7 @@ CompetitionSettings._fields = [
   FieldMetadata("rerunOverrideKernelId", "rerun_override_kernel_id", "_rerun_override_kernel_id", int, None, PredefinedSerializer(), optional=True),
   FieldMetadata("gatewayKernelId", "gateway_kernel_id", "_gateway_kernel_id", int, None, PredefinedSerializer(), optional=True),
   FieldMetadata("rerunMaxStaggerMinutes", "rerun_max_stagger_minutes", "_rerun_max_stagger_minutes", float, 0.0, PredefinedSerializer()),
+  FieldMetadata("rerunExpectedOutputFilename", "rerun_expected_output_filename", "_rerun_expected_output_filename", str, None, PredefinedSerializer(), optional=True),
   FieldMetadata("directlyResponsibleUserId", "directly_responsible_user_id", "_directly_responsible_user_id", int, None, PredefinedSerializer(), optional=True),
 ]
 
