@@ -14,6 +14,7 @@ from kagglesdk.users.types.account_service import (
 class KaggleCredentials:
     DEFAULT_CREDENTIALS_FILE = "~/.kaggle/credentials.json"
     DEFAULT_ACCESS_TOKEN_EXPIRATION = timedelta(hours=12)
+    ACCESS_TOKEN_REFRESH_MARGIN = timedelta(minutes=30)
 
     def __init__(
         self,
@@ -115,9 +116,10 @@ class KaggleCredentials:
         self.save()
 
     def access_token_has_expired(self) -> bool:
-        return not self._access_token_expiration or self._access_token_expiration < datetime.now(
-            timezone.utc
-        ) - timedelta(minutes=30)
+        return (
+            not self._access_token_expiration
+            or self._access_token_expiration - KaggleCredentials.ACCESS_TOKEN_REFRESH_MARGIN < datetime.now(timezone.utc)
+        )
 
     def get_access_token(self) -> str:
         if not self._access_token or self.access_token_has_expired():
