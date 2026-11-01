@@ -80,7 +80,7 @@ def _get_access_token_from_file(path):
     if not token_path.exists():
         return None
 
-    token_value = token_path.read_text().strip()
+    token_value = token_path.read_text(encoding='utf-8').strip()
     if not token_value:
         return None
 
