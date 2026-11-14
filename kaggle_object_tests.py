@@ -617,6 +617,36 @@ class TimeDeltaSerializerTests(unittest.TestCase):
         datetime.timedelta(seconds=151),
     )
 
+  def test_days_duration_serialization(self):
+    # timedelta of 30 hours (days=1, seconds=21600) should serialize to 108000s, not 21600s
+    d = datetime.timedelta(seconds=108000)
+    self.assertEqual(TimeDeltaSerializer._to_dict_value(d), "108000s")
+
+  def test_fractional_second_serialization(self):
+    d = datetime.timedelta(seconds=11247, microseconds=735000)
+    self.assertEqual(TimeDeltaSerializer._to_dict_value(d), "11247.735s")
+
+  def test_subsecond_padding_serialization(self):
+    d_ms = datetime.timedelta(microseconds=5000)
+    self.assertEqual(TimeDeltaSerializer._to_dict_value(d_ms), "0.005s")
+    d_us = datetime.timedelta(microseconds=7)
+    self.assertEqual(TimeDeltaSerializer._to_dict_value(d_us), "0.000007s")
+
+  def test_round_trip_serialization(self):
+    cases = [
+        datetime.timedelta(0),
+        datetime.timedelta(seconds=151),
+        datetime.timedelta(seconds=108000),
+        datetime.timedelta(seconds=11247, microseconds=735000),
+        datetime.timedelta(microseconds=5000),
+        datetime.timedelta(microseconds=7),
+        datetime.timedelta(days=3, seconds=14, microseconds=123456),
+    ]
+    for d in cases:
+      serialized = TimeDeltaSerializer._to_dict_value(d)
+      deserialized = TimeDeltaSerializer._from_dict_value(serialized)
+      self.assertEqual(d, deserialized)
+
 
 if __name__ == "__main__":
   unittest.main()
