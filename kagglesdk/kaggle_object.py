@@ -165,11 +165,13 @@ class TimeDeltaSerializer(ObjectSerializer):
 
   @staticmethod
   def _to_dict_value(delta):
-    seconds = delta.seconds
-    nanos_str = TimeDeltaSerializer._nanos_to_str(delta.microseconds * 1000)
+    total_us = (delta.days * 86400 + delta.seconds) * 1_000_000 + delta.microseconds
+    sign = "-" if total_us < 0 else ""
+    seconds, micros = divmod(abs(total_us), 1_000_000)
+    nanos_str = TimeDeltaSerializer._nanos_to_str(micros * 1000)
     if nanos_str is None:
-      return "{}s".format(seconds)
-    return "{}.{}s".format(seconds, nanos_str)
+      return "{}{}s".format(sign, seconds)
+    return "{}{}.{}s".format(sign, seconds, nanos_str)
 
   @staticmethod
   def _nanos_to_str(nanos):
@@ -178,11 +180,11 @@ class TimeDeltaSerializer(ObjectSerializer):
     if nanos < 0:
       nanos *= -1
     if nanos % 1000000 == 0:
-      return "{}".format(nanos / 1000000)
+      return "{:03d}".format(nanos // 1000000)
     elif nanos % 1000 == 0:
-      return "{}".format(nanos / 1000)
+      return "{:06d}".format(nanos // 1000)
     else:
-      return "{}".format(nanos)
+      return "{:09d}".format(nanos)
 
   @staticmethod
   def _from_dict_value(value):
