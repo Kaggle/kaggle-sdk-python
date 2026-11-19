@@ -1,8 +1,8 @@
 from datetime import datetime, timedelta
 from google.protobuf.field_mask_pb2 import FieldMask
-from kagglesdk.benchmarks.types.benchmark_enums import BenchmarkArenaArtifactType, BenchmarkCandidateType, BenchmarkEnqueueSkipPolicy, BenchmarkTaskRunState, BenchmarkTaskVersionCreationState, BenchmarkTaskVersionSource
+from kagglesdk.benchmarks.types.benchmark_enums import BenchmarkArenaArtifactType, BenchmarkCandidateType, BenchmarkEnqueueSkipPolicy, BenchmarkTaskCollaboratorRole, BenchmarkTaskRunState, BenchmarkTaskVersionCreationState, BenchmarkTaskVersionSource
 from kagglesdk.benchmarks.types.benchmark_task_run_service import BatchScheduleBenchmarkModelVersionResult
-from kagglesdk.benchmarks.types.benchmark_types import BenchmarkTaskDefinition, BenchmarkTaskOptions, BenchmarkTaskValidationStage
+from kagglesdk.benchmarks.types.benchmark_types import ApiTaskCreationValidationConfig, BenchmarkTaskDefinition, BenchmarkTaskOptions
 from kagglesdk.kaggle_object import *
 from typing import List, Optional
 
@@ -383,8 +383,13 @@ class ApiBenchmarkTask(KaggleObject):
       reader cannot read are omitted, and `env_variables` is omitted wholesale
       unless the caller could update the task. `definition_partial` is set
       whenever anything is omitted for one of those reasons.
+
+      A client pushing this back should not also send `validation_config` with
+      a default_*_slug set here; see `validation_config`.
     definition_partial (bool)
-      True when `definition` is missing something the version declares.
+      True when `definition` or `validation_config` omits an item the version
+      declares. A `validation_config` left unset for a caller who may not read
+      it at all does not count; see that field.
       Separates 'declares no default candidate' from 'declares one that did not
       come back', which otherwise look identical and would have a client push a
       spurious change. False when `definition` is unset.
@@ -393,14 +398,32 @@ class ApiBenchmarkTask(KaggleObject):
       when a referenced dataset cannot be named -- one still being created, say
       -- so a client cannot read it as a statement about its own permissions.
     artifact_path (str)
-      Glob, relative to a run's output root, naming the file the task's preview
-      shows, e.g. *.mp4. Unset if the task has none.
+      Glob, relative to a run's output root, naming the file a benchmark's arena
+      and gallery show, e.g. *.mp4. Unset if the task has none.
     artifact_type (BenchmarkArenaArtifactType)
       How the artifact is rendered. Set iff artifact_path is.
     are_run_artifacts_public (bool)
       Whether everyone who can read the task can also read its raw run artifacts
       (run.json, logs, output files, trajectories), rather than only the task's
       writers.
+    preview_artifact_path (str)
+    preview_artifact_type (BenchmarkArenaArtifactType)
+    validation_config (ApiTaskCreationValidationConfig)
+      The validation stages this task version declared, returned in the shape
+      CreateBenchmarkTask accepts, with the version's default candidate on the
+      DEFAULT_CANDIDATE stage. Populated alongside `definition`, only when
+      `include_definition` is set. Unset when the version recorded no
+      validation stages, as tasks created before they existed did.
+
+      The default candidate also still comes back on `definition` as its legacy
+      default_*_slug field. A client pushing a task back should send either
+      `validation_config` or the legacy definition default_*_slug, not both,
+      because CreateBenchmarkTask rejects a request that sets both.
+
+      Only a caller who could update the task, or a site admin, reads the
+      stages; for anyone else this is always unset, and that alone does not
+      set `definition_partial`. A default candidate the reader cannot read is
+      omitted from its stage, and `definition_partial` is set.
   """
 
   def __init__(self):
@@ -425,6 +448,9 @@ class ApiBenchmarkTask(KaggleObject):
     self._artifact_path = None
     self._artifact_type = None
     self._are_run_artifacts_public = None
+    self._preview_artifact_path = None
+    self._preview_artifact_type = None
+    self._validation_config = None
     self._freeze()
 
   @property
@@ -724,6 +750,9 @@ class ApiBenchmarkTask(KaggleObject):
     reader cannot read are omitted, and `env_variables` is omitted wholesale
     unless the caller could update the task. `definition_partial` is set
     whenever anything is omitted for one of those reasons.
+
+    A client pushing this back should not also send `validation_config` with
+    a default_*_slug set here; see `validation_config`.
     """
     return self._definition or None
 
@@ -739,7 +768,9 @@ class ApiBenchmarkTask(KaggleObject):
   @property
   def definition_partial(self) -> bool:
     r"""
-    True when `definition` is missing something the version declares.
+    True when `definition` or `validation_config` omits an item the version
+    declares. A `validation_config` left unset for a caller who may not read
+    it at all does not count; see that field.
     Separates 'declares no default candidate' from 'declares one that did not
     come back', which otherwise look identical and would have a client push a
     spurious change. False when `definition` is unset.
@@ -762,8 +793,8 @@ class ApiBenchmarkTask(KaggleObject):
   @property
   def artifact_path(self) -> str:
     r"""
-    Glob, relative to a run's output root, naming the file the task's preview
-    shows, e.g. *.mp4. Unset if the task has none.
+    Glob, relative to a run's output root, naming the file a benchmark's arena
+    and gallery show, e.g. *.mp4. Unset if the task has none.
     """
     return self._artifact_path or ""
 
@@ -789,6 +820,62 @@ class ApiBenchmarkTask(KaggleObject):
     if not isinstance(artifact_type, BenchmarkArenaArtifactType):
       raise TypeError('artifact_type must be of type BenchmarkArenaArtifactType')
     self._artifact_type = artifact_type
+
+  @property
+  def preview_artifact_path(self) -> str:
+    return self._preview_artifact_path or ""
+
+  @preview_artifact_path.setter
+  def preview_artifact_path(self, preview_artifact_path: Optional[str]):
+    if preview_artifact_path is None:
+      del self.preview_artifact_path
+      return
+    if not isinstance(preview_artifact_path, str):
+      raise TypeError('preview_artifact_path must be of type str')
+    self._preview_artifact_path = preview_artifact_path
+
+  @property
+  def preview_artifact_type(self) -> 'BenchmarkArenaArtifactType':
+    return self._preview_artifact_type or BenchmarkArenaArtifactType.BENCHMARK_ARENA_ARTIFACT_TYPE_UNSPECIFIED
+
+  @preview_artifact_type.setter
+  def preview_artifact_type(self, preview_artifact_type: Optional['BenchmarkArenaArtifactType']):
+    if preview_artifact_type is None:
+      del self.preview_artifact_type
+      return
+    if not isinstance(preview_artifact_type, BenchmarkArenaArtifactType):
+      raise TypeError('preview_artifact_type must be of type BenchmarkArenaArtifactType')
+    self._preview_artifact_type = preview_artifact_type
+
+  @property
+  def validation_config(self) -> Optional['ApiTaskCreationValidationConfig']:
+    r"""
+    The validation stages this task version declared, returned in the shape
+    CreateBenchmarkTask accepts, with the version's default candidate on the
+    DEFAULT_CANDIDATE stage. Populated alongside `definition`, only when
+    `include_definition` is set. Unset when the version recorded no
+    validation stages, as tasks created before they existed did.
+
+    The default candidate also still comes back on `definition` as its legacy
+    default_*_slug field. A client pushing a task back should send either
+    `validation_config` or the legacy definition default_*_slug, not both,
+    because CreateBenchmarkTask rejects a request that sets both.
+
+    Only a caller who could update the task, or a site admin, reads the
+    stages; for anyone else this is always unset, and that alone does not
+    set `definition_partial`. A default candidate the reader cannot read is
+    omitted from its stage, and `definition_partial` is set.
+    """
+    return self._validation_config or None
+
+  @validation_config.setter
+  def validation_config(self, validation_config: Optional[Optional['ApiTaskCreationValidationConfig']]):
+    if validation_config is None:
+      del self.validation_config
+      return
+    if not isinstance(validation_config, ApiTaskCreationValidationConfig):
+      raise TypeError('validation_config must be of type ApiTaskCreationValidationConfig')
+    self._validation_config = validation_config
 
 
 class ApiBenchmarkTaskCitation(KaggleObject):
@@ -840,6 +927,122 @@ class ApiBenchmarkTaskCitation(KaggleObject):
     self._url = url
 
 
+class ApiBenchmarkTaskCollaborator(KaggleObject):
+  r"""
+  Attributes:
+    principal (ApiBenchmarkTaskPrincipal)
+    role (BenchmarkTaskCollaboratorRole)
+  """
+
+  def __init__(self):
+    self._principal = None
+    self._role = BenchmarkTaskCollaboratorRole.BENCHMARK_TASK_COLLABORATOR_ROLE_UNSPECIFIED
+    self._freeze()
+
+  @property
+  def principal(self) -> Optional['ApiBenchmarkTaskPrincipal']:
+    return self._principal
+
+  @principal.setter
+  def principal(self, principal: Optional['ApiBenchmarkTaskPrincipal']):
+    if principal is None:
+      del self.principal
+      return
+    if not isinstance(principal, ApiBenchmarkTaskPrincipal):
+      raise TypeError('principal must be of type ApiBenchmarkTaskPrincipal')
+    self._principal = principal
+
+  @property
+  def role(self) -> 'BenchmarkTaskCollaboratorRole':
+    return self._role
+
+  @role.setter
+  def role(self, role: 'BenchmarkTaskCollaboratorRole'):
+    if role is None:
+      del self.role
+      return
+    if not isinstance(role, BenchmarkTaskCollaboratorRole):
+      raise TypeError('role must be of type BenchmarkTaskCollaboratorRole')
+    self._role = role
+
+
+class ApiBenchmarkTaskCollaborators(KaggleObject):
+  r"""
+  Attributes:
+    collaborators (ApiBenchmarkTaskCollaborator)
+  """
+
+  def __init__(self):
+    self._collaborators = []
+    self._freeze()
+
+  @property
+  def collaborators(self) -> Optional[List[Optional['ApiBenchmarkTaskCollaborator']]]:
+    return self._collaborators
+
+  @collaborators.setter
+  def collaborators(self, collaborators: Optional[List[Optional['ApiBenchmarkTaskCollaborator']]]):
+    if collaborators is None:
+      del self.collaborators
+      return
+    if not isinstance(collaborators, list):
+      raise TypeError('collaborators must be of type list')
+    if not all([isinstance(t, ApiBenchmarkTaskCollaborator) for t in collaborators]):
+      raise TypeError('collaborators must contain only items of type ApiBenchmarkTaskCollaborator')
+    self._collaborators = collaborators
+
+
+class ApiBenchmarkTaskPrincipal(KaggleObject):
+  r"""
+  A user or group that can collaborate on a task.
+
+  Attributes:
+    username (str)
+    group_slug (str)
+      A user-managed group's slug, or a synchronized (e.g. Google) group's
+      name. Synchronized groups the caller can't see are listed as
+      `private-group`.
+  """
+
+  def __init__(self):
+    self._username = None
+    self._group_slug = None
+    self._freeze()
+
+  @property
+  def username(self) -> str:
+    return self._username or ""
+
+  @username.setter
+  def username(self, username: str):
+    if username is None:
+      del self.username
+      return
+    if not isinstance(username, str):
+      raise TypeError('username must be of type str')
+    del self.group_slug
+    self._username = username
+
+  @property
+  def group_slug(self) -> str:
+    r"""
+    A user-managed group's slug, or a synchronized (e.g. Google) group's
+    name. Synchronized groups the caller can't see are listed as
+    `private-group`.
+    """
+    return self._group_slug or ""
+
+  @group_slug.setter
+  def group_slug(self, group_slug: str):
+    if group_slug is None:
+      del self.group_slug
+      return
+    if not isinstance(group_slug, str):
+      raise TypeError('group_slug must be of type str')
+    del self.username
+    self._group_slug = group_slug
+
+
 class ApiBenchmarkTaskRun(KaggleObject):
   r"""
   API equivalent of the BenchmarkTaskRun from benchmark_types.proto.
@@ -875,6 +1078,10 @@ class ApiBenchmarkTaskRun(KaggleObject):
       Result the run produced (score or pass/fail). Unset for runs that have not
       produced a result (e.g. still queued/running, errored, or no result
       recorded).
+    is_manual (bool)
+      Whether the run's result was recorded rather than produced by executing the
+      task on Kaggle, e.g. uploaded through CreateBenchmarkTaskRuns. True exactly
+      when BenchmarkTaskRun.manual_user_id is set.
   """
 
   def __init__(self):
@@ -888,6 +1095,7 @@ class ApiBenchmarkTaskRun(KaggleObject):
     self._agent_slug = None
     self._model_version_config_slug = None
     self._result = None
+    self._is_manual = False
     self._freeze()
 
   @property
@@ -1047,6 +1255,24 @@ class ApiBenchmarkTaskRun(KaggleObject):
     if not isinstance(result, ApiBenchmarkTaskRunResult):
       raise TypeError('result must be of type ApiBenchmarkTaskRunResult')
     self._result = result
+
+  @property
+  def is_manual(self) -> bool:
+    r"""
+    Whether the run's result was recorded rather than produced by executing the
+    task on Kaggle, e.g. uploaded through CreateBenchmarkTaskRuns. True exactly
+    when BenchmarkTaskRun.manual_user_id is set.
+    """
+    return self._is_manual
+
+  @is_manual.setter
+  def is_manual(self, is_manual: bool):
+    if is_manual is None:
+      del self.is_manual
+      return
+    if not isinstance(is_manual, bool):
+      raise TypeError('is_manual must be of type bool')
+    self._is_manual = is_manual
 
 
 class ApiBenchmarkTaskRunIds(KaggleObject):
@@ -1588,6 +1814,44 @@ class ApiDownloadBenchmarkTaskRunOutputRequest(KaggleObject):
     return '/api/v1/benchmarks/tasks/runs/{run_id}/output'
 
 
+class ApiDownloadBenchmarkTaskTrajectoriesRequest(KaggleObject):
+  r"""
+  Attributes:
+    slug (ApiBenchmarkTaskSlug)
+      `owner_slug` defaults to the authenticated user and `version_number` to
+      the task's latest version.
+  """
+
+  def __init__(self):
+    self._slug = None
+    self._freeze()
+
+  @property
+  def slug(self) -> Optional['ApiBenchmarkTaskSlug']:
+    r"""
+    `owner_slug` defaults to the authenticated user and `version_number` to
+    the task's latest version.
+    """
+    return self._slug
+
+  @slug.setter
+  def slug(self, slug: Optional['ApiBenchmarkTaskSlug']):
+    if slug is None:
+      del self.slug
+      return
+    if not isinstance(slug, ApiBenchmarkTaskSlug):
+      raise TypeError('slug must be of type ApiBenchmarkTaskSlug')
+    self._slug = slug
+
+  def endpoint(self):
+    path = '/api/v1/benchmarks/tasks/{slug.task_slug}/trajectories'
+    return path.format_map(self.to_field_map(self))
+
+  @staticmethod
+  def endpoint_path():
+    return '/api/v1/benchmarks/tasks/{slug.task_slug}/trajectories'
+
+
 class ApiGetBenchmarkSchedulerStatusRequest(KaggleObject):
   r"""
   No scope field: this endpoint always reports the caller's own runs.
@@ -1598,6 +1862,46 @@ class ApiGetBenchmarkSchedulerStatusRequest(KaggleObject):
   def endpoint(self):
     path = '/api/v1/benchmarks/scheduler/status'
     return path.format_map(self.to_field_map(self))
+
+
+class ApiGetBenchmarkTaskCollaboratorsRequest(KaggleObject):
+  r"""
+  Attributes:
+    slug (ApiBenchmarkTaskSlug)
+      The task to read. `owner_slug` is optional and defaults to the
+      authenticated user. `version_number` is rejected: collaborators belong to
+      the task, not to a version.
+  """
+
+  def __init__(self):
+    self._slug = None
+    self._freeze()
+
+  @property
+  def slug(self) -> Optional['ApiBenchmarkTaskSlug']:
+    r"""
+    The task to read. `owner_slug` is optional and defaults to the
+    authenticated user. `version_number` is rejected: collaborators belong to
+    the task, not to a version.
+    """
+    return self._slug
+
+  @slug.setter
+  def slug(self, slug: Optional['ApiBenchmarkTaskSlug']):
+    if slug is None:
+      del self.slug
+      return
+    if not isinstance(slug, ApiBenchmarkTaskSlug):
+      raise TypeError('slug must be of type ApiBenchmarkTaskSlug')
+    self._slug = slug
+
+  def endpoint(self):
+    path = '/api/v1/benchmarks/tasks/{slug.owner_slug}/{slug.task_slug}/collaborators'
+    return path.format_map(self.to_field_map(self))
+
+  @staticmethod
+  def endpoint_path():
+    return '/api/v1/benchmarks/tasks/{slug.owner_slug}/{slug.task_slug}/collaborators'
 
 
 class ApiGetBenchmarkTaskQuotaRequest(KaggleObject):
@@ -1666,8 +1970,8 @@ class ApiGetBenchmarkTaskRequest(KaggleObject):
   Attributes:
     slug (ApiBenchmarkTaskSlug)
     include_definition (bool)
-      Populate `definition` and `definition_partial`. Off by default since it
-      costs extra reads.
+      Populate `definition`, `validation_config` and `definition_partial`. Off
+      by default since it costs extra reads.
   """
 
   def __init__(self):
@@ -1691,8 +1995,8 @@ class ApiGetBenchmarkTaskRequest(KaggleObject):
   @property
   def include_definition(self) -> bool:
     r"""
-    Populate `definition` and `definition_partial`. Off by default since it
-    costs extra reads.
+    Populate `definition`, `validation_config` and `definition_partial`. Off
+    by default since it costs extra reads.
     """
     return self._include_definition
 
@@ -1934,8 +2238,8 @@ class ApiListBenchmarkTasksRequest(KaggleObject):
       Optional benchmark version to target when benchmark_slug is set. When
       omitted, the benchmark's current published (or draft) version is used.
     include_definition (bool)
-      Populate `definition` and `definition_partial` on each task. Off by
-      default since it costs extra reads.
+      Populate `definition`, `validation_config` and `definition_partial` on
+      each task. Off by default since it costs extra reads.
   """
 
   def __init__(self):
@@ -2075,8 +2379,8 @@ class ApiListBenchmarkTasksRequest(KaggleObject):
   @property
   def include_definition(self) -> bool:
     r"""
-    Populate `definition` and `definition_partial` on each task. Off by
-    default since it costs extra reads.
+    Populate `definition`, `validation_config` and `definition_partial` on
+    each task. Off by default since it costs extra reads.
     """
     return self._include_definition
 
@@ -2296,34 +2600,91 @@ class ApiPublishBenchmarkTaskRequest(KaggleObject):
     return '*'
 
 
-class ApiTaskCreationValidationConfig(KaggleObject):
+class ApiUpdateBenchmarkTaskCollaboratorsRequest(KaggleObject):
   r"""
-  The public API input shape of TaskCreationValidationConfig.
-
   Attributes:
-    validation_stages (ApiValidationStage)
-      The validation stages to run against the task version.
+    slug (ApiBenchmarkTaskSlug)
+      The task to update. `owner_slug` is optional and defaults to the
+      authenticated user. `version_number` is rejected: collaborators belong to
+      the task, not to a version.
+    add (ApiBenchmarkTaskCollaborator)
+      Each is given its role, replacing any role it already holds.
+    remove (ApiBenchmarkTaskPrincipal)
+      Each loses whatever role it holds. Ones that aren't collaborators are
+      skipped.
   """
 
   def __init__(self):
-    self._validation_stages = []
+    self._slug = None
+    self._add = []
+    self._remove = []
     self._freeze()
 
   @property
-  def validation_stages(self) -> Optional[List[Optional['ApiValidationStage']]]:
-    """The validation stages to run against the task version."""
-    return self._validation_stages
+  def slug(self) -> Optional['ApiBenchmarkTaskSlug']:
+    r"""
+    The task to update. `owner_slug` is optional and defaults to the
+    authenticated user. `version_number` is rejected: collaborators belong to
+    the task, not to a version.
+    """
+    return self._slug
 
-  @validation_stages.setter
-  def validation_stages(self, validation_stages: Optional[List[Optional['ApiValidationStage']]]):
-    if validation_stages is None:
-      del self.validation_stages
+  @slug.setter
+  def slug(self, slug: Optional['ApiBenchmarkTaskSlug']):
+    if slug is None:
+      del self.slug
       return
-    if not isinstance(validation_stages, list):
-      raise TypeError('validation_stages must be of type list')
-    if not all([isinstance(t, ApiValidationStage) for t in validation_stages]):
-      raise TypeError('validation_stages must contain only items of type ApiValidationStage')
-    self._validation_stages = validation_stages
+    if not isinstance(slug, ApiBenchmarkTaskSlug):
+      raise TypeError('slug must be of type ApiBenchmarkTaskSlug')
+    self._slug = slug
+
+  @property
+  def add(self) -> Optional[List[Optional['ApiBenchmarkTaskCollaborator']]]:
+    """Each is given its role, replacing any role it already holds."""
+    return self._add
+
+  @add.setter
+  def add(self, add: Optional[List[Optional['ApiBenchmarkTaskCollaborator']]]):
+    if add is None:
+      del self.add
+      return
+    if not isinstance(add, list):
+      raise TypeError('add must be of type list')
+    if not all([isinstance(t, ApiBenchmarkTaskCollaborator) for t in add]):
+      raise TypeError('add must contain only items of type ApiBenchmarkTaskCollaborator')
+    self._add = add
+
+  @property
+  def remove(self) -> Optional[List[Optional['ApiBenchmarkTaskPrincipal']]]:
+    r"""
+    Each loses whatever role it holds. Ones that aren't collaborators are
+    skipped.
+    """
+    return self._remove
+
+  @remove.setter
+  def remove(self, remove: Optional[List[Optional['ApiBenchmarkTaskPrincipal']]]):
+    if remove is None:
+      del self.remove
+      return
+    if not isinstance(remove, list):
+      raise TypeError('remove must be of type list')
+    if not all([isinstance(t, ApiBenchmarkTaskPrincipal) for t in remove]):
+      raise TypeError('remove must contain only items of type ApiBenchmarkTaskPrincipal')
+    self._remove = remove
+
+  def endpoint(self):
+    path = '/api/v1/benchmarks/tasks/{slug.owner_slug}/{slug.task_slug}/collaborators/update'
+    return path.format_map(self.to_field_map(self))
+
+
+  @staticmethod
+  def method():
+    return 'POST'
+
+  @staticmethod
+  def body_fields():
+    return '*'
 
 
 class ApiUpdateBenchmarkTaskRequest(KaggleObject):
@@ -2560,10 +2921,13 @@ class ApiUpdateBenchmarkTaskVersionRequest(KaggleObject):
       Which of the above to write. Only fields named here are read. `tags` is
       not writable here: tags are task-scoped, so use UpdateBenchmarkTask.
     artifact_path (str)
-      The file the task's preview shows, as a glob relative to a run's output
-      root. Written together with artifact_type: naming either in update_mask
-      writes both, and leaving both unset clears them.
+      The file a benchmark's arena and gallery show, as a glob relative to a
+      run's output root. Written together with artifact_type: naming either in
+      update_mask writes both, and leaving both unset clears them.
     artifact_type (BenchmarkArenaArtifactType)
+    preview_artifact_path (str)
+      Optional preview shown on cards and while HTML loads; paired with type.
+    preview_artifact_type (BenchmarkArenaArtifactType)
   """
 
   def __init__(self):
@@ -2574,6 +2938,8 @@ class ApiUpdateBenchmarkTaskVersionRequest(KaggleObject):
     self._update_mask = None
     self._artifact_path = None
     self._artifact_type = None
+    self._preview_artifact_path = None
+    self._preview_artifact_type = None
     self._freeze()
 
   @property
@@ -2651,9 +3017,9 @@ class ApiUpdateBenchmarkTaskVersionRequest(KaggleObject):
   @property
   def artifact_path(self) -> str:
     r"""
-    The file the task's preview shows, as a glob relative to a run's output
-    root. Written together with artifact_type: naming either in update_mask
-    writes both, and leaving both unset clears them.
+    The file a benchmark's arena and gallery show, as a glob relative to a
+    run's output root. Written together with artifact_type: naming either in
+    update_mask writes both, and leaving both unset clears them.
     """
     return self._artifact_path or ""
 
@@ -2678,6 +3044,33 @@ class ApiUpdateBenchmarkTaskVersionRequest(KaggleObject):
     if not isinstance(artifact_type, BenchmarkArenaArtifactType):
       raise TypeError('artifact_type must be of type BenchmarkArenaArtifactType')
     self._artifact_type = artifact_type
+
+  @property
+  def preview_artifact_path(self) -> str:
+    """Optional preview shown on cards and while HTML loads; paired with type."""
+    return self._preview_artifact_path or ""
+
+  @preview_artifact_path.setter
+  def preview_artifact_path(self, preview_artifact_path: Optional[str]):
+    if preview_artifact_path is None:
+      del self.preview_artifact_path
+      return
+    if not isinstance(preview_artifact_path, str):
+      raise TypeError('preview_artifact_path must be of type str')
+    self._preview_artifact_path = preview_artifact_path
+
+  @property
+  def preview_artifact_type(self) -> 'BenchmarkArenaArtifactType':
+    return self._preview_artifact_type or BenchmarkArenaArtifactType.BENCHMARK_ARENA_ARTIFACT_TYPE_UNSPECIFIED
+
+  @preview_artifact_type.setter
+  def preview_artifact_type(self, preview_artifact_type: Optional['BenchmarkArenaArtifactType']):
+    if preview_artifact_type is None:
+      del self.preview_artifact_type
+      return
+    if not isinstance(preview_artifact_type, BenchmarkArenaArtifactType):
+      raise TypeError('preview_artifact_type must be of type BenchmarkArenaArtifactType')
+    self._preview_artifact_type = preview_artifact_type
 
   @property
   def update_mask(self) -> FieldMask:
@@ -2708,106 +3101,6 @@ class ApiUpdateBenchmarkTaskVersionRequest(KaggleObject):
   @staticmethod
   def body_fields():
     return '*'
-
-
-class ApiValidationStage(KaggleObject):
-  r"""
-  The public API input shape of ValidationStage, which identifies the default
-  candidate by slug instead of id.
-
-  Attributes:
-    type (BenchmarkTaskValidationStage)
-      Required. Not UNSPECIFIED.
-    default_model_version_slug (str)
-      Canonical BenchmarkModelVersion.slug (e.g. 'claude-sonnet-4-6-default').
-      On Harbor tasks, requires override_harness_version: without one the task
-      evaluates agents, so pick the model via default_agent_slug instead.
-    default_agent_slug (str)
-      Canonical Agent.slug (e.g. 'claude-code-2.1.216-opus-4.8-high').
-    default_model_version_config_slug (str)
-      Canonical BenchmarkModelVersionConfig.slug (e.g.
-      'claude-sonnet-4-6-high'). Like default_model_version_slug, but also pins
-      the reasoning effort. Harbor tasks only; requires
-      override_harness_version.
-  """
-
-  def __init__(self):
-    self._type = BenchmarkTaskValidationStage.BENCHMARK_TASK_VALIDATION_STAGE_UNSPECIFIED
-    self._default_model_version_slug = None
-    self._default_agent_slug = None
-    self._default_model_version_config_slug = None
-    self._freeze()
-
-  @property
-  def type(self) -> 'BenchmarkTaskValidationStage':
-    """Required. Not UNSPECIFIED."""
-    return self._type
-
-  @type.setter
-  def type(self, type: 'BenchmarkTaskValidationStage'):
-    if type is None:
-      del self.type
-      return
-    if not isinstance(type, BenchmarkTaskValidationStage):
-      raise TypeError('type must be of type BenchmarkTaskValidationStage')
-    self._type = type
-
-  @property
-  def default_model_version_slug(self) -> str:
-    r"""
-    Canonical BenchmarkModelVersion.slug (e.g. 'claude-sonnet-4-6-default').
-    On Harbor tasks, requires override_harness_version: without one the task
-    evaluates agents, so pick the model via default_agent_slug instead.
-    """
-    return self._default_model_version_slug or ""
-
-  @default_model_version_slug.setter
-  def default_model_version_slug(self, default_model_version_slug: str):
-    if default_model_version_slug is None:
-      del self.default_model_version_slug
-      return
-    if not isinstance(default_model_version_slug, str):
-      raise TypeError('default_model_version_slug must be of type str')
-    del self.default_agent_slug
-    del self.default_model_version_config_slug
-    self._default_model_version_slug = default_model_version_slug
-
-  @property
-  def default_agent_slug(self) -> str:
-    """Canonical Agent.slug (e.g. 'claude-code-2.1.216-opus-4.8-high')."""
-    return self._default_agent_slug or ""
-
-  @default_agent_slug.setter
-  def default_agent_slug(self, default_agent_slug: str):
-    if default_agent_slug is None:
-      del self.default_agent_slug
-      return
-    if not isinstance(default_agent_slug, str):
-      raise TypeError('default_agent_slug must be of type str')
-    del self.default_model_version_slug
-    del self.default_model_version_config_slug
-    self._default_agent_slug = default_agent_slug
-
-  @property
-  def default_model_version_config_slug(self) -> str:
-    r"""
-    Canonical BenchmarkModelVersionConfig.slug (e.g.
-    'claude-sonnet-4-6-high'). Like default_model_version_slug, but also pins
-    the reasoning effort. Harbor tasks only; requires
-    override_harness_version.
-    """
-    return self._default_model_version_config_slug or ""
-
-  @default_model_version_config_slug.setter
-  def default_model_version_config_slug(self, default_model_version_config_slug: str):
-    if default_model_version_config_slug is None:
-      del self.default_model_version_config_slug
-      return
-    if not isinstance(default_model_version_config_slug, str):
-      raise TypeError('default_model_version_config_slug must be of type str')
-    del self.default_model_version_slug
-    del self.default_agent_slug
-    self._default_model_version_config_slug = default_model_version_config_slug
 
 
 ApiBatchScheduleBenchmarkTaskRunsRequest._fields = [
@@ -2853,11 +3146,28 @@ ApiBenchmarkTask._fields = [
   FieldMetadata("artifactPath", "artifact_path", "_artifact_path", str, None, PredefinedSerializer(), optional=True),
   FieldMetadata("artifactType", "artifact_type", "_artifact_type", BenchmarkArenaArtifactType, None, EnumSerializer(), optional=True),
   FieldMetadata("areRunArtifactsPublic", "are_run_artifacts_public", "_are_run_artifacts_public", bool, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("previewArtifactPath", "preview_artifact_path", "_preview_artifact_path", str, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("previewArtifactType", "preview_artifact_type", "_preview_artifact_type", BenchmarkArenaArtifactType, None, EnumSerializer(), optional=True),
+  FieldMetadata("validationConfig", "validation_config", "_validation_config", ApiTaskCreationValidationConfig, None, KaggleObjectSerializer(), optional=True),
 ]
 
 ApiBenchmarkTaskCitation._fields = [
   FieldMetadata("title", "title", "_title", str, "", PredefinedSerializer()),
   FieldMetadata("url", "url", "_url", str, "", PredefinedSerializer()),
+]
+
+ApiBenchmarkTaskCollaborator._fields = [
+  FieldMetadata("principal", "principal", "_principal", ApiBenchmarkTaskPrincipal, None, KaggleObjectSerializer()),
+  FieldMetadata("role", "role", "_role", BenchmarkTaskCollaboratorRole, BenchmarkTaskCollaboratorRole.BENCHMARK_TASK_COLLABORATOR_ROLE_UNSPECIFIED, EnumSerializer()),
+]
+
+ApiBenchmarkTaskCollaborators._fields = [
+  FieldMetadata("collaborators", "collaborators", "_collaborators", ApiBenchmarkTaskCollaborator, [], ListSerializer(KaggleObjectSerializer())),
+]
+
+ApiBenchmarkTaskPrincipal._fields = [
+  FieldMetadata("username", "username", "_username", str, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("groupSlug", "group_slug", "_group_slug", str, None, PredefinedSerializer(), optional=True),
 ]
 
 ApiBenchmarkTaskRun._fields = [
@@ -2871,6 +3181,7 @@ ApiBenchmarkTaskRun._fields = [
   FieldMetadata("agentSlug", "agent_slug", "_agent_slug", str, None, PredefinedSerializer(), optional=True),
   FieldMetadata("modelVersionConfigSlug", "model_version_config_slug", "_model_version_config_slug", str, None, PredefinedSerializer(), optional=True),
   FieldMetadata("result", "result", "_result", ApiBenchmarkTaskRunResult, None, KaggleObjectSerializer(), optional=True),
+  FieldMetadata("isManual", "is_manual", "_is_manual", bool, False, PredefinedSerializer()),
 ]
 
 ApiBenchmarkTaskRunIds._fields = [
@@ -2918,7 +3229,15 @@ ApiDownloadBenchmarkTaskRunOutputRequest._fields = [
   FieldMetadata("includeSource", "include_source", "_include_source", bool, False, PredefinedSerializer()),
 ]
 
+ApiDownloadBenchmarkTaskTrajectoriesRequest._fields = [
+  FieldMetadata("slug", "slug", "_slug", ApiBenchmarkTaskSlug, None, KaggleObjectSerializer()),
+]
+
 ApiGetBenchmarkSchedulerStatusRequest._fields = []
+
+ApiGetBenchmarkTaskCollaboratorsRequest._fields = [
+  FieldMetadata("slug", "slug", "_slug", ApiBenchmarkTaskSlug, None, KaggleObjectSerializer()),
+]
 
 ApiGetBenchmarkTaskQuotaRequest._fields = []
 
@@ -2979,8 +3298,10 @@ ApiPublishBenchmarkTaskRequest._fields = [
   FieldMetadata("publishRunArtifacts", "publish_run_artifacts", "_publish_run_artifacts", bool, False, PredefinedSerializer()),
 ]
 
-ApiTaskCreationValidationConfig._fields = [
-  FieldMetadata("validationStages", "validation_stages", "_validation_stages", ApiValidationStage, [], ListSerializer(KaggleObjectSerializer())),
+ApiUpdateBenchmarkTaskCollaboratorsRequest._fields = [
+  FieldMetadata("slug", "slug", "_slug", ApiBenchmarkTaskSlug, None, KaggleObjectSerializer()),
+  FieldMetadata("add", "add", "_add", ApiBenchmarkTaskCollaborator, [], ListSerializer(KaggleObjectSerializer())),
+  FieldMetadata("remove", "remove", "_remove", ApiBenchmarkTaskPrincipal, [], ListSerializer(KaggleObjectSerializer())),
 ]
 
 ApiUpdateBenchmarkTaskRequest._fields = [
@@ -3005,12 +3326,7 @@ ApiUpdateBenchmarkTaskVersionRequest._fields = [
   FieldMetadata("updateMask", "update_mask", "_update_mask", FieldMask, None, FieldMaskSerializer()),
   FieldMetadata("artifactPath", "artifact_path", "_artifact_path", str, None, PredefinedSerializer(), optional=True),
   FieldMetadata("artifactType", "artifact_type", "_artifact_type", BenchmarkArenaArtifactType, None, EnumSerializer(), optional=True),
-]
-
-ApiValidationStage._fields = [
-  FieldMetadata("type", "type", "_type", BenchmarkTaskValidationStage, BenchmarkTaskValidationStage.BENCHMARK_TASK_VALIDATION_STAGE_UNSPECIFIED, EnumSerializer()),
-  FieldMetadata("defaultModelVersionSlug", "default_model_version_slug", "_default_model_version_slug", str, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("defaultAgentSlug", "default_agent_slug", "_default_agent_slug", str, None, PredefinedSerializer(), optional=True),
-  FieldMetadata("defaultModelVersionConfigSlug", "default_model_version_config_slug", "_default_model_version_config_slug", str, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("previewArtifactPath", "preview_artifact_path", "_preview_artifact_path", str, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("previewArtifactType", "preview_artifact_type", "_preview_artifact_type", BenchmarkArenaArtifactType, None, EnumSerializer(), optional=True),
 ]
 

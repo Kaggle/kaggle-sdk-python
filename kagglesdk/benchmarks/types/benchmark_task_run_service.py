@@ -454,7 +454,8 @@ class GetBenchmarkSchedulerStatusResponse(KaggleObject):
       Excludes cancellations, which are stamped Errored and removed.
     model_version_stats (BenchmarkSchedulerModelVersionStats)
       One entry per model version with live work or a recent outcome, ordered
-      by running count descending, then id ascending so ties stay stable.
+      by queued count descending, then running count descending, then id
+      ascending so ties stay stable.
     settings (BenchmarkSchedulerSettings)
       The settings these counts were measured against. The caps are enforced over
       the enqueued-only population, so headroom is their difference from the
@@ -515,7 +516,8 @@ class GetBenchmarkSchedulerStatusResponse(KaggleObject):
   def model_version_stats(self) -> Optional[List[Optional['BenchmarkSchedulerModelVersionStats']]]:
     r"""
     One entry per model version with live work or a recent outcome, ordered
-    by running count descending, then id ascending so ties stay stable.
+    by queued count descending, then running count descending, then id
+    ascending so ties stay stable.
     """
     return self._model_version_stats
 

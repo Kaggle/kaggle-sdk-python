@@ -4,7 +4,7 @@ from kagglesdk.benchmarks.types.benchmark_enums import BenchmarkArenaArtifactTyp
 from kagglesdk.kaggle_object import *
 from kagglesdk.licenses.types.licenses_types import License
 from kagglesdk.users.types.legacy_organizations_service import OrganizationCard
-from typing import Optional, List
+from typing import List, Optional
 
 class BenchmarkTaskValidationStage(enum.Enum):
   r"""
@@ -36,6 +36,139 @@ class HarborMetricType(enum.Enum):
   HARBOR_METRIC_TYPE_MIN = 2
   HARBOR_METRIC_TYPE_MAX = 3
   HARBOR_METRIC_TYPE_MEAN = 4
+
+class ApiTaskCreationValidationConfig(KaggleObject):
+  r"""
+  The slug-keyed shape of TaskCreationValidationConfig, accepted by
+  CreateBenchmarkTask and echoed on BenchmarkTask and ApiBenchmarkTask reads.
+  Here rather than in benchmark_tasks_api_service.proto so the BenchmarkTask
+  read shape can use it.
+
+  Attributes:
+    validation_stages (ApiValidationStage)
+      The validation stages to run against the task version.
+  """
+
+  def __init__(self):
+    self._validation_stages = []
+    self._freeze()
+
+  @property
+  def validation_stages(self) -> Optional[List[Optional['ApiValidationStage']]]:
+    """The validation stages to run against the task version."""
+    return self._validation_stages
+
+  @validation_stages.setter
+  def validation_stages(self, validation_stages: Optional[List[Optional['ApiValidationStage']]]):
+    if validation_stages is None:
+      del self.validation_stages
+      return
+    if not isinstance(validation_stages, list):
+      raise TypeError('validation_stages must be of type list')
+    if not all([isinstance(t, ApiValidationStage) for t in validation_stages]):
+      raise TypeError('validation_stages must contain only items of type ApiValidationStage')
+    self._validation_stages = validation_stages
+
+
+class ApiValidationStage(KaggleObject):
+  r"""
+  The slug-keyed shape of ValidationStage, which identifies the default
+  candidate by slug instead of id. Accepted on create and echoed on reads.
+
+  Attributes:
+    type (BenchmarkTaskValidationStage)
+      Required on create. Not UNSPECIFIED.
+    default_model_version_slug (str)
+      Canonical BenchmarkModelVersion.slug (e.g. 'claude-sonnet-4-6-default').
+      On Harbor tasks, requires override_harness_version: without one the task
+      evaluates agents, so pick the model via default_agent_slug instead.
+    default_agent_slug (str)
+      Canonical Agent.slug (e.g. 'claude-code-2.1.216-opus-4.8-high').
+    default_model_version_config_slug (str)
+      Canonical BenchmarkModelVersionConfig.slug (e.g.
+      'claude-sonnet-4-6-high'). Like default_model_version_slug, but also pins
+      the reasoning effort. Harbor tasks only; requires
+      override_harness_version.
+  """
+
+  def __init__(self):
+    self._type = BenchmarkTaskValidationStage.BENCHMARK_TASK_VALIDATION_STAGE_UNSPECIFIED
+    self._default_model_version_slug = None
+    self._default_agent_slug = None
+    self._default_model_version_config_slug = None
+    self._freeze()
+
+  @property
+  def type(self) -> 'BenchmarkTaskValidationStage':
+    """Required on create. Not UNSPECIFIED."""
+    return self._type
+
+  @type.setter
+  def type(self, type: 'BenchmarkTaskValidationStage'):
+    if type is None:
+      del self.type
+      return
+    if not isinstance(type, BenchmarkTaskValidationStage):
+      raise TypeError('type must be of type BenchmarkTaskValidationStage')
+    self._type = type
+
+  @property
+  def default_model_version_slug(self) -> str:
+    r"""
+    Canonical BenchmarkModelVersion.slug (e.g. 'claude-sonnet-4-6-default').
+    On Harbor tasks, requires override_harness_version: without one the task
+    evaluates agents, so pick the model via default_agent_slug instead.
+    """
+    return self._default_model_version_slug or ""
+
+  @default_model_version_slug.setter
+  def default_model_version_slug(self, default_model_version_slug: str):
+    if default_model_version_slug is None:
+      del self.default_model_version_slug
+      return
+    if not isinstance(default_model_version_slug, str):
+      raise TypeError('default_model_version_slug must be of type str')
+    del self.default_agent_slug
+    del self.default_model_version_config_slug
+    self._default_model_version_slug = default_model_version_slug
+
+  @property
+  def default_agent_slug(self) -> str:
+    """Canonical Agent.slug (e.g. 'claude-code-2.1.216-opus-4.8-high')."""
+    return self._default_agent_slug or ""
+
+  @default_agent_slug.setter
+  def default_agent_slug(self, default_agent_slug: str):
+    if default_agent_slug is None:
+      del self.default_agent_slug
+      return
+    if not isinstance(default_agent_slug, str):
+      raise TypeError('default_agent_slug must be of type str')
+    del self.default_model_version_slug
+    del self.default_model_version_config_slug
+    self._default_agent_slug = default_agent_slug
+
+  @property
+  def default_model_version_config_slug(self) -> str:
+    r"""
+    Canonical BenchmarkModelVersionConfig.slug (e.g.
+    'claude-sonnet-4-6-high'). Like default_model_version_slug, but also pins
+    the reasoning effort. Harbor tasks only; requires
+    override_harness_version.
+    """
+    return self._default_model_version_config_slug or ""
+
+  @default_model_version_config_slug.setter
+  def default_model_version_config_slug(self, default_model_version_config_slug: str):
+    if default_model_version_config_slug is None:
+      del self.default_model_version_config_slug
+      return
+    if not isinstance(default_model_version_config_slug, str):
+      raise TypeError('default_model_version_config_slug must be of type str')
+    del self.default_model_version_slug
+    del self.default_agent_slug
+    self._default_model_version_config_slug = default_model_version_config_slug
+
 
 class BenchmarkArenaCombination(KaggleObject):
   r"""
@@ -83,18 +216,25 @@ class BenchmarkArenaCombination(KaggleObject):
 
 class BenchmarkArenaSettings(KaggleObject):
   r"""
-  Human-vote arena over a benchmark version's task run artifacts.
+  Human-vote arena over a benchmark version's task run artifacts. Everyone who
+  can read the benchmark version sees these, on
+  BenchmarkVersion.arena_settings, so only fields fit for its readers belong
+  here.
 
   Attributes:
     artifact_path (str)
-      Glob, relative to a run's session output root, selecting the artifact,
+      Unused: arenas show the artifact each task version's own artifact_path
+      selects. Still validated as a glob relative to a run's session output root,
       e.g. '*.mp4'.
     artifact_type (BenchmarkArenaArtifactType)
+      Labels and filters the arena. Each task version's own artifact_type decides
+      how its outputs are shown.
     reveal_candidates (bool)
       Show candidate names after a vote. Off keeps voting fully blind.
     voting_enabled (bool)
       Kill switches for the arena's public surfaces. Off when the arena is
-      created.
+      created. The gallery labels each output with its candidate, so with
+      voting on it requires reveal_candidates.
     gallery_enabled (bool)
     arena_task_version_id (int)
       The task version the arena's overall Elo is written to, shown as a
@@ -104,6 +244,15 @@ class BenchmarkArenaSettings(KaggleObject):
       Clicking an artifact opens it full size, rather than voting for it in the
       arena. HTML artifacts always do; this extends it to every type, for outputs
       too detailed to judge at card size.
+    show_vote_counts (bool)
+      Show each candidate's vote count, and the total, on the arena's
+      leaderboard. Only votes behind the Elos count.
+    votes_task_version_id (int)
+      The task version each candidate's vote count is written to, a leaderboard
+      column beside the Elo. Created with the Elo's.
+    vote_count (int)
+      How many votes the arena's Elos were last computed from. Set only when
+      show_vote_counts is on.
   """
 
   def __init__(self):
@@ -115,12 +264,16 @@ class BenchmarkArenaSettings(KaggleObject):
     self._arena_task_version_id = None
     self._gallery_card_size = BenchmarkGalleryCardSize.BENCHMARK_GALLERY_CARD_SIZE_UNSPECIFIED
     self._expand_artifacts = False
+    self._show_vote_counts = False
+    self._votes_task_version_id = None
+    self._vote_count = None
     self._freeze()
 
   @property
   def artifact_path(self) -> str:
     r"""
-    Glob, relative to a run's session output root, selecting the artifact,
+    Unused: arenas show the artifact each task version's own artifact_path
+    selects. Still validated as a glob relative to a run's session output root,
     e.g. '*.mp4'.
     """
     return self._artifact_path
@@ -136,6 +289,10 @@ class BenchmarkArenaSettings(KaggleObject):
 
   @property
   def artifact_type(self) -> 'BenchmarkArenaArtifactType':
+    r"""
+    Labels and filters the arena. Each task version's own artifact_type decides
+    how its outputs are shown.
+    """
     return self._artifact_type
 
   @artifact_type.setter
@@ -165,7 +322,8 @@ class BenchmarkArenaSettings(KaggleObject):
   def voting_enabled(self) -> bool:
     r"""
     Kill switches for the arena's public surfaces. Off when the arena is
-    created.
+    created. The gallery labels each output with its candidate, so with
+    voting on it requires reveal_candidates.
     """
     return self._voting_enabled
 
@@ -238,6 +396,57 @@ class BenchmarkArenaSettings(KaggleObject):
     if not isinstance(expand_artifacts, bool):
       raise TypeError('expand_artifacts must be of type bool')
     self._expand_artifacts = expand_artifacts
+
+  @property
+  def show_vote_counts(self) -> bool:
+    r"""
+    Show each candidate's vote count, and the total, on the arena's
+    leaderboard. Only votes behind the Elos count.
+    """
+    return self._show_vote_counts
+
+  @show_vote_counts.setter
+  def show_vote_counts(self, show_vote_counts: bool):
+    if show_vote_counts is None:
+      del self.show_vote_counts
+      return
+    if not isinstance(show_vote_counts, bool):
+      raise TypeError('show_vote_counts must be of type bool')
+    self._show_vote_counts = show_vote_counts
+
+  @property
+  def votes_task_version_id(self) -> int:
+    r"""
+    The task version each candidate's vote count is written to, a leaderboard
+    column beside the Elo. Created with the Elo's.
+    """
+    return self._votes_task_version_id or 0
+
+  @votes_task_version_id.setter
+  def votes_task_version_id(self, votes_task_version_id: Optional[int]):
+    if votes_task_version_id is None:
+      del self.votes_task_version_id
+      return
+    if not isinstance(votes_task_version_id, int):
+      raise TypeError('votes_task_version_id must be of type int')
+    self._votes_task_version_id = votes_task_version_id
+
+  @property
+  def vote_count(self) -> int:
+    r"""
+    How many votes the arena's Elos were last computed from. Set only when
+    show_vote_counts is on.
+    """
+    return self._vote_count or 0
+
+  @vote_count.setter
+  def vote_count(self, vote_count: Optional[int]):
+    if vote_count is None:
+      del self.vote_count
+      return
+    if not isinstance(vote_count, int):
+      raise TypeError('vote_count must be of type int')
+    self._vote_count = vote_count
 
 
 class BenchmarkCandidate(KaggleObject):
@@ -333,6 +542,197 @@ class BenchmarkCandidate(KaggleObject):
     if not isinstance(reasoning_effort, str):
       raise TypeError('reasoning_effort must be of type str')
     self._reasoning_effort = reasoning_effort
+
+
+class BenchmarkMetricProducer(KaggleObject):
+  r"""
+  Attributes:
+    id (int)
+    benchmark_version_id (int)
+    definition_dataset_version_id (int)
+    definition_dataset_version_subpath (str)
+    entrypoint (str)
+    input_options (BenchmarkMetricProducerInputOptions)
+    creator_user_id (int)
+    create_time (datetime)
+  """
+
+  def __init__(self):
+    self._id = 0
+    self._benchmark_version_id = 0
+    self._definition_dataset_version_id = 0
+    self._definition_dataset_version_subpath = None
+    self._entrypoint = ""
+    self._input_options = None
+    self._creator_user_id = 0
+    self._create_time = None
+    self._freeze()
+
+  @property
+  def id(self) -> int:
+    return self._id
+
+  @id.setter
+  def id(self, id: int):
+    if id is None:
+      del self.id
+      return
+    if not isinstance(id, int):
+      raise TypeError('id must be of type int')
+    self._id = id
+
+  @property
+  def benchmark_version_id(self) -> int:
+    return self._benchmark_version_id
+
+  @benchmark_version_id.setter
+  def benchmark_version_id(self, benchmark_version_id: int):
+    if benchmark_version_id is None:
+      del self.benchmark_version_id
+      return
+    if not isinstance(benchmark_version_id, int):
+      raise TypeError('benchmark_version_id must be of type int')
+    self._benchmark_version_id = benchmark_version_id
+
+  @property
+  def definition_dataset_version_id(self) -> int:
+    return self._definition_dataset_version_id
+
+  @definition_dataset_version_id.setter
+  def definition_dataset_version_id(self, definition_dataset_version_id: int):
+    if definition_dataset_version_id is None:
+      del self.definition_dataset_version_id
+      return
+    if not isinstance(definition_dataset_version_id, int):
+      raise TypeError('definition_dataset_version_id must be of type int')
+    self._definition_dataset_version_id = definition_dataset_version_id
+
+  @property
+  def definition_dataset_version_subpath(self) -> str:
+    return self._definition_dataset_version_subpath or ""
+
+  @definition_dataset_version_subpath.setter
+  def definition_dataset_version_subpath(self, definition_dataset_version_subpath: Optional[str]):
+    if definition_dataset_version_subpath is None:
+      del self.definition_dataset_version_subpath
+      return
+    if not isinstance(definition_dataset_version_subpath, str):
+      raise TypeError('definition_dataset_version_subpath must be of type str')
+    self._definition_dataset_version_subpath = definition_dataset_version_subpath
+
+  @property
+  def entrypoint(self) -> str:
+    return self._entrypoint
+
+  @entrypoint.setter
+  def entrypoint(self, entrypoint: str):
+    if entrypoint is None:
+      del self.entrypoint
+      return
+    if not isinstance(entrypoint, str):
+      raise TypeError('entrypoint must be of type str')
+    self._entrypoint = entrypoint
+
+  @property
+  def input_options(self) -> Optional['BenchmarkMetricProducerInputOptions']:
+    return self._input_options
+
+  @input_options.setter
+  def input_options(self, input_options: Optional['BenchmarkMetricProducerInputOptions']):
+    if input_options is None:
+      del self.input_options
+      return
+    if not isinstance(input_options, BenchmarkMetricProducerInputOptions):
+      raise TypeError('input_options must be of type BenchmarkMetricProducerInputOptions')
+    self._input_options = input_options
+
+  @property
+  def creator_user_id(self) -> int:
+    return self._creator_user_id
+
+  @creator_user_id.setter
+  def creator_user_id(self, creator_user_id: int):
+    if creator_user_id is None:
+      del self.creator_user_id
+      return
+    if not isinstance(creator_user_id, int):
+      raise TypeError('creator_user_id must be of type int')
+    self._creator_user_id = creator_user_id
+
+  @property
+  def create_time(self) -> datetime:
+    return self._create_time
+
+  @create_time.setter
+  def create_time(self, create_time: datetime):
+    if create_time is None:
+      del self.create_time
+      return
+    if not isinstance(create_time, datetime):
+      raise TypeError('create_time must be of type datetime')
+    self._create_time = create_time
+
+
+class BenchmarkMetricProducerInputOptions(KaggleObject):
+  r"""
+  Shapes what a BenchmarkMetricProducer is given from the benchmark version's
+  runs. Persisted as JSON on BenchmarkMetricProducers.
+
+  Attributes:
+    results_only (bool)
+      Stage only the manifest of scores and cost/token usage, which come from
+      SQL, and skip copying run files. Per-trial rewards exist only in each
+      trial's result.json, so they are omitted; producers that need them should
+      copy result.json via output_path_regex instead.
+    output_path_regex (str)
+      Copy only run files whose path, relative to each run's session output
+      directory, matches this regex. Empty copies all files. Ignored when
+      results_only is set. Agent credential files under agent/sessions/ are
+      never copied, whatever the regex.
+  """
+
+  def __init__(self):
+    self._results_only = False
+    self._output_path_regex = ""
+    self._freeze()
+
+  @property
+  def results_only(self) -> bool:
+    r"""
+    Stage only the manifest of scores and cost/token usage, which come from
+    SQL, and skip copying run files. Per-trial rewards exist only in each
+    trial's result.json, so they are omitted; producers that need them should
+    copy result.json via output_path_regex instead.
+    """
+    return self._results_only
+
+  @results_only.setter
+  def results_only(self, results_only: bool):
+    if results_only is None:
+      del self.results_only
+      return
+    if not isinstance(results_only, bool):
+      raise TypeError('results_only must be of type bool')
+    self._results_only = results_only
+
+  @property
+  def output_path_regex(self) -> str:
+    r"""
+    Copy only run files whose path, relative to each run's session output
+    directory, matches this regex. Empty copies all files. Ignored when
+    results_only is set. Agent credential files under agent/sessions/ are
+    never copied, whatever the regex.
+    """
+    return self._output_path_regex
+
+  @output_path_regex.setter
+  def output_path_regex(self, output_path_regex: str):
+    if output_path_regex is None:
+      del self.output_path_regex
+      return
+    if not isinstance(output_path_regex, str):
+      raise TypeError('output_path_regex must be of type str')
+    self._output_path_regex = output_path_regex
 
 
 class BenchmarkModel(KaggleObject):
@@ -1131,6 +1531,25 @@ class BenchmarkSchedulerSettings(KaggleObject):
     global_min_model_proxy_priority (float)
       Minimum priority value sent to Model Proxy for every run. 0.0 is most
       urgent, so this caps how urgent a run can be. Unset = no floor.
+    unattributed_scheduler_priority (float)
+      Scheduler tier for queued runs attributed to no benchmark, on the same
+      [0.0, 4.0] scale as Benchmark.scheduler_priority. Read live by the drain,
+      so a change applies to runs already queued. Unset = Normal (2.0).
+    user_session_caps_enforced (bool)
+      When on, the drain leaves runs Queued that would take their creator past
+      their KKB session cap (KkbQuotaTiers / KkbUserQuotas), and BatchSchedule
+      rejects such requests with ResourceExhausted. When off, both start the runs
+      and only report it.
+      Optional so a client that omits it doesn't turn enforcement off.
+    kkb_pool_gating_enabled (bool)
+      Whether the drain holds back runs whose KKB pool has no room left, per
+      max_kkb_pool_queued_sessions. Off, the drain still measures the pools and
+      reports how many runs it would have held back.
+      Optional so a client that omits it doesn't turn gating off.
+    max_kkb_pool_queued_sessions (int)
+      How many sessions a KKB pool may have waiting for a VM before the drain
+      stops starting runs on it. Unset = 100; 0 fills only idle VMs. Pools scale
+      up on their queue, so a low cap slows how fast they grow.
   """
 
   def __init__(self):
@@ -1148,6 +1567,10 @@ class BenchmarkSchedulerSettings(KaggleObject):
     self._max_retries_per_tick = None
     self._screening_enabled = None
     self._global_min_model_proxy_priority = None
+    self._unattributed_scheduler_priority = None
+    self._user_session_caps_enforced = None
+    self._kkb_pool_gating_enabled = None
+    self._max_kkb_pool_queued_sessions = None
     self._freeze()
 
   @property
@@ -1383,6 +1806,81 @@ class BenchmarkSchedulerSettings(KaggleObject):
     if not isinstance(global_min_model_proxy_priority, float):
       raise TypeError('global_min_model_proxy_priority must be of type float')
     self._global_min_model_proxy_priority = global_min_model_proxy_priority
+
+  @property
+  def unattributed_scheduler_priority(self) -> float:
+    r"""
+    Scheduler tier for queued runs attributed to no benchmark, on the same
+    [0.0, 4.0] scale as Benchmark.scheduler_priority. Read live by the drain,
+    so a change applies to runs already queued. Unset = Normal (2.0).
+    """
+    return self._unattributed_scheduler_priority or 0.0
+
+  @unattributed_scheduler_priority.setter
+  def unattributed_scheduler_priority(self, unattributed_scheduler_priority: Optional[float]):
+    if unattributed_scheduler_priority is None:
+      del self.unattributed_scheduler_priority
+      return
+    if not isinstance(unattributed_scheduler_priority, float):
+      raise TypeError('unattributed_scheduler_priority must be of type float')
+    self._unattributed_scheduler_priority = unattributed_scheduler_priority
+
+  @property
+  def user_session_caps_enforced(self) -> bool:
+    r"""
+    When on, the drain leaves runs Queued that would take their creator past
+    their KKB session cap (KkbQuotaTiers / KkbUserQuotas), and BatchSchedule
+    rejects such requests with ResourceExhausted. When off, both start the runs
+    and only report it.
+    Optional so a client that omits it doesn't turn enforcement off.
+    """
+    return self._user_session_caps_enforced or False
+
+  @user_session_caps_enforced.setter
+  def user_session_caps_enforced(self, user_session_caps_enforced: Optional[bool]):
+    if user_session_caps_enforced is None:
+      del self.user_session_caps_enforced
+      return
+    if not isinstance(user_session_caps_enforced, bool):
+      raise TypeError('user_session_caps_enforced must be of type bool')
+    self._user_session_caps_enforced = user_session_caps_enforced
+
+  @property
+  def kkb_pool_gating_enabled(self) -> bool:
+    r"""
+    Whether the drain holds back runs whose KKB pool has no room left, per
+    max_kkb_pool_queued_sessions. Off, the drain still measures the pools and
+    reports how many runs it would have held back.
+    Optional so a client that omits it doesn't turn gating off.
+    """
+    return self._kkb_pool_gating_enabled or False
+
+  @kkb_pool_gating_enabled.setter
+  def kkb_pool_gating_enabled(self, kkb_pool_gating_enabled: Optional[bool]):
+    if kkb_pool_gating_enabled is None:
+      del self.kkb_pool_gating_enabled
+      return
+    if not isinstance(kkb_pool_gating_enabled, bool):
+      raise TypeError('kkb_pool_gating_enabled must be of type bool')
+    self._kkb_pool_gating_enabled = kkb_pool_gating_enabled
+
+  @property
+  def max_kkb_pool_queued_sessions(self) -> int:
+    r"""
+    How many sessions a KKB pool may have waiting for a VM before the drain
+    stops starting runs on it. Unset = 100; 0 fills only idle VMs. Pools scale
+    up on their queue, so a low cap slows how fast they grow.
+    """
+    return self._max_kkb_pool_queued_sessions or 0
+
+  @max_kkb_pool_queued_sessions.setter
+  def max_kkb_pool_queued_sessions(self, max_kkb_pool_queued_sessions: Optional[int]):
+    if max_kkb_pool_queued_sessions is None:
+      del self.max_kkb_pool_queued_sessions
+      return
+    if not isinstance(max_kkb_pool_queued_sessions, int):
+      raise TypeError('max_kkb_pool_queued_sessions must be of type int')
+    self._max_kkb_pool_queued_sessions = max_kkb_pool_queued_sessions
 
 
 class BenchmarkTaskDefinition(KaggleObject):
@@ -1726,6 +2224,9 @@ class BenchmarkTaskKaggleDatasetsDefinition(KaggleObject):
       Canonical BenchmarkModelVersionConfig.slug (e.g.
       'claude-sonnet-4-6-high'). Like default_model_version_slug, but also pins
       the reasoning effort. Requires override_harness_version.
+    environment (HarborTaskEnvironment)
+      What the task's task.toml declares about where it runs. Ignored on create,
+      which reads these from task.toml itself.
   """
 
   def __init__(self):
@@ -1743,6 +2244,7 @@ class BenchmarkTaskKaggleDatasetsDefinition(KaggleObject):
     self._metrics = []
     self._session_concurrency = None
     self._default_model_version_config_slug = None
+    self._environment = None
     self._freeze()
 
   @property
@@ -1998,6 +2500,23 @@ class BenchmarkTaskKaggleDatasetsDefinition(KaggleObject):
       raise TypeError('session_concurrency must be of type int')
     self._session_concurrency = session_concurrency
 
+  @property
+  def environment(self) -> Optional['HarborTaskEnvironment']:
+    r"""
+    What the task's task.toml declares about where it runs. Ignored on create,
+    which reads these from task.toml itself.
+    """
+    return self._environment
+
+  @environment.setter
+  def environment(self, environment: Optional['HarborTaskEnvironment']):
+    if environment is None:
+      del self.environment
+      return
+    if not isinstance(environment, HarborTaskEnvironment):
+      raise TypeError('environment must be of type HarborTaskEnvironment')
+    self._environment = environment
+
 
 class BenchmarkTaskNotebookDefinition(KaggleObject):
   r"""
@@ -2101,11 +2620,18 @@ class DatasetMount(KaggleObject):
       Absolute path inside the container where the dataset is mounted. Callers
       pick this so tasks can locate their data anywhere. Unique across the
       mount list; must not shadow the task-definition mount.
+    dataset_id (int)
+      As on DefinitionSource.
+    dataset_version_id (int)
+    databundle_version_id (int)
   """
 
   def __init__(self):
     self._dataset_version_slug = ""
     self._mount_path = ""
+    self._dataset_id = 0
+    self._dataset_version_id = 0
+    self._databundle_version_id = 0
     self._freeze()
 
   @property
@@ -2143,6 +2669,46 @@ class DatasetMount(KaggleObject):
       raise TypeError('mount_path must be of type str')
     self._mount_path = mount_path
 
+  @property
+  def dataset_id(self) -> int:
+    """As on DefinitionSource."""
+    return self._dataset_id
+
+  @dataset_id.setter
+  def dataset_id(self, dataset_id: int):
+    if dataset_id is None:
+      del self.dataset_id
+      return
+    if not isinstance(dataset_id, int):
+      raise TypeError('dataset_id must be of type int')
+    self._dataset_id = dataset_id
+
+  @property
+  def dataset_version_id(self) -> int:
+    return self._dataset_version_id
+
+  @dataset_version_id.setter
+  def dataset_version_id(self, dataset_version_id: int):
+    if dataset_version_id is None:
+      del self.dataset_version_id
+      return
+    if not isinstance(dataset_version_id, int):
+      raise TypeError('dataset_version_id must be of type int')
+    self._dataset_version_id = dataset_version_id
+
+  @property
+  def databundle_version_id(self) -> int:
+    return self._databundle_version_id
+
+  @databundle_version_id.setter
+  def databundle_version_id(self, databundle_version_id: int):
+    if databundle_version_id is None:
+      del self.databundle_version_id
+      return
+    if not isinstance(databundle_version_id, int):
+      raise TypeError('databundle_version_id must be of type int')
+    self._databundle_version_id = databundle_version_id
+
 
 class DefinitionSource(KaggleObject):
   r"""
@@ -2156,11 +2722,19 @@ class DefinitionSource(KaggleObject):
     sub_path (str)
       Sub-directory within the dataset containing task.toml. Empty means the
       dataset root.
+    dataset_id (int)
+      The pinned version's ids, for embedding its file explorer. Ignored on
+      create, which takes dataset_version_slug.
+    dataset_version_id (int)
+    databundle_version_id (int)
   """
 
   def __init__(self):
     self._dataset_version_slug = ""
     self._sub_path = ""
+    self._dataset_id = 0
+    self._dataset_version_id = 0
+    self._databundle_version_id = 0
     self._freeze()
 
   @property
@@ -2196,6 +2770,49 @@ class DefinitionSource(KaggleObject):
     if not isinstance(sub_path, str):
       raise TypeError('sub_path must be of type str')
     self._sub_path = sub_path
+
+  @property
+  def dataset_id(self) -> int:
+    r"""
+    The pinned version's ids, for embedding its file explorer. Ignored on
+    create, which takes dataset_version_slug.
+    """
+    return self._dataset_id
+
+  @dataset_id.setter
+  def dataset_id(self, dataset_id: int):
+    if dataset_id is None:
+      del self.dataset_id
+      return
+    if not isinstance(dataset_id, int):
+      raise TypeError('dataset_id must be of type int')
+    self._dataset_id = dataset_id
+
+  @property
+  def dataset_version_id(self) -> int:
+    return self._dataset_version_id
+
+  @dataset_version_id.setter
+  def dataset_version_id(self, dataset_version_id: int):
+    if dataset_version_id is None:
+      del self.dataset_version_id
+      return
+    if not isinstance(dataset_version_id, int):
+      raise TypeError('dataset_version_id must be of type int')
+    self._dataset_version_id = dataset_version_id
+
+  @property
+  def databundle_version_id(self) -> int:
+    return self._databundle_version_id
+
+  @databundle_version_id.setter
+  def databundle_version_id(self, databundle_version_id: int):
+    if databundle_version_id is None:
+      del self.databundle_version_id
+      return
+    if not isinstance(databundle_version_id, int):
+      raise TypeError('databundle_version_id must be of type int')
+    self._databundle_version_id = databundle_version_id
 
 
 class EnvVariable(KaggleObject):
@@ -2259,6 +2876,161 @@ class EnvVariable(KaggleObject):
     if not isinstance(is_secret_name, bool):
       raise TypeError('is_secret_name must be of type bool')
     self._is_secret_name = is_secret_name
+
+
+class HarborTaskEnvironment(KaggleObject):
+  r"""
+  The resources and network access a Harbor task's task.toml declares, as read
+  when its version was created. Unset fields weren't declared.
+
+  Attributes:
+    cpus (int)
+    memory_mb (int)
+    storage_mb (int)
+    gpus (int)
+    gpu_types (str)
+    tpu_type (str)
+    tpu_topology (str)
+    agent_network_mode (str)
+      Harbor's network_mode for the agent container, collapsed to its most
+      permissive step.
+    verifier_network_mode (str)
+  """
+
+  def __init__(self):
+    self._cpus = None
+    self._memory_mb = None
+    self._storage_mb = None
+    self._gpus = None
+    self._gpu_types = []
+    self._tpu_type = None
+    self._tpu_topology = None
+    self._agent_network_mode = None
+    self._verifier_network_mode = None
+    self._freeze()
+
+  @property
+  def cpus(self) -> int:
+    return self._cpus or 0
+
+  @cpus.setter
+  def cpus(self, cpus: Optional[int]):
+    if cpus is None:
+      del self.cpus
+      return
+    if not isinstance(cpus, int):
+      raise TypeError('cpus must be of type int')
+    self._cpus = cpus
+
+  @property
+  def memory_mb(self) -> int:
+    return self._memory_mb or 0
+
+  @memory_mb.setter
+  def memory_mb(self, memory_mb: Optional[int]):
+    if memory_mb is None:
+      del self.memory_mb
+      return
+    if not isinstance(memory_mb, int):
+      raise TypeError('memory_mb must be of type int')
+    self._memory_mb = memory_mb
+
+  @property
+  def storage_mb(self) -> int:
+    return self._storage_mb or 0
+
+  @storage_mb.setter
+  def storage_mb(self, storage_mb: Optional[int]):
+    if storage_mb is None:
+      del self.storage_mb
+      return
+    if not isinstance(storage_mb, int):
+      raise TypeError('storage_mb must be of type int')
+    self._storage_mb = storage_mb
+
+  @property
+  def gpus(self) -> int:
+    return self._gpus or 0
+
+  @gpus.setter
+  def gpus(self, gpus: Optional[int]):
+    if gpus is None:
+      del self.gpus
+      return
+    if not isinstance(gpus, int):
+      raise TypeError('gpus must be of type int')
+    self._gpus = gpus
+
+  @property
+  def gpu_types(self) -> Optional[List[str]]:
+    return self._gpu_types
+
+  @gpu_types.setter
+  def gpu_types(self, gpu_types: Optional[List[str]]):
+    if gpu_types is None:
+      del self.gpu_types
+      return
+    if not isinstance(gpu_types, list):
+      raise TypeError('gpu_types must be of type list')
+    if not all([isinstance(t, str) for t in gpu_types]):
+      raise TypeError('gpu_types must contain only items of type str')
+    self._gpu_types = gpu_types
+
+  @property
+  def tpu_type(self) -> str:
+    return self._tpu_type or ""
+
+  @tpu_type.setter
+  def tpu_type(self, tpu_type: Optional[str]):
+    if tpu_type is None:
+      del self.tpu_type
+      return
+    if not isinstance(tpu_type, str):
+      raise TypeError('tpu_type must be of type str')
+    self._tpu_type = tpu_type
+
+  @property
+  def tpu_topology(self) -> str:
+    return self._tpu_topology or ""
+
+  @tpu_topology.setter
+  def tpu_topology(self, tpu_topology: Optional[str]):
+    if tpu_topology is None:
+      del self.tpu_topology
+      return
+    if not isinstance(tpu_topology, str):
+      raise TypeError('tpu_topology must be of type str')
+    self._tpu_topology = tpu_topology
+
+  @property
+  def agent_network_mode(self) -> str:
+    r"""
+    Harbor's network_mode for the agent container, collapsed to its most
+    permissive step.
+    """
+    return self._agent_network_mode or ""
+
+  @agent_network_mode.setter
+  def agent_network_mode(self, agent_network_mode: Optional[str]):
+    if agent_network_mode is None:
+      del self.agent_network_mode
+      return
+    if not isinstance(agent_network_mode, str):
+      raise TypeError('agent_network_mode must be of type str')
+    self._agent_network_mode = agent_network_mode
+
+  @property
+  def verifier_network_mode(self) -> str:
+    return self._verifier_network_mode or ""
+
+  @verifier_network_mode.setter
+  def verifier_network_mode(self, verifier_network_mode: Optional[str]):
+    if verifier_network_mode is None:
+      del self.verifier_network_mode
+      return
+    if not isinstance(verifier_network_mode, str):
+      raise TypeError('verifier_network_mode must be of type str')
+    self._verifier_network_mode = verifier_network_mode
 
 
 class NumericResult(KaggleObject):
@@ -2463,6 +3235,17 @@ class UserSecret(KaggleObject):
     self._override_existing = override_existing
 
 
+ApiTaskCreationValidationConfig._fields = [
+  FieldMetadata("validationStages", "validation_stages", "_validation_stages", ApiValidationStage, [], ListSerializer(KaggleObjectSerializer())),
+]
+
+ApiValidationStage._fields = [
+  FieldMetadata("type", "type", "_type", BenchmarkTaskValidationStage, BenchmarkTaskValidationStage.BENCHMARK_TASK_VALIDATION_STAGE_UNSPECIFIED, EnumSerializer()),
+  FieldMetadata("defaultModelVersionSlug", "default_model_version_slug", "_default_model_version_slug", str, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("defaultAgentSlug", "default_agent_slug", "_default_agent_slug", str, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("defaultModelVersionConfigSlug", "default_model_version_config_slug", "_default_model_version_config_slug", str, None, PredefinedSerializer(), optional=True),
+]
+
 BenchmarkArenaCombination._fields = [
   FieldMetadata("taskVersionId", "task_version_id", "_task_version_id", int, 0, PredefinedSerializer()),
   FieldMetadata("candidate", "candidate", "_candidate", BenchmarkCandidate, None, KaggleObjectSerializer()),
@@ -2477,6 +3260,9 @@ BenchmarkArenaSettings._fields = [
   FieldMetadata("arenaTaskVersionId", "arena_task_version_id", "_arena_task_version_id", int, None, PredefinedSerializer(), optional=True),
   FieldMetadata("galleryCardSize", "gallery_card_size", "_gallery_card_size", BenchmarkGalleryCardSize, BenchmarkGalleryCardSize.BENCHMARK_GALLERY_CARD_SIZE_UNSPECIFIED, EnumSerializer()),
   FieldMetadata("expandArtifacts", "expand_artifacts", "_expand_artifacts", bool, False, PredefinedSerializer()),
+  FieldMetadata("showVoteCounts", "show_vote_counts", "_show_vote_counts", bool, False, PredefinedSerializer()),
+  FieldMetadata("votesTaskVersionId", "votes_task_version_id", "_votes_task_version_id", int, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("voteCount", "vote_count", "_vote_count", int, None, PredefinedSerializer(), optional=True),
 ]
 
 BenchmarkCandidate._fields = [
@@ -2484,6 +3270,22 @@ BenchmarkCandidate._fields = [
   FieldMetadata("agentId", "agent_id", "_agent_id", int, None, PredefinedSerializer(), optional=True),
   FieldMetadata("reasoningEffort", "reasoning_effort", "_reasoning_effort", str, None, PredefinedSerializer(), optional=True),
   FieldMetadata("benchmarkModelVersionConfigId", "benchmark_model_version_config_id", "_benchmark_model_version_config_id", int, None, PredefinedSerializer(), optional=True),
+]
+
+BenchmarkMetricProducer._fields = [
+  FieldMetadata("id", "id", "_id", int, 0, PredefinedSerializer()),
+  FieldMetadata("benchmarkVersionId", "benchmark_version_id", "_benchmark_version_id", int, 0, PredefinedSerializer()),
+  FieldMetadata("definitionDatasetVersionId", "definition_dataset_version_id", "_definition_dataset_version_id", int, 0, PredefinedSerializer()),
+  FieldMetadata("definitionDatasetVersionSubpath", "definition_dataset_version_subpath", "_definition_dataset_version_subpath", str, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("entrypoint", "entrypoint", "_entrypoint", str, "", PredefinedSerializer()),
+  FieldMetadata("inputOptions", "input_options", "_input_options", BenchmarkMetricProducerInputOptions, None, KaggleObjectSerializer()),
+  FieldMetadata("creatorUserId", "creator_user_id", "_creator_user_id", int, 0, PredefinedSerializer()),
+  FieldMetadata("createTime", "create_time", "_create_time", datetime, None, DateTimeSerializer()),
+]
+
+BenchmarkMetricProducerInputOptions._fields = [
+  FieldMetadata("resultsOnly", "results_only", "_results_only", bool, False, PredefinedSerializer()),
+  FieldMetadata("outputPathRegex", "output_path_regex", "_output_path_regex", str, "", PredefinedSerializer()),
 ]
 
 BenchmarkModel._fields = [
@@ -2549,6 +3351,10 @@ BenchmarkSchedulerSettings._fields = [
   FieldMetadata("maxRetriesPerTick", "max_retries_per_tick", "_max_retries_per_tick", int, None, PredefinedSerializer(), optional=True),
   FieldMetadata("screeningEnabled", "screening_enabled", "_screening_enabled", bool, None, PredefinedSerializer(), optional=True),
   FieldMetadata("globalMinModelProxyPriority", "global_min_model_proxy_priority", "_global_min_model_proxy_priority", float, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("unattributedSchedulerPriority", "unattributed_scheduler_priority", "_unattributed_scheduler_priority", float, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("userSessionCapsEnforced", "user_session_caps_enforced", "_user_session_caps_enforced", bool, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("kkbPoolGatingEnabled", "kkb_pool_gating_enabled", "_kkb_pool_gating_enabled", bool, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("maxKkbPoolQueuedSessions", "max_kkb_pool_queued_sessions", "_max_kkb_pool_queued_sessions", int, None, PredefinedSerializer(), optional=True),
 ]
 
 BenchmarkTaskDefinition._fields = [
@@ -2585,6 +3391,7 @@ BenchmarkTaskKaggleDatasetsDefinition._fields = [
   FieldMetadata("metrics", "metrics", "_metrics", HarborMetricType, [], ListSerializer(EnumSerializer())),
   FieldMetadata("sessionConcurrency", "session_concurrency", "_session_concurrency", int, None, PredefinedSerializer(), optional=True),
   FieldMetadata("defaultModelVersionConfigSlug", "default_model_version_config_slug", "_default_model_version_config_slug", str, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("environment", "environment", "_environment", HarborTaskEnvironment, None, KaggleObjectSerializer()),
 ]
 
 BenchmarkTaskNotebookDefinition._fields = []
@@ -2601,17 +3408,35 @@ CustomResult._fields = [
 DatasetMount._fields = [
   FieldMetadata("datasetVersionSlug", "dataset_version_slug", "_dataset_version_slug", str, "", PredefinedSerializer()),
   FieldMetadata("mountPath", "mount_path", "_mount_path", str, "", PredefinedSerializer()),
+  FieldMetadata("datasetId", "dataset_id", "_dataset_id", int, 0, PredefinedSerializer()),
+  FieldMetadata("datasetVersionId", "dataset_version_id", "_dataset_version_id", int, 0, PredefinedSerializer()),
+  FieldMetadata("databundleVersionId", "databundle_version_id", "_databundle_version_id", int, 0, PredefinedSerializer()),
 ]
 
 DefinitionSource._fields = [
   FieldMetadata("datasetVersionSlug", "dataset_version_slug", "_dataset_version_slug", str, "", PredefinedSerializer()),
   FieldMetadata("subPath", "sub_path", "_sub_path", str, "", PredefinedSerializer()),
+  FieldMetadata("datasetId", "dataset_id", "_dataset_id", int, 0, PredefinedSerializer()),
+  FieldMetadata("datasetVersionId", "dataset_version_id", "_dataset_version_id", int, 0, PredefinedSerializer()),
+  FieldMetadata("databundleVersionId", "databundle_version_id", "_databundle_version_id", int, 0, PredefinedSerializer()),
 ]
 
 EnvVariable._fields = [
   FieldMetadata("key", "key", "_key", str, "", PredefinedSerializer()),
   FieldMetadata("value", "value", "_value", str, "", PredefinedSerializer()),
   FieldMetadata("isSecretName", "is_secret_name", "_is_secret_name", bool, False, PredefinedSerializer()),
+]
+
+HarborTaskEnvironment._fields = [
+  FieldMetadata("cpus", "cpus", "_cpus", int, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("memoryMb", "memory_mb", "_memory_mb", int, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("storageMb", "storage_mb", "_storage_mb", int, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("gpus", "gpus", "_gpus", int, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("gpuTypes", "gpu_types", "_gpu_types", str, [], ListSerializer(PredefinedSerializer())),
+  FieldMetadata("tpuType", "tpu_type", "_tpu_type", str, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("tpuTopology", "tpu_topology", "_tpu_topology", str, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("agentNetworkMode", "agent_network_mode", "_agent_network_mode", str, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("verifierNetworkMode", "verifier_network_mode", "_verifier_network_mode", str, None, PredefinedSerializer(), optional=True),
 ]
 
 NumericResult._fields = [

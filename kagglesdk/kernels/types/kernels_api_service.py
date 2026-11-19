@@ -191,7 +191,6 @@ class ApiCreateKernelSessionRequest(KaggleObject):
     machine_shape (str)
       The machine shape to use for this session. Currently supported options:
          * NvidiaTeslaT4
-         * NvidiaTeslaP100
          * Tpu1VmV38
     enable_internet (bool)
       Whether or not the kernel should be able to access the internet in this
@@ -279,7 +278,6 @@ class ApiCreateKernelSessionRequest(KaggleObject):
     r"""
     The machine shape to use for this session. Currently supported options:
        * NvidiaTeslaT4
-       * NvidiaTeslaP100
        * Tpu1VmV38
     """
     return self._machine_shape or ""
@@ -2028,7 +2026,6 @@ class ApiSaveKernelRequest(KaggleObject):
     machine_shape (str)
       The machine shape to use for this session. Currently supported options:
          * NvidiaTeslaT4
-         * NvidiaTeslaP100
          * Tpu1VmV38
   """
 
@@ -2393,7 +2390,6 @@ class ApiSaveKernelRequest(KaggleObject):
     r"""
     The machine shape to use for this session. Currently supported options:
        * NvidiaTeslaT4
-       * NvidiaTeslaP100
        * Tpu1VmV38
     """
     return self._machine_shape or ""
