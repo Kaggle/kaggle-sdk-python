@@ -1,5 +1,5 @@
-from kagglesdk.benchmarks.types.benchmark_types import BenchmarkArenaSettings
-from kagglesdk.benchmarks.types.benchmarks_api_service import ApiAddTasksToBenchmarkRequest, ApiAddTasksToBenchmarkResponse, ApiBenchmarkLeaderboard, ApiBenchmarkModelVersionConfig, ApiCreateBenchmarkArenaSettingsRequest, ApiCreateBenchmarkModelVersionConfigRequest, ApiCreateBenchmarkVersionAgentMappingsRequest, ApiCreateBenchmarkVersionAgentMappingsResponse, ApiDeleteBenchmarkVersionAgentMappingsRequest, ApiDeleteBenchmarkVersionAgentMappingsResponse, ApiGetBenchmarkArenaSettingsRequest, ApiGetBenchmarkLeaderboardRequest, ApiGetBenchmarkModelVersionConfigRequest, ApiListBenchmarkArenaCombinationsRequest, ApiListBenchmarkArenaCombinationsResponse, ApiListBenchmarkModelsRequest, ApiListBenchmarkModelsResponse, ApiListBenchmarkModelVersionConfigsRequest, ApiListBenchmarkModelVersionConfigsResponse, ApiListBenchmarkVersionAgentMappingsRequest, ApiListBenchmarkVersionAgentMappingsResponse, ApiRegisterAuxiliaryModelVersionConfigsRequest, ApiRemoveTasksFromBenchmarkRequest, ApiRemoveTasksFromBenchmarkResponse, ApiUnregisterAuxiliaryModelVersionConfigsRequest, ApiUpdateBenchmarkArenaCombinationsRequest, ApiUpdateBenchmarkArenaSettingsRequest
+from kagglesdk.benchmarks.types.benchmark_types import BenchmarkArenaSettings, BenchmarkMetricProducer
+from kagglesdk.benchmarks.types.benchmarks_api_service import ApiAddTasksToBenchmarkRequest, ApiAddTasksToBenchmarkResponse, ApiBatchScheduleBenchmarkMetricsRequest, ApiBatchScheduleBenchmarkMetricsResponse, ApiBenchmarkLeaderboard, ApiBenchmarkModelVersionConfig, ApiCreateBenchmarkArenaSettingsRequest, ApiCreateBenchmarkMetricProducerRequest, ApiCreateBenchmarkModelVersionConfigRequest, ApiCreateBenchmarkVersionAgentMappingsRequest, ApiCreateBenchmarkVersionAgentMappingsResponse, ApiDeleteBenchmarkVersionAgentMappingsRequest, ApiDeleteBenchmarkVersionAgentMappingsResponse, ApiGetBenchmarkArenaSettingsRequest, ApiGetBenchmarkLeaderboardRequest, ApiGetBenchmarkModelVersionConfigRequest, ApiListBenchmarkArenaCombinationsRequest, ApiListBenchmarkArenaCombinationsResponse, ApiListBenchmarkModelsRequest, ApiListBenchmarkModelsResponse, ApiListBenchmarkModelVersionConfigsRequest, ApiListBenchmarkModelVersionConfigsResponse, ApiListBenchmarkVersionAgentMappingsRequest, ApiListBenchmarkVersionAgentMappingsResponse, ApiRegisterAuxiliaryModelVersionConfigsRequest, ApiRemoveTasksFromBenchmarkRequest, ApiRemoveTasksFromBenchmarkResponse, ApiSetDisplayedBenchmarkMetricProducerRunRequest, ApiSetDisplayedBenchmarkMetricProducerRunResponse, ApiUnregisterAuxiliaryModelVersionConfigsRequest, ApiUpdateBenchmarkArenaCombinationsRequest, ApiUpdateBenchmarkArenaCombinationsResponse, ApiUpdateBenchmarkArenaSettingsRequest, ApiValidateBenchmarkMetricProducerOutputRequest, ApiValidateBenchmarkMetricProducerOutputResponse
 from kagglesdk.kaggle_http_client import KaggleHttpClient
 
 class BenchmarksApiClient(object):
@@ -376,11 +376,12 @@ class BenchmarksApiClient(object):
 
     return self._client.call("benchmarks.BenchmarksApiService", "ListBenchmarkArenaCombinations", request, ApiListBenchmarkArenaCombinationsResponse)
 
-  def update_benchmark_arena_combinations(self, request: ApiUpdateBenchmarkArenaCombinationsRequest = None):
+  def update_benchmark_arena_combinations(self, request: ApiUpdateBenchmarkArenaCombinationsRequest = None) -> ApiUpdateBenchmarkArenaCombinationsResponse:
     r"""
     Opt (task version, candidate) combinations into or out of a benchmark
     version's arena. Requires update access to the benchmark version and read
-    access to each candidate added.
+    access to each candidate added. Added combinations with nothing to show
+    voters are skipped and returned; the rest are saved.
 
     Example:
       curl -sSL -u fickleone:local_api_token \
@@ -402,4 +403,106 @@ class BenchmarksApiClient(object):
     if request is None:
       request = ApiUpdateBenchmarkArenaCombinationsRequest()
 
-    self._client.call("benchmarks.BenchmarksApiService", "UpdateBenchmarkArenaCombinations", request, None)
+    return self._client.call("benchmarks.BenchmarksApiService", "UpdateBenchmarkArenaCombinations", request, ApiUpdateBenchmarkArenaCombinationsResponse)
+
+  def create_benchmark_metric_producer(self, request: ApiCreateBenchmarkMetricProducerRequest = None) -> BenchmarkMetricProducer:
+    r"""
+    Create a BenchmarkMetricProducer on a benchmark version. Requires update
+    access to the benchmark version and read access to the definition and
+    mounted datasets.
+
+    Example:
+      curl -sSL -u fickleone:local_api_token \
+        -X POST \
+        http://localhost/api/v1/benchmarks/fickleone/my-benchmark/metric-producers/create
+        \
+        -H 'Content-Type: application/json' \
+        -d '{
+          'definitionSource': {
+            'datasetVersionSlug': 'fickleone/my-metrics/versions/1'
+          },
+          'entrypoint': 'main.py',
+          'inputOptions': {'resultsOnly': true}
+        }'
+
+    Args:
+      request (ApiCreateBenchmarkMetricProducerRequest):
+        The request object; initialized to empty instance if not specified.
+    """
+
+    if request is None:
+      request = ApiCreateBenchmarkMetricProducerRequest()
+
+    return self._client.call("benchmarks.BenchmarksApiService", "CreateBenchmarkMetricProducer", request, BenchmarkMetricProducer)
+
+  def batch_schedule_benchmark_metrics(self, request: ApiBatchScheduleBenchmarkMetricsRequest = None) -> ApiBatchScheduleBenchmarkMetricsResponse:
+    r"""
+    Run one of a benchmark version's metric producers: stages the version's
+    latest completed runs, then starts the producer's session. Requires update
+    access to the benchmark version.
+
+    Example:
+      curl -sSL -u fickleone:local_api_token \
+        -X POST \
+        http://localhost/api/v1/benchmarks/fickleone/my-benchmark/metrics/schedule
+        \
+        -H 'Content-Type: application/json' \
+        -d '{'benchmarkMetricProducerId': 1}'
+
+    Args:
+      request (ApiBatchScheduleBenchmarkMetricsRequest):
+        The request object; initialized to empty instance if not specified.
+    """
+
+    if request is None:
+      request = ApiBatchScheduleBenchmarkMetricsRequest()
+
+    return self._client.call("benchmarks.BenchmarksApiService", "BatchScheduleBenchmarkMetrics", request, ApiBatchScheduleBenchmarkMetricsResponse)
+
+  def validate_benchmark_metric_producer_output(self, request: ApiValidateBenchmarkMetricProducerOutputRequest = None) -> ApiValidateBenchmarkMetricProducerOutputResponse:
+    r"""
+    Validate a BenchmarkMetricProducerOutput JSON payload against a benchmark
+    version's mapped candidates and manual metrics without persisting anything.
+    Requires update access to the benchmark version.
+
+    Example:
+      curl -sSL -u fickleone:local_api_token \
+        -X POST \
+        http://localhost/api/v1/benchmarks/fickleone/my-benchmark/metric-producers/validate-output
+        \
+        -H 'Content-Type: application/json' \
+        -d '{'outputJson': '{\'version\':1,\'metrics\':[...]}'}'
+
+    Args:
+      request (ApiValidateBenchmarkMetricProducerOutputRequest):
+        The request object; initialized to empty instance if not specified.
+    """
+
+    if request is None:
+      request = ApiValidateBenchmarkMetricProducerOutputRequest()
+
+    return self._client.call("benchmarks.BenchmarksApiService", "ValidateBenchmarkMetricProducerOutput", request, ApiValidateBenchmarkMetricProducerOutputResponse)
+
+  def set_displayed_benchmark_metric_producer_run(self, request: ApiSetDisplayedBenchmarkMetricProducerRunRequest = None) -> ApiSetDisplayedBenchmarkMetricProducerRunResponse:
+    r"""
+    Point a benchmark version's DisplayedMetricProducerRunId at one of its
+    COMPLETED metric producer runs (or omit benchmarkMetricProducerRunId to
+    clear it). Requires update access to the benchmark version.
+
+    Example:
+      curl -sSL -u fickleone:local_api_token \
+        -X POST \
+        http://localhost/api/v1/benchmarks/fickleone/my-benchmark/metrics/displayed-run
+        \
+        -H 'Content-Type: application/json' \
+        -d '{'benchmarkMetricProducerRunId': 1}'
+
+    Args:
+      request (ApiSetDisplayedBenchmarkMetricProducerRunRequest):
+        The request object; initialized to empty instance if not specified.
+    """
+
+    if request is None:
+      request = ApiSetDisplayedBenchmarkMetricProducerRunRequest()
+
+    return self._client.call("benchmarks.BenchmarksApiService", "SetDisplayedBenchmarkMetricProducerRun", request, ApiSetDisplayedBenchmarkMetricProducerRunResponse)
