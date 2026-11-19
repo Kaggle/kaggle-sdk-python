@@ -196,6 +196,16 @@ class BenchmarkLeaderboardDisplayType(enum.Enum):
   $2,601,845, $456, $790
   """
 
+class BenchmarkTaskCollaboratorRole(enum.Enum):
+  """What a task collaborator can do. Each role includes the ones above it."""
+  BENCHMARK_TASK_COLLABORATOR_ROLE_UNSPECIFIED = 0
+  BENCHMARK_TASK_COLLABORATOR_ROLE_VIEWER = 1
+  """Can view the task while it's private."""
+  BENCHMARK_TASK_COLLABORATOR_ROLE_EDITOR = 2
+  """Can also edit the task."""
+  BENCHMARK_TASK_COLLABORATOR_ROLE_ADMIN = 3
+  """Can also change the task's visibility and collaborators."""
+
 class BenchmarkTaskRunState(enum.Enum):
   BENCHMARK_TASK_RUN_STATE_UNSPECIFIED = 0
   BENCHMARK_TASK_RUN_STATE_QUEUED = 1

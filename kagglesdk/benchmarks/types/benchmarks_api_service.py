@@ -1,7 +1,7 @@
 from google.protobuf.field_mask_pb2 import FieldMask
 from kagglesdk.benchmarks.types.benchmark_enums import BenchmarkCandidateClass, BenchmarkLeaderboardDisplayType, BenchmarkVersionAgentMappingType
 from kagglesdk.benchmarks.types.benchmark_tasks_api_service import ApiBenchmarkTaskSlug
-from kagglesdk.benchmarks.types.benchmark_types import BenchmarkArenaCombination, BenchmarkArenaSettings, BenchmarkModel, BenchmarkResult
+from kagglesdk.benchmarks.types.benchmark_types import BenchmarkArenaCombination, BenchmarkArenaSettings, BenchmarkMetricProducerInputOptions, BenchmarkModel, BenchmarkResult, DatasetMount, DefinitionSource, EnvVariable, UserSecret
 from kagglesdk.kaggle_object import *
 from typing import Optional, List
 
@@ -152,6 +152,127 @@ class ApiAddTasksToBenchmarkResponse(KaggleObject):
   @property
   def skippedTasks(self):
     return self.skipped_tasks
+
+
+class ApiBatchScheduleBenchmarkMetricsRequest(KaggleObject):
+  r"""
+  Attributes:
+    owner_slug (str)
+    benchmark_slug (str)
+    version_number (int)
+      Targets the benchmark's current published version, or its draft when
+      there is no published version, if omitted.
+    benchmark_metric_producer_id (int)
+      Any of the version's producers, not only its latest.
+  """
+
+  def __init__(self):
+    self._owner_slug = ""
+    self._benchmark_slug = ""
+    self._version_number = None
+    self._benchmark_metric_producer_id = 0
+    self._freeze()
+
+  @property
+  def owner_slug(self) -> str:
+    return self._owner_slug
+
+  @owner_slug.setter
+  def owner_slug(self, owner_slug: str):
+    if owner_slug is None:
+      del self.owner_slug
+      return
+    if not isinstance(owner_slug, str):
+      raise TypeError('owner_slug must be of type str')
+    self._owner_slug = owner_slug
+
+  @property
+  def benchmark_slug(self) -> str:
+    return self._benchmark_slug
+
+  @benchmark_slug.setter
+  def benchmark_slug(self, benchmark_slug: str):
+    if benchmark_slug is None:
+      del self.benchmark_slug
+      return
+    if not isinstance(benchmark_slug, str):
+      raise TypeError('benchmark_slug must be of type str')
+    self._benchmark_slug = benchmark_slug
+
+  @property
+  def version_number(self) -> int:
+    r"""
+    Targets the benchmark's current published version, or its draft when
+    there is no published version, if omitted.
+    """
+    return self._version_number or 0
+
+  @version_number.setter
+  def version_number(self, version_number: Optional[int]):
+    if version_number is None:
+      del self.version_number
+      return
+    if not isinstance(version_number, int):
+      raise TypeError('version_number must be of type int')
+    self._version_number = version_number
+
+  @property
+  def benchmark_metric_producer_id(self) -> int:
+    """Any of the version's producers, not only its latest."""
+    return self._benchmark_metric_producer_id
+
+  @benchmark_metric_producer_id.setter
+  def benchmark_metric_producer_id(self, benchmark_metric_producer_id: int):
+    if benchmark_metric_producer_id is None:
+      del self.benchmark_metric_producer_id
+      return
+    if not isinstance(benchmark_metric_producer_id, int):
+      raise TypeError('benchmark_metric_producer_id must be of type int')
+    self._benchmark_metric_producer_id = benchmark_metric_producer_id
+
+  def endpoint(self):
+    if self.version_number:
+      path = '/api/v1/benchmarks/{owner_slug}/{benchmark_slug}/versions/{version_number}/metrics/schedule'
+    else:
+      path = '/api/v1/benchmarks/{owner_slug}/{benchmark_slug}/metrics/schedule'
+    return path.format_map(self.to_field_map(self))
+
+
+  @staticmethod
+  def method():
+    return 'POST'
+
+  @staticmethod
+  def body_fields():
+    return '*'
+
+
+class ApiBatchScheduleBenchmarkMetricsResponse(KaggleObject):
+  r"""
+  Attributes:
+    benchmark_metric_producer_run_id (int)
+  """
+
+  def __init__(self):
+    self._benchmark_metric_producer_run_id = 0
+    self._freeze()
+
+  @property
+  def benchmark_metric_producer_run_id(self) -> int:
+    return self._benchmark_metric_producer_run_id
+
+  @benchmark_metric_producer_run_id.setter
+  def benchmark_metric_producer_run_id(self, benchmark_metric_producer_run_id: int):
+    if benchmark_metric_producer_run_id is None:
+      del self.benchmark_metric_producer_run_id
+      return
+    if not isinstance(benchmark_metric_producer_run_id, int):
+      raise TypeError('benchmark_metric_producer_run_id must be of type int')
+    self._benchmark_metric_producer_run_id = benchmark_metric_producer_run_id
+
+  @property
+  def benchmarkMetricProducerRunId(self):
+    return self.benchmark_metric_producer_run_id
 
 
 class ApiBenchmarkLeaderboard(KaggleObject):
@@ -706,6 +827,192 @@ class ApiCreateBenchmarkArenaSettingsRequest(KaggleObject):
       path = '/api/v1/benchmarks/{owner_slug}/{benchmark_slug}/versions/{version_number}/arena/settings/create'
     else:
       path = '/api/v1/benchmarks/{owner_slug}/{benchmark_slug}/arena/settings/create'
+    return path.format_map(self.to_field_map(self))
+
+
+  @staticmethod
+  def method():
+    return 'POST'
+
+  @staticmethod
+  def body_fields():
+    return '*'
+
+
+class ApiCreateBenchmarkMetricProducerRequest(KaggleObject):
+  r"""
+  Attributes:
+    owner_slug (str)
+    benchmark_slug (str)
+    version_number (int)
+      Targets the benchmark's current published version, or its draft when
+      there is no published version, if omitted.
+    definition_source (DefinitionSource)
+      DatasetVersionSlug + optional SubPath where the script lives.
+    entrypoint (str)
+      Relative to definition_source.sub_path, executed via: cd <sub_path> &&
+      python3 <entrypoint>
+    input_options (BenchmarkMetricProducerInputOptions)
+    env_variables (EnvVariable)
+    secrets (UserSecret)
+    mounts (DatasetMount)
+      Optional. Additional Kaggle datasets mounted read-only into the producer
+      session container (e.g. rubrics or reference data).
+  """
+
+  def __init__(self):
+    self._owner_slug = ""
+    self._benchmark_slug = ""
+    self._version_number = None
+    self._definition_source = None
+    self._entrypoint = ""
+    self._input_options = None
+    self._env_variables = []
+    self._secrets = []
+    self._mounts = []
+    self._freeze()
+
+  @property
+  def owner_slug(self) -> str:
+    return self._owner_slug
+
+  @owner_slug.setter
+  def owner_slug(self, owner_slug: str):
+    if owner_slug is None:
+      del self.owner_slug
+      return
+    if not isinstance(owner_slug, str):
+      raise TypeError('owner_slug must be of type str')
+    self._owner_slug = owner_slug
+
+  @property
+  def benchmark_slug(self) -> str:
+    return self._benchmark_slug
+
+  @benchmark_slug.setter
+  def benchmark_slug(self, benchmark_slug: str):
+    if benchmark_slug is None:
+      del self.benchmark_slug
+      return
+    if not isinstance(benchmark_slug, str):
+      raise TypeError('benchmark_slug must be of type str')
+    self._benchmark_slug = benchmark_slug
+
+  @property
+  def version_number(self) -> int:
+    r"""
+    Targets the benchmark's current published version, or its draft when
+    there is no published version, if omitted.
+    """
+    return self._version_number or 0
+
+  @version_number.setter
+  def version_number(self, version_number: Optional[int]):
+    if version_number is None:
+      del self.version_number
+      return
+    if not isinstance(version_number, int):
+      raise TypeError('version_number must be of type int')
+    self._version_number = version_number
+
+  @property
+  def definition_source(self) -> Optional['DefinitionSource']:
+    """DatasetVersionSlug + optional SubPath where the script lives."""
+    return self._definition_source
+
+  @definition_source.setter
+  def definition_source(self, definition_source: Optional['DefinitionSource']):
+    if definition_source is None:
+      del self.definition_source
+      return
+    if not isinstance(definition_source, DefinitionSource):
+      raise TypeError('definition_source must be of type DefinitionSource')
+    self._definition_source = definition_source
+
+  @property
+  def entrypoint(self) -> str:
+    r"""
+    Relative to definition_source.sub_path, executed via: cd <sub_path> &&
+    python3 <entrypoint>
+    """
+    return self._entrypoint
+
+  @entrypoint.setter
+  def entrypoint(self, entrypoint: str):
+    if entrypoint is None:
+      del self.entrypoint
+      return
+    if not isinstance(entrypoint, str):
+      raise TypeError('entrypoint must be of type str')
+    self._entrypoint = entrypoint
+
+  @property
+  def input_options(self) -> Optional['BenchmarkMetricProducerInputOptions']:
+    return self._input_options or None
+
+  @input_options.setter
+  def input_options(self, input_options: Optional[Optional['BenchmarkMetricProducerInputOptions']]):
+    if input_options is None:
+      del self.input_options
+      return
+    if not isinstance(input_options, BenchmarkMetricProducerInputOptions):
+      raise TypeError('input_options must be of type BenchmarkMetricProducerInputOptions')
+    self._input_options = input_options
+
+  @property
+  def env_variables(self) -> Optional[List[Optional['EnvVariable']]]:
+    return self._env_variables
+
+  @env_variables.setter
+  def env_variables(self, env_variables: Optional[List[Optional['EnvVariable']]]):
+    if env_variables is None:
+      del self.env_variables
+      return
+    if not isinstance(env_variables, list):
+      raise TypeError('env_variables must be of type list')
+    if not all([isinstance(t, EnvVariable) for t in env_variables]):
+      raise TypeError('env_variables must contain only items of type EnvVariable')
+    self._env_variables = env_variables
+
+  @property
+  def secrets(self) -> Optional[List[Optional['UserSecret']]]:
+    return self._secrets
+
+  @secrets.setter
+  def secrets(self, secrets: Optional[List[Optional['UserSecret']]]):
+    if secrets is None:
+      del self.secrets
+      return
+    if not isinstance(secrets, list):
+      raise TypeError('secrets must be of type list')
+    if not all([isinstance(t, UserSecret) for t in secrets]):
+      raise TypeError('secrets must contain only items of type UserSecret')
+    self._secrets = secrets
+
+  @property
+  def mounts(self) -> Optional[List[Optional['DatasetMount']]]:
+    r"""
+    Optional. Additional Kaggle datasets mounted read-only into the producer
+    session container (e.g. rubrics or reference data).
+    """
+    return self._mounts
+
+  @mounts.setter
+  def mounts(self, mounts: Optional[List[Optional['DatasetMount']]]):
+    if mounts is None:
+      del self.mounts
+      return
+    if not isinstance(mounts, list):
+      raise TypeError('mounts must be of type list')
+    if not all([isinstance(t, DatasetMount) for t in mounts]):
+      raise TypeError('mounts must contain only items of type DatasetMount')
+    self._mounts = mounts
+
+  def endpoint(self):
+    if self.version_number:
+      path = '/api/v1/benchmarks/{owner_slug}/{benchmark_slug}/versions/{version_number}/metric-producers/create'
+    else:
+      path = '/api/v1/benchmarks/{owner_slug}/{benchmark_slug}/metric-producers/create'
     return path.format_map(self.to_field_map(self))
 
 
@@ -1989,6 +2296,44 @@ class ApiUpdateBenchmarkArenaCombinationsRequest(KaggleObject):
     return '*'
 
 
+class ApiUpdateBenchmarkArenaCombinationsResponse(KaggleObject):
+  r"""
+  Attributes:
+    not_added (BenchmarkArenaCombination)
+      Added combinations not saved because voters would have nothing to see:
+      the task names no artifact, or the candidate's counted run didn't
+      complete with output holding it.
+  """
+
+  def __init__(self):
+    self._not_added = []
+    self._freeze()
+
+  @property
+  def not_added(self) -> Optional[List[Optional['BenchmarkArenaCombination']]]:
+    r"""
+    Added combinations not saved because voters would have nothing to see:
+    the task names no artifact, or the candidate's counted run didn't
+    complete with output holding it.
+    """
+    return self._not_added
+
+  @not_added.setter
+  def not_added(self, not_added: Optional[List[Optional['BenchmarkArenaCombination']]]):
+    if not_added is None:
+      del self.not_added
+      return
+    if not isinstance(not_added, list):
+      raise TypeError('not_added must be of type list')
+    if not all([isinstance(t, BenchmarkArenaCombination) for t in not_added]):
+      raise TypeError('not_added must contain only items of type BenchmarkArenaCombination')
+    self._not_added = not_added
+
+  @property
+  def notAdded(self):
+    return self.not_added
+
+
 class ApiUpdateBenchmarkArenaSettingsRequest(KaggleObject):
   r"""
   Attributes:
@@ -2095,6 +2440,146 @@ class ApiUpdateBenchmarkArenaSettingsRequest(KaggleObject):
     return '*'
 
 
+class ApiValidateBenchmarkMetricProducerOutputRequest(KaggleObject):
+  r"""
+  Attributes:
+    owner_slug (str)
+    benchmark_slug (str)
+    version_number (int)
+      Targets the benchmark's current published version, or its draft when
+      there is no published version, if omitted.
+    output_json (str)
+      Raw JSON text of a BenchmarkMetricProducerOutput file.
+  """
+
+  def __init__(self):
+    self._owner_slug = ""
+    self._benchmark_slug = ""
+    self._version_number = None
+    self._output_json = ""
+    self._freeze()
+
+  @property
+  def owner_slug(self) -> str:
+    return self._owner_slug
+
+  @owner_slug.setter
+  def owner_slug(self, owner_slug: str):
+    if owner_slug is None:
+      del self.owner_slug
+      return
+    if not isinstance(owner_slug, str):
+      raise TypeError('owner_slug must be of type str')
+    self._owner_slug = owner_slug
+
+  @property
+  def benchmark_slug(self) -> str:
+    return self._benchmark_slug
+
+  @benchmark_slug.setter
+  def benchmark_slug(self, benchmark_slug: str):
+    if benchmark_slug is None:
+      del self.benchmark_slug
+      return
+    if not isinstance(benchmark_slug, str):
+      raise TypeError('benchmark_slug must be of type str')
+    self._benchmark_slug = benchmark_slug
+
+  @property
+  def version_number(self) -> int:
+    r"""
+    Targets the benchmark's current published version, or its draft when
+    there is no published version, if omitted.
+    """
+    return self._version_number or 0
+
+  @version_number.setter
+  def version_number(self, version_number: Optional[int]):
+    if version_number is None:
+      del self.version_number
+      return
+    if not isinstance(version_number, int):
+      raise TypeError('version_number must be of type int')
+    self._version_number = version_number
+
+  @property
+  def output_json(self) -> str:
+    """Raw JSON text of a BenchmarkMetricProducerOutput file."""
+    return self._output_json
+
+  @output_json.setter
+  def output_json(self, output_json: str):
+    if output_json is None:
+      del self.output_json
+      return
+    if not isinstance(output_json, str):
+      raise TypeError('output_json must be of type str')
+    self._output_json = output_json
+
+  def endpoint(self):
+    if self.version_number:
+      path = '/api/v1/benchmarks/{owner_slug}/{benchmark_slug}/versions/{version_number}/metric-producers/validate-output'
+    else:
+      path = '/api/v1/benchmarks/{owner_slug}/{benchmark_slug}/metric-producers/validate-output'
+    return path.format_map(self.to_field_map(self))
+
+
+  @staticmethod
+  def method():
+    return 'POST'
+
+  @staticmethod
+  def body_fields():
+    return '*'
+
+
+class ApiValidateBenchmarkMetricProducerOutputResponse(KaggleObject):
+  r"""
+  Attributes:
+    is_valid (bool)
+    errors (str)
+      Validation errors found in output_json; empty when is_valid is true.
+  """
+
+  def __init__(self):
+    self._is_valid = False
+    self._errors = []
+    self._freeze()
+
+  @property
+  def is_valid(self) -> bool:
+    return self._is_valid
+
+  @is_valid.setter
+  def is_valid(self, is_valid: bool):
+    if is_valid is None:
+      del self.is_valid
+      return
+    if not isinstance(is_valid, bool):
+      raise TypeError('is_valid must be of type bool')
+    self._is_valid = is_valid
+
+  @property
+  def errors(self) -> Optional[List[str]]:
+    """Validation errors found in output_json; empty when is_valid is true."""
+    return self._errors
+
+  @errors.setter
+  def errors(self, errors: Optional[List[str]]):
+    if errors is None:
+      del self.errors
+      return
+    if not isinstance(errors, list):
+      raise TypeError('errors must be of type list')
+    if not all([isinstance(t, str) for t in errors]):
+      raise TypeError('errors must contain only items of type str')
+    self._errors = errors
+
+  @property
+  def isValid(self):
+    return self.is_valid
+
+
 ApiAddTasksToBenchmarkRequest._fields = [
   FieldMetadata("benchmarkSlug", "benchmark_slug", "_benchmark_slug", str, "", PredefinedSerializer()),
   FieldMetadata("versionNumber", "version_number", "_version_number", int, None, PredefinedSerializer(), optional=True),
@@ -2104,6 +2589,17 @@ ApiAddTasksToBenchmarkRequest._fields = [
 ApiAddTasksToBenchmarkResponse._fields = [
   FieldMetadata("addedTasks", "added_tasks", "_added_tasks", ApiBenchmarkTaskSlug, [], ListSerializer(KaggleObjectSerializer())),
   FieldMetadata("skippedTasks", "skipped_tasks", "_skipped_tasks", ApiBenchmarkTaskSlug, [], ListSerializer(KaggleObjectSerializer())),
+]
+
+ApiBatchScheduleBenchmarkMetricsRequest._fields = [
+  FieldMetadata("ownerSlug", "owner_slug", "_owner_slug", str, "", PredefinedSerializer()),
+  FieldMetadata("benchmarkSlug", "benchmark_slug", "_benchmark_slug", str, "", PredefinedSerializer()),
+  FieldMetadata("versionNumber", "version_number", "_version_number", int, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("benchmarkMetricProducerId", "benchmark_metric_producer_id", "_benchmark_metric_producer_id", int, 0, PredefinedSerializer()),
+]
+
+ApiBatchScheduleBenchmarkMetricsResponse._fields = [
+  FieldMetadata("benchmarkMetricProducerRunId", "benchmark_metric_producer_run_id", "_benchmark_metric_producer_run_id", int, 0, PredefinedSerializer()),
 ]
 
 ApiBenchmarkLeaderboard.LeaderboardRow._fields = [
@@ -2151,6 +2647,18 @@ ApiCreateBenchmarkArenaSettingsRequest._fields = [
   FieldMetadata("benchmarkSlug", "benchmark_slug", "_benchmark_slug", str, "", PredefinedSerializer()),
   FieldMetadata("versionNumber", "version_number", "_version_number", int, None, PredefinedSerializer(), optional=True),
   FieldMetadata("settings", "settings", "_settings", BenchmarkArenaSettings, None, KaggleObjectSerializer()),
+]
+
+ApiCreateBenchmarkMetricProducerRequest._fields = [
+  FieldMetadata("ownerSlug", "owner_slug", "_owner_slug", str, "", PredefinedSerializer()),
+  FieldMetadata("benchmarkSlug", "benchmark_slug", "_benchmark_slug", str, "", PredefinedSerializer()),
+  FieldMetadata("versionNumber", "version_number", "_version_number", int, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("definitionSource", "definition_source", "_definition_source", DefinitionSource, None, KaggleObjectSerializer()),
+  FieldMetadata("entrypoint", "entrypoint", "_entrypoint", str, "", PredefinedSerializer()),
+  FieldMetadata("inputOptions", "input_options", "_input_options", BenchmarkMetricProducerInputOptions, None, KaggleObjectSerializer(), optional=True),
+  FieldMetadata("envVariables", "env_variables", "_env_variables", EnvVariable, [], ListSerializer(KaggleObjectSerializer())),
+  FieldMetadata("secrets", "secrets", "_secrets", UserSecret, [], ListSerializer(KaggleObjectSerializer())),
+  FieldMetadata("mounts", "mounts", "_mounts", DatasetMount, [], ListSerializer(KaggleObjectSerializer())),
 ]
 
 ApiCreateBenchmarkModelVersionConfigRequest._fields = [
@@ -2268,11 +2776,27 @@ ApiUpdateBenchmarkArenaCombinationsRequest._fields = [
   FieldMetadata("remove", "remove", "_remove", BenchmarkArenaCombination, [], ListSerializer(KaggleObjectSerializer())),
 ]
 
+ApiUpdateBenchmarkArenaCombinationsResponse._fields = [
+  FieldMetadata("notAdded", "not_added", "_not_added", BenchmarkArenaCombination, [], ListSerializer(KaggleObjectSerializer())),
+]
+
 ApiUpdateBenchmarkArenaSettingsRequest._fields = [
   FieldMetadata("ownerSlug", "owner_slug", "_owner_slug", str, "", PredefinedSerializer()),
   FieldMetadata("benchmarkSlug", "benchmark_slug", "_benchmark_slug", str, "", PredefinedSerializer()),
   FieldMetadata("versionNumber", "version_number", "_version_number", int, None, PredefinedSerializer(), optional=True),
   FieldMetadata("settings", "settings", "_settings", BenchmarkArenaSettings, None, KaggleObjectSerializer()),
   FieldMetadata("updateMask", "update_mask", "_update_mask", FieldMask, None, FieldMaskSerializer()),
+]
+
+ApiValidateBenchmarkMetricProducerOutputRequest._fields = [
+  FieldMetadata("ownerSlug", "owner_slug", "_owner_slug", str, "", PredefinedSerializer()),
+  FieldMetadata("benchmarkSlug", "benchmark_slug", "_benchmark_slug", str, "", PredefinedSerializer()),
+  FieldMetadata("versionNumber", "version_number", "_version_number", int, None, PredefinedSerializer(), optional=True),
+  FieldMetadata("outputJson", "output_json", "_output_json", str, "", PredefinedSerializer()),
+]
+
+ApiValidateBenchmarkMetricProducerOutputResponse._fields = [
+  FieldMetadata("isValid", "is_valid", "_is_valid", bool, False, PredefinedSerializer()),
+  FieldMetadata("errors", "errors", "_errors", str, [], ListSerializer(PredefinedSerializer())),
 ]
 

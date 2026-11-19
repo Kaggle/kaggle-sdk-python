@@ -1,5 +1,5 @@
 from kagglesdk.benchmarks.types.benchmark_task_run_service import GetBenchmarkSchedulerStatusResponse
-from kagglesdk.benchmarks.types.benchmark_tasks_api_service import ApiBatchScheduleBenchmarkTaskRunsRequest, ApiBatchScheduleBenchmarkTaskRunsResponse, ApiBenchmarkTask, ApiCancelBenchmarkTaskRunsRequest, ApiCancelBenchmarkTaskRunsResponse, ApiCreateBenchmarkTaskRequest, ApiDownloadBenchmarkTaskRunOutputRequest, ApiGetBenchmarkSchedulerStatusRequest, ApiGetBenchmarkTaskQuotaRequest, ApiGetBenchmarkTaskQuotaResponse, ApiGetBenchmarkTaskRequest, ApiGetBenchmarkTaskRunLogsRequest, ApiListBenchmarkTaskRunsRequest, ApiListBenchmarkTaskRunsResponse, ApiListBenchmarkTasksRequest, ApiListBenchmarkTasksResponse, ApiPublishBenchmarkTaskRequest, ApiUpdateBenchmarkTaskRequest, ApiUpdateBenchmarkTaskResponse, ApiUpdateBenchmarkTaskVersionRequest
+from kagglesdk.benchmarks.types.benchmark_tasks_api_service import ApiBatchScheduleBenchmarkTaskRunsRequest, ApiBatchScheduleBenchmarkTaskRunsResponse, ApiBenchmarkTask, ApiBenchmarkTaskCollaborators, ApiCancelBenchmarkTaskRunsRequest, ApiCancelBenchmarkTaskRunsResponse, ApiCreateBenchmarkTaskRequest, ApiDownloadBenchmarkTaskRunOutputRequest, ApiGetBenchmarkSchedulerStatusRequest, ApiGetBenchmarkTaskCollaboratorsRequest, ApiGetBenchmarkTaskQuotaRequest, ApiGetBenchmarkTaskQuotaResponse, ApiGetBenchmarkTaskRequest, ApiGetBenchmarkTaskRunLogsRequest, ApiListBenchmarkTaskRunsRequest, ApiListBenchmarkTaskRunsResponse, ApiListBenchmarkTasksRequest, ApiListBenchmarkTasksResponse, ApiPublishBenchmarkTaskRequest, ApiUpdateBenchmarkTaskCollaboratorsRequest, ApiUpdateBenchmarkTaskRequest, ApiUpdateBenchmarkTaskResponse, ApiUpdateBenchmarkTaskVersionRequest
 from kagglesdk.common.types.file_download import FileDownload
 from kagglesdk.kaggle_http_client import KaggleHttpClient
 
@@ -208,3 +208,33 @@ class BenchmarkTasksApiClient(object):
       request = ApiUpdateBenchmarkTaskVersionRequest()
 
     return self._client.call("benchmarks.BenchmarkTasksApiService", "UpdateBenchmarkTaskVersion", request, ApiBenchmarkTask)
+
+  def get_benchmark_task_collaborators(self, request: ApiGetBenchmarkTaskCollaboratorsRequest = None) -> ApiBenchmarkTaskCollaborators:
+    r"""
+    List the users and groups who collaborate on a task and the role each one
+    holds. The owner isn't included.
+
+    Args:
+      request (ApiGetBenchmarkTaskCollaboratorsRequest):
+        The request object; initialized to empty instance if not specified.
+    """
+
+    if request is None:
+      request = ApiGetBenchmarkTaskCollaboratorsRequest()
+
+    return self._client.call("benchmarks.BenchmarkTasksApiService", "GetBenchmarkTaskCollaborators", request, ApiBenchmarkTaskCollaborators)
+
+  def update_benchmark_task_collaborators(self, request: ApiUpdateBenchmarkTaskCollaboratorsRequest = None) -> ApiBenchmarkTaskCollaborators:
+    r"""
+    Add, re-role or remove collaborators on a task. Collaborators the request
+    doesn't name are left as they are.
+
+    Args:
+      request (ApiUpdateBenchmarkTaskCollaboratorsRequest):
+        The request object; initialized to empty instance if not specified.
+    """
+
+    if request is None:
+      request = ApiUpdateBenchmarkTaskCollaboratorsRequest()
+
+    return self._client.call("benchmarks.BenchmarkTasksApiService", "UpdateBenchmarkTaskCollaborators", request, ApiBenchmarkTaskCollaborators)
